@@ -253,6 +253,7 @@ def run_report(run_dir: str | Path) -> dict:
         "analysis_versions": {
             "parser": telemetry.PARSER_VERSION,
             "coverage_formula": tools.COVERAGE_FORMULA_VERSION,
+            "bash_classifier": tools.BASH_CLASSIFIER_VERSION,
             "reacquisition_classifier": metrics.REACQUISITION_CLASSIFIER_VERSION,
             "handoff_metrics": handoff.HANDOFF_SCHEMA_VERSION,
             "isolation_check": isolation.ISOLATION_CHECK_VERSION,

@@ -848,3 +848,39 @@ and in the pilot report.
 `--repeat-id 2`, so the invalid attempt stays visible as repeat 1 (Arm A only,
 invalid). Tasks 5 and 6 run under v3. Nothing else changes: no metric,
 threshold, fixture, arm, topology, permission policy or limit value.
+
+### Amendment 8 - 2026-09-11 - bash command splitter mis-parsed `2>&1` (DURING the Stage-0.5 pilot)
+
+**Written during the Stage-0.5 pilot**, after observing the Task-4 rerun pair
+and before any further run. The user authorized this amendment, including the
+re-analysis of the observed run, explicitly.
+
+**POST-RUN INSTRUMENTATION DEFECT DISCOVERED.** Under the frozen bash classifier
+(v1), `20260911T015737Z_settings_list_fields_B_r2` (Task 4 rerun, Arm B) had
+acquisition coverage **0.700** (14 classified, 6 unknown). That flagged it
+`low_observability` and made the pair invalid. All six unknown commands were
+the Implementer's own non-acquisition work:
+
+- five test runs of the form `python -m pytest -q [file] 2>&1`: `tools.split_bash_segments`
+  treated the `&` in the `2>&1` redirection as a background separator, which
+  left a bogus segment `1`;
+- one `python --version`: v1 had no category for version queries.
+
+None of these commands returned repository content. The raw stream is complete
+and unmodified (41/41 checksums).
+
+**Fix (bash classifier v2, `tools.BASH_CLASSIFIER_VERSION = 2`).**
+- `&` inside a redirection (`N>&M`, `>&`, `<&`, `&>`) is not a separator. A
+  bare `&`, `&&`, `||`, `|` and `;` still separate commands.
+- Interpreter version queries (`--version`, `-V`, `version`, exact tokens) are
+  non-acquisition metadata.
+
+The coverage formula (v2), the gate (≥ 0.90, no unknown tools) and every other
+category are unchanged. The classifier is part of the derived analysis, not of
+`config_hash`, and nothing about execution changed.
+
+**Re-analysis (post-hoc, disclosed; no rerun).** Under v2 the same raw data
+gives coverage **1.000** (14 classified, 0 unknown), so the run is valid and the
+Task-4 rerun pair is valid. The v1 result (0.700, invalid) is recorded here and
+in the pilot report. No other real run contains either command form, and every
+other run's classification is unchanged (asserted in `tests/test_amendment8.py`).

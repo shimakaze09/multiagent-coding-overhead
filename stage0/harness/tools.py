@@ -163,6 +163,12 @@ GIT_NON_ACQUISITION_SUBCMDS = {"rev-parse", "config", "remote", "version"}
 # a naive split turning such a script body into bogus unknown segments.
 _SEPARATORS = ("||", "&&", "|", ";", "&", "\n")
 
+# 1: frozen through the Stage-0.5 freeze (5a756bf).
+# 2: amendment 8 (2026-09-11): `&` inside a redirection is not a separator, and
+#    interpreter version queries are non-acquisition metadata.
+BASH_CLASSIFIER_VERSION = 2
+_VERSION_QUERY_TOKENS = {"--version", "-V", "version"}
+
 
 def split_bash_segments(command: str) -> list[str]:
     """Split a shell command into segments, respecting quotes.
@@ -199,6 +205,14 @@ def split_bash_segments(command: str) -> list[str]:
             buf.append(ch)
             buf.append(command[i + 1])
             i += 2
+            continue
+
+        # Amendment 8: `&` inside a redirection (`2>&1`, `>&2`, `<&3`, `&>file`)
+        # is not a command separator. v1 split `pytest -q 2>&1` into `... 2>`
+        # and an unclassifiable `1`.
+        if ch == "&" and (command.startswith("&>", i) or (buf and buf[-1] in "<>")):
+            buf.append(ch)
+            i += 1
             continue
 
         matched = next((sep for sep in _SEPARATORS if command.startswith(sep, i)), None)
@@ -330,6 +344,11 @@ def classify_bash_segment(segment: str) -> str:
         # `python -c "..."` / `node -e "..."` runs generated code, not a file read.
         if any(t in _INLINE_SCRIPT_FLAGS for t in rest):
             return BASH_VERIFICATION
+        # Amendment 8: `python --version` / `go version` report the tool's own
+        # version, never repository content. Exact tokens only: `python -v` is
+        # verbose mode, not a version query.
+        if rest and set(rest) <= _VERSION_QUERY_TOKENS:
+            return BASH_NON_ACQUISITION
         return BASH_UNKNOWN
 
     if head == "make":
