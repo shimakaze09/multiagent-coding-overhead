@@ -2429,7 +2429,7 @@ Nothing about the experiment changed. Verified after the move:
 * `runner.py ingest` rebuilds the index; `difficulty-summary` is unchanged.
 
 One detail for anyone reading raw telemetry: each run's `metadata.json` records
-the absolute workspace path it had when it ran, which still contains
-`...\stage0uns\...`. That is raw recorded data and was deliberately not
-rewritten. The analysis reads the repository from `<run_dir>/workspace`, which
+the absolute workspace path it had when it ran, which still ends in
+`stage0/runs/<run_id>/workspace`. That is raw recorded data and was
+deliberately not rewritten. The analysis reads the repository from `<run_dir>/workspace`, which
 is where it now is, so every derived output is identical either way.
