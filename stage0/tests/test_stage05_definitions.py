@@ -40,7 +40,8 @@ def test_stage0_frozen_definitions_are_untouched():
     assert handoff.HANDOFF_SCHEMA_VERSION == 1
     assert isolation.ISOLATION_CHECK_VERSION == 1
     assert metrics.REACQUISITION_CLASSIFIER_VERSION == 1
-    assert config.RunConfig().config_hash() == "22ce9b7e5249dd497ee7c4c0318216b4"
+    # amendment 7 (turn-limit counting) is the only change since the Stage-0.5 freeze
+    assert config.RunConfig().config_hash() == "9edbfb5d0d082d49a61969068fafd4ac"
 
 
 @pytest.mark.parametrize("task_id", sorted(NEW_TASK_BASE_COMMITS))

@@ -28,7 +28,46 @@ from typing import Optional, Sequence
 import config
 from harness import telemetry
 
-WRAPPER_VERSION = 2
+WRAPPER_VERSION = 3  # 3: turn limit counts distinct API messages (amendment 7)
+
+TURN_LIMIT_ENFORCEMENT = "harness_side_api_messages"
+
+
+class TurnCounter:
+    """Harness-side turn limit (there is no --max-turns on 2.1.260).
+
+    A turn is one API assistant message, i.e. one distinct `message.id`.
+    Amendment 7 (2026-09-11): wrapper v2 counted every raw assistant stream
+    line, but Claude Code emits one line per content block (thinking, text,
+    each tool_use). The "25 turns" limit therefore fired after as few as 11
+    model turns. Lines that merely contain the text `"type":"assistant"` (e.g.
+    inside a tool result) are no longer counted either.
+    """
+
+    def __init__(self, limit: int):
+        self.limit = limit
+        self.turns = 0
+        self.assistant_events = 0
+        self._last_id: object = object()
+
+    def observe(self, line: str) -> bool:
+        """Feed one raw stdout line; True once the limit is exceeded."""
+        if '"assistant"' not in line:
+            return False
+        try:
+            obj = json.loads(line)
+        except (json.JSONDecodeError, ValueError):
+            return False
+        if not isinstance(obj, dict) or obj.get("type") != "assistant":
+            return False
+        self.assistant_events += 1
+        msg = obj.get("message") if isinstance(obj.get("message"), dict) else {}
+        mid = msg.get("id")
+        if mid is None or mid != self._last_id:
+            self.turns += 1
+            self._last_id = mid
+        return self.turns > self.limit
+
 
 TERM_COMPLETED = "completed"
 TERM_TURN_LIMIT = "turn_limit_exceeded"
@@ -347,7 +386,7 @@ def build_invocation(
         output_format="stream-json",
         max_turns=max_turns,
         max_wall_seconds=max_wall_seconds,
-        turn_limit_enforcement="harness_side",
+        turn_limit_enforcement=TURN_LIMIT_ENFORCEMENT,
         append_system_prompt=append_system_prompt,
         env_manifest=manifest,
         prompt_inputs=prompt_inputs or {},
@@ -498,7 +537,7 @@ def run_invocation(
         pass
 
     termination = TERM_COMPLETED
-    turns_seen = 0
+    turn_counter = TurnCounter(inv.max_turns)
     deadline = t0 + inv.max_wall_seconds
 
     with open(stdout_path, "w", encoding="utf-8", newline="\n") as raw_fh:
@@ -524,13 +563,12 @@ def run_invocation(
                 except Exception:
                     pass  # observation must never break execution
 
-            # Harness-side turn limit (no --max-turns on this build).
-            if '"type":"assistant"' in item or '"type": "assistant"' in item:
-                turns_seen += 1
-                if turns_seen > inv.max_turns:
-                    termination = TERM_TURN_LIMIT
-                    _terminate(proc)
-                    break
+            # Harness-side turn limit (no --max-turns on this build): distinct
+            # API messages, not stream lines (amendment 7).
+            if turn_counter.observe(item):
+                termination = TERM_TURN_LIMIT
+                _terminate(proc)
+                break
 
     try:
         exit_code = proc.wait(timeout=30)

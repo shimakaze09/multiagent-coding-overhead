@@ -306,7 +306,11 @@ def test_stored_run_records_the_policy_and_config_hash(run_dir):
     assert pol["permission_mode"] == "acceptEdits"
     assert pol["permission_prompts"] == "none"
     assert pol["identical_across_arms"] is True
-    assert meta["config_hash"] == config.RunConfig().config_hash()
+    # recorded under wrapper v2; amendment 7 changed only turn_limit_enforcement
+    import dataclasses
+
+    v2 = dataclasses.replace(config.RunConfig(), turn_limit_enforcement="harness_side")
+    assert meta["config_hash"] == v2.config_hash() == "22ce9b7e5249dd497ee7c4c0318216b4"
 
     inv = json.loads(
         (run_dir / "sessions" / "01_solo" / "invocation.json").read_text(encoding="utf-8")

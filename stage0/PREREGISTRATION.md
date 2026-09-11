@@ -805,3 +805,46 @@ rows, their spread across task shapes, and the success outcomes together:
 
 These are experiment branches, not implementation tasks. Cross-task means and
 medians are descriptive, and invalid pairs never enter them.
+
+### Amendment 7 - 2026-09-11 - harness turn limit counted stream lines, not turns (DURING the Stage-0.5 pilot)
+
+**Written during the Stage-0.5 pilot**, after observing the Task-3 pair and
+Task-4 Arm A, and before any further run. The user authorized this amendment and
+the Task-4 rerun explicitly.
+
+**POST-RUN INSTRUMENTATION DEFECT DISCOVERED.** The frozen limit is "25 turns
+per session, enforced by the harness" (section 11; README: "the parser counts
+assistant turns"). Wrapper v2 (`claude_cli.run_invocation`) incremented its
+counter on every raw stdout line containing `"type":"assistant"`. Claude Code
+emits one such line per content block (thinking, text, each tool_use; SPEC
+section 8), so the limit fired on content blocks, not turns.
+`20260911T014415Z_settings_list_fields_A_r1` (Task 4, Arm A) was terminated
+`turn_limit_exceeded` at its 26th assistant stream line, after only 11 API
+messages and 17 tool calls. The held-out verifier still passed. The session has
+no `result` event, so its token totals are truncated. The limit was also biased
+against Arm A: a single session carries a whole task's content blocks, while
+Arm B splits them across sessions.
+
+**Treatment of that run.** Under section 5 it stays INVALID. Its raw data is
+preserved unmodified, and it is not re-analysed as valid.
+
+**Fix (wrapper v3).** `claude_cli.TurnCounter` counts distinct API messages
+(`message.id`), which is what a turn is, and ignores lines that merely contain
+the assistant marker. The limit value (25) is unchanged. `turn_limit_enforcement`
+becomes `harness_side_api_messages`, which changes `config_hash` from
+`22ce9b7e5249dd497ee7c4c0318216b4` to `9edbfb5d0d082d49a61969068fafd4ac`.
+
+**Unaffected data.** Every session that completed under v2 would also complete
+under v3 (asserted in `tests/test_turn_counter.py`), so no valid run changes:
+
+- Pair 1 and Pair 2 (all sessions at 22 or fewer stream lines);
+- the Stage-0.5 Task-3 pair (16 and 15 stream lines in its largest sessions).
+
+That pair keeps `config_hash` `22ce9b7e…`. Each pair is internally consistent,
+and the cross-task summary spans two wrapper versions; this is disclosed here
+and in the pilot report.
+
+**Rerun.** Task 4 is run again as a fresh pair (Arm A and Arm B) under v3 with
+`--repeat-id 2`, so the invalid attempt stays visible as repeat 1 (Arm A only,
+invalid). Tasks 5 and 6 run under v3. Nothing else changes: no metric,
+threshold, fixture, arm, topology, permission policy or limit value.

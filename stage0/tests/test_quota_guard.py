@@ -72,7 +72,13 @@ def test_the_guard_does_not_change_config_hash():
     # token match, not substring: "min_acquisition_coverage" contains "overage"
     tokens = {t for k in keys for t in k.split("_")}
     assert not ({"quota", "overage", "guard"} & tokens)
-    assert config.RunConfig().config_hash() == "22ce9b7e5249dd497ee7c4c0318216b4", (
+    import dataclasses
+
+    assert config.RunConfig().config_hash() == "9edbfb5d0d082d49a61969068fafd4ac"
+    # Amendment 7 (turn-limit counting) is the ONLY configuration change since the
+    # validated runs: reverting it reproduces their hash exactly.
+    v2 = dataclasses.replace(config.RunConfig(), turn_limit_enforcement="harness_side")
+    assert v2.config_hash() == "22ce9b7e5249dd497ee7c4c0318216b4", (
         "must equal the validated Arm A run's config_hash"
     )
 

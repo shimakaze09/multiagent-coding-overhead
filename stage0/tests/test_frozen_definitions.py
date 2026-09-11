@@ -35,12 +35,18 @@ def test_versions_are_frozen():
     assert handoff.HANDOFF_SCHEMA_VERSION == 1
     assert isolation.ISOLATION_CHECK_VERSION == 1
     assert events.SCHEMA_VERSION == 1
-    assert claude_cli.WRAPPER_VERSION == 2
+    # 3 since amendment 7 (2026-09-11): the harness-side turn limit counts
+    # distinct API messages. Wrapper v2 counted assistant stream lines.
+    assert claude_cli.WRAPPER_VERSION == 3
 
 
 def test_experiment_visible_configuration_is_frozen():
     cfg = config.RunConfig()
-    assert cfg.config_hash() == "22ce9b7e5249dd497ee7c4c0318216b4"
+    # Amendment 7 changed turn_limit_enforcement, so the hash changed from
+    # 22ce9b7e5249dd497ee7c4c0318216b4 (Pair 1, Pair 2, Stage-0.5 task 3 and
+    # the invalid task-4 Arm A) to the value below (every later run).
+    assert cfg.config_hash() == "9edbfb5d0d082d49a61969068fafd4ac"
+    assert cfg.turn_limit_enforcement == "harness_side_api_messages"
     assert cfg.model == "sonnet"
     assert cfg.permission_mode == "acceptEdits"
     assert cfg.permission_prompts == "none"

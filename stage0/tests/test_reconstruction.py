@@ -252,7 +252,7 @@ def test_turn_and_time_limits_are_recorded(mock_runs, arm):
         stored = json.loads((sd / "invocation.json").read_text(encoding="utf-8"))
         assert stored["max_turns"] == config.SMOKE_LIMITS.max_turns_per_session
         assert stored["max_wall_seconds"] == config.SMOKE_LIMITS.max_wall_seconds_per_session
-        assert stored["turn_limit_enforcement"] == "harness_side"
+        assert stored["turn_limit_enforcement"] == claude_cli.TURN_LIMIT_ENFORCEMENT
 
 
 def test_permission_policy_is_reconstructible_from_the_log(mock_runs):

@@ -340,7 +340,9 @@ class RunConfig:
     # covered by the allowlist is denied rather than left hanging.
     permission_prompts: str = "none"
     # Harness-side turn limiting, because --max-turns does not exist in 2.1.260.
-    turn_limit_enforcement: str = "harness_side"
+    # Amendment 7: a turn is a distinct API message (was: every assistant stream
+    # line). Part of config_hash, so runs under either rule are distinguishable.
+    turn_limit_enforcement: str = "harness_side_api_messages"
     min_acquisition_coverage: float = 0.90
 
     def as_dict(self) -> dict:
