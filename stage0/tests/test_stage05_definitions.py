@@ -54,8 +54,9 @@ def test_new_task_base_commits_are_pinned(task_id, tmp_path):
 
 
 def test_six_task_shapes_are_registered():
+    # The Stage-2 difficulty candidates (PREREGISTRATION 19.3) are the only additions.
     assert set(registry.all_tasks()) == {"palindrome_punctuation", "cart_invoice_rounding",
-                                         *NEW_TASK_BASE_COMMITS}
+                                         *NEW_TASK_BASE_COMMITS, *config.STAGE2_CANDIDATES}
 
 
 def test_historical_runs_are_exactly_the_manifested_real_runs():

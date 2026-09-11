@@ -1577,3 +1577,448 @@ No historical hash is rewritten.
 * **n = 1** per task and configuration: descriptive only.
 * **Server-side unobservables.** Effort and any server-side routing behind a
   model id are not observable.
+
+## 19. Stage 2 amendment: difficulty-calibrated quality × cost experiment (preregistered 2026-09-11, before any Stage-2 inference)
+
+### 19.0 Integrity record
+
+* `ee0f020` was a valid pre-inference Stage-2 routing freeze (section 18).
+* When this amendment was written, **no Stage-2 model call had occurred**:
+  - no Stage-2 run directory exists;
+  - `runs/` holds only the 18 manifested Stage 0–1 runs.
+* The research question was broadened **before observing any Stage-2 outcome**.
+* The 17-run execution plan of 18.11 is **SUPERSEDED** before execution. None
+  of it ran and no result was discarded.
+* Motivation: the documented Stage 0–1 ceiling effect. Single Strong solved
+  every tested task (all six A/B pairs; the four C1 tasks are the same tasks),
+  so a quality advantage for multi-agent decomposition could not appear.
+* Kept unchanged:
+  - section 18's routing infrastructure: `S2_R1`, `S2_R2`, `S2_R3`, `S2_S`,
+    `S2_SS`, model-resolution telemetry, role/model cost accounting, auxiliary
+    separation and mismatch invalidation;
+  - its five configuration hashes;
+  - every historical A/B/C1 record.
+
+  This amendment changes the task design and the interpretation, and adds one
+  configuration.
+
+### 19.1 Questions
+
+Primary:
+
+> At what task difficulty does multi-agent decomposition begin to improve
+> solution quality or reliability over a single strong agent, and what token,
+> latency, and monetary cost is required for that improvement?
+
+Secondary:
+
+> If such a quality advantage exists, can heterogeneous routing preserve most
+> of it while using less strong-model compute?
+
+The experiment is about **quality × cost × difficulty**, not token overhead
+alone. Multi-agent decomposition *may* become advantageous as task depth,
+breadth and horizon increase; that is a hypothesis, not an assumption. Valid
+conclusions include:
+
+* no advantage;
+* an advantage only in a narrow difficulty range;
+* a substantial advantage;
+* an advantage too expensive to justify.
+
+### 19.2 The four Stage-0.5 tasks: EASY controls
+
+`shipping_inch_dimensions`, `settings_list_fields`, `rename_max_connections`
+and `sla_weekend_hours` are retained as the **EASY control stratum**
+(`easy_control`). They are not calibrated and are not used to infer hard-task
+behaviour. They get no extra repetitions: n = 1 per architecture, reported
+separately and never pooled with calibrated strata. No E2 runs happen there.
+
+The frozen section-18.7 decision stands:
+
+| Control data | Source |
+| --- | --- |
+| Single Strong, 3 tasks | exact-parity historical Arm A |
+| Single Strong, `shipping_inch_dimensions` | one fresh `S2_SS` run |
+| All-Strong Multi, 3 tasks | exact-parity historical Arm B (`settings_list_fields`, `rename_max_connections`, `sla_weekend_hours`), checked mechanically by `stage2.multi_strong_parity` |
+| All-Strong Multi, `shipping_inch_dimensions` | one fresh `S2_M` run |
+
+The exact-parity check for historical Arm B covers every item of 18.7, plus
+byte-identical Arm-B prompts for all five invocations. Control runs use the
+historical smoke limits.
+
+### 19.3 Candidate pool
+
+The pool has 12 tasks in 4 families on 3 codebases. Task ids are neutral;
+family, design and difficulty are analysis-only.
+
+| Family | ledgerly | flowq | docpipe |
+| --- | --- | --- | --- |
+| A deep diagnosis (symptom far from cause; several credible hypotheses) | `s2t01_ledgerly` | `s2t05_flowq` | `s2t09_docpipe` |
+| B cross-subsystem change (several components and contracts) | `s2t02_ledgerly` | `s2t06_flowq` | `s2t10_docpipe` |
+| C long-horizon migration (coordinated edits, compatibility preserved) | `s2t03_ledgerly` | `s2t07_flowq` | `s2t11_docpipe` |
+| D hidden regression / adversarial correctness | `s2t04_ledgerly` | `s2t08_flowq` | `s2t12_docpipe` |
+
+The codebases, each with its own conventions documents that a developer can
+read:
+
+* **`ledgerly`**: double-entry bookkeeping, 11 modules. Money and minor units,
+  dated exchange rates, journal, ledger with periods, reports, bank and
+  rate-file import, JSON persistence, revenue splits.
+* **`flowq`**: a workflow engine on a simulated clock, 10 modules. Spec
+  versions, dependency graph, scheduler, retries with backoff, resource
+  capacity, crash/resume snapshots, reports.
+* **`docpipe`**: a Markdown subset to HTML and text, 12 modules. Lexer, inline
+  parser, parser, heading ids, TOC, footnotes, two renderers with an extension
+  API, render cache, link safety.
+
+Every fixture has the following, all checked by `tests/test_fixture_stage2.py`
+without Claude:
+
+* a deterministic base commit;
+* visible tests that pass on the unfixed code;
+* a held-out verifier of 6–8 independent tests, each named after its
+  constraint; the unfixed code passes 0–3 of them;
+* a reference solution (`tasks/holdout/<task>/reference/`);
+* failure-before-fix and success-after-reference proofs;
+* 1–2 plausible naive variants that pass the visible tests but fail the
+  verifier;
+* the content and path/marker leakage detectors;
+* analysis-only metadata isolated in `tasks/holdout/<task>/design.json`. It is
+  never copied into a workspace and is flagged by the frozen isolation marker
+  `tasks/holdout`.
+
+Per codebase, every task's fixed tree is the same correct codebase. Difficulty
+comes from software-engineering reasoning only. There are no obfuscated names,
+filler files, trivia, hidden information or flaky tests: everything a
+developer needs is in the statement, code, docs or tests.
+
+### 19.4 Design metadata (descriptive, never a score)
+
+`design.json` records:
+
+* the design features:
+  - `task_family`;
+  - `estimated_reasoning_depth`;
+  - `subsystems_touched`;
+  - `expected_minimum_edit_scope`;
+  - `hidden_constraints_count`;
+  - `plausible_root_causes`;
+  - `cross_file_dependency_count`;
+  - `requires_regression_preservation`;
+  - `requires_backward_compatibility`;
+* the eight dimensions, each rated none/low/medium/high: depth, breadth,
+  long_horizon, hidden_interaction, misleading_evidence, constraint_density,
+  independent_verification_value, search_space_width;
+* the held-out constraints.
+
+There is **no scalar difficulty score**. Empirical difficulty comes only from
+Phase C.
+
+| Task | Depth | Subsystems | Min. files | Hidden constraints | Back-compat |
+| --- | --- | --- | --- | --- | --- |
+| s2t01_ledgerly | 5 | 5 | 1 | 5 | no |
+| s2t02_ledgerly | 2 | 7 | 5 | 6 | yes |
+| s2t03_ledgerly | 2 | 7 | 6 | 5 | yes |
+| s2t04_ledgerly | 3 | 3 | 1 | 6 | no |
+| s2t05_flowq | 4 | 4 | 1 | 5 | yes |
+| s2t06_flowq | 3 | 6 | 7 | 6 | yes |
+| s2t07_flowq | 2 | 4 | 4 | 6 | yes |
+| s2t08_flowq | 3 | 3 | 2 | 4 | yes |
+| s2t09_docpipe | 4 | 5 | 1 | 5 | no |
+| s2t10_docpipe | 2 | 9 | 10 | 6 | yes |
+| s2t11_docpipe | 3 | 6 | 6 | 6 | yes |
+| s2t12_docpipe | 2 | 3 | 1 | 6 | yes |
+
+### 19.5 Phase C: calibration (Single Strong only)
+
+* **Runs.** Only `S2_SS` runs on the 12 candidates, tagged
+  `stage2_phase = "calibration"` (`runner.py calibrate`).
+* **Sequential rule** (`analysis/difficulty.py`, `DIFFICULTY_PROTOCOL_VERSION`
+  1):
+  - 3 valid runs;
+  - 3/3 successes completes the task (all-success early stop);
+  - otherwise 2 more, 5 in total.
+
+  An invalid run is not counted and is replaced by the next repeat id. After
+  more than 2 replacements the task is *unresolved* and reported.
+* **Strata**, from the pooled rate p = k/n:
+
+  | Stratum | Rate |
+  | --- | --- |
+  | easy | p ≥ 0.9 |
+  | medium | 0.7 ≤ p < 0.9 |
+  | hard | 0.4 ≤ p < 0.7 |
+  | very_hard | 0 < p < 0.4 |
+  | beyond | p = 0 |
+
+  With n = 5: 5 → easy, 4 → medium, 3 or 2 → hard, 1 → very_hard,
+  0 → beyond. With n = 3, 3/3 → easy.
+* **Targets, not thresholds.** The calibration targets (Easy ≈ 90–100%,
+  Medium ≈ 70–90%, Hard ≈ 40–70%, Very Hard ≈ 10–40%) are not enforced by
+  deleting tasks. No candidate is edited or dropped after calibration except
+  by the fixed caps. If calibration produces no hard strata, that is reported;
+  a new pool would need a new preregistration.
+* **Freeze.** `runner.py difficulty-freeze` writes
+  `results/stage2/difficulty_labels.json`: strata, counted run ids and a
+  calibration-run hash. It refuses if any candidate is incomplete or if the
+  labels are already frozen. After the freeze, `calibrate` refuses to run.
+* **Benchmark selection.**
+  - Caps per stratum: easy 2, medium 3, hard 3, very_hard 3, beyond 2.
+  - Over a cap: round-robin over families in fixed order, then
+    sha256(task_id).
+  - Nothing but the stratum and the design family is used.
+
+### 19.6 Separating calibration from evaluation: a split-sample design
+
+Calibration runs choose strata only. **Phase E re-measures every architecture,
+Single Strong included, with fresh independent runs.**
+
+Selecting tasks because Single Strong failed in calibration biases its
+calibration success rate downward (regression to the mean). Reusing those same
+runs in the comparison would inflate any multi-agent gain.
+
+Enforcement:
+
+* `difficulty.calibration_entries` accepts only calibration-phase `S2_SS` runs
+  on candidates.
+* `quality_cost.evaluation_entries` accepts only evaluation-phase runs.
+* Evaluation results cannot change a label (tests 4–5).
+* Every evaluation run records the labels hash and its stratum as metadata,
+  never in a prompt (test 13).
+
+Alternatives considered:
+
+* A random task split or a hierarchical model: neither fits 12 tasks within
+  this budget better than repeated split-sample measurement.
+* Reusing calibration runs: rejected for the bias above.
+
+### 19.7 Architectures, limits and identity
+
+| Arch. | Configuration | Roles | Notes |
+| --- | --- | --- | --- |
+| A Single Strong | `S2_SS` | one STRONG agent | Arm A prompt and tools |
+| M All-Strong Multi | `S2_M` (**new**) | Coordinator, Investigator and Implementer all STRONG | Arm-B topology and prompts under Stage-2 identity and routing verification. Not historical Arm B unless exact parity (19.2). |
+| H1 Strong-Investigator Hybrid | `S2_R1` | CHEAP / STRONG / CHEAP | section 18 |
+| H2 Strong-Implementer Hybrid | `S2_R2` | CHEAP / CHEAP / STRONG | section 18 |
+| CM All-Cheap Multi | `S2_R3` | all CHEAP | section 18 |
+| CS Single Cheap | `S2_S` | one CHEAP agent | section 18 |
+
+C1 and every Layer-3 optimization are excluded. The effort policy stays
+`cli_default_not_passed` (18.4). No prompt changes.
+
+**Limits.** In the calibrated strata every architecture gets
+`config.STAGE2_LIMITS`: 60 turns and 1,800 s per session.
+
+* The smoke limits (25 turns, 900 s) were sized for tasks where Single Strong
+  used at most 18 turns. On harder tasks they would bind first for the single
+  agent's one session and could manufacture a multi-agent advantage.
+* Limit terminations stay outcomes (18.10), and limit hits are reported per
+  architecture.
+* Disclosed asymmetry: a multi-agent run gets the per-session cap for each of
+  its sessions, exactly as historical Arm B did.
+* The EASY controls keep `SMOKE_LIMITS`, for historical parity.
+
+| Identity item | Value |
+| --- | --- |
+| amendment base config (`RunConfig(limits=STAGE2_LIMITS)`) | `38c37c95c6160f3a17fc71d910e4f6fb` |
+| `S2_SS` / `S2_M` | `7b8ebe0d1074c2ae2cc984bc63c59e30` / `ecbff88e07b7f4255cd7ab0e22ab9503` |
+| `S2_R1` / `S2_R2` | `423975fef4e6c99390df411b65b0ab73` / `67b4604c80555090d15190521e94c09a` |
+| `S2_R3` / `S2_S` | `2fa77f9c107074e39c5d389f8647d5f8` / `cdd156bf965213748ee194a71ec2b2b2` |
+| `S2_M` under the smoke limits (EASY controls) | `d5459739f84ac4c5202bb144b45507da` |
+
+The section-18 hashes are unchanged. Every run's `stage2_identity` adds the
+task base commit, the verifier hash and the classifier versions.
+
+### 19.8 Execution plan (evidence-efficient; fixed now)
+
+1. **Phase C1**: calibration (19.5), then the freeze.
+2. **Phase E1**: `S2_SS` vs `S2_M` on every frozen benchmark task.
+   * Each gets 3 runs.
+   * If both are 3/3 or both are 0/3, stop. Otherwise both go to 5.
+   * The rule looks at both arms symmetrically and **never at which one is
+     ahead**.
+   * The EASY controls get n = 1 (19.2).
+3. **Phase E2**, per stratum. It runs only when E1 is complete for that stratum
+   **and** the pooled Δ = rate(M) − rate(A) ≥ **0.15**. Then `S2_R1`, `S2_R2`,
+   `S2_R3` and `S2_S` get 3 runs each on every task of the stratum.
+   * Otherwise the stratum gets no routing runs.
+   * There is no extension in E2.
+   * `runner.py evaluate` refuses E2 architectures while the gate is closed.
+
+`runner.py evaluation-plan` prints the next preregistered runs. Invalid runs are
+replaced by the next repeat id and disclosed. A routing mismatch stops Stage 2
+(18.10). Paid overage stops execution; high utilization alone does not. Raw
+checksums go to `run_manifests/stage2/`, so `historical_run_ids()` stays
+unchanged.
+
+### 19.9 Quality metrics (mechanical; `analysis/quality.py`)
+
+No LLM judge:
+
+* **Q1 held-out success**: the verifier's exit code (SOLVED).
+* **Q2 held-out test fraction**: tests passed / tests defined. From
+  `pytest -rA`; an unreported test counts as not passed.
+* **Q3 regression preservation**: visible tests and held-out `test_r_*` tests.
+* **Q4 patch scope**: files changed, lines added and removed, unexpected files.
+  Reported only; smaller is not assumed to be better.
+* **Q5 constraint satisfaction**: constraints whose `test_c<k>_*` tests all
+  pass, over the total.
+* **Q6 reliability**: success frequency over repetitions.
+
+### 19.10 Cost metrics and derived economics
+
+Per run:
+
+* total input, uncached input, cache read, cache write, output, and thinking
+  where exposed;
+* API-equivalent cost, split by model for heterogeneous configurations (18.8);
+* wall time;
+* tool calls, model calls, strong-model calls, cheap-model calls.
+
+Per architecture, stratum and task:
+
+* **cost per successful solution** = total cost over all attempts / successes.
+  It is *undefined* (infinite) at zero successes; no finite number is invented.
+* **expected cost to success** = mean cost per attempt / estimated success
+  probability. Labelled an estimate; undefined at p̂ = 0.
+* wall time per success;
+* tokens per success.
+
+### 19.11 Statistics
+
+Per cell:
+
+* n and successes;
+* success rate with a **Wilson** 95% interval (z = 1.959963984540054);
+* mean, median and range of cost and wall time.
+
+Rates are pooled within a stratum, with per-task tables alongside. Effect sizes
+and uncertainty only: **no significance is claimed from 3–5 runs**.
+
+### 19.12 Primary comparison, crossover, token ratios
+
+The primary comparison is **Single Strong vs All-Strong Multi per stratum**:
+
+* both success rates, the absolute and relative difference;
+* cost per run and per success;
+* wall time per run and per success;
+* tokens per run and per success.
+
+Ratios are reported per stratum, M/A and each hybrid/A: total input, output,
+cache write, cost and wall time.
+
+**Crossover**: the first stratum, in difficulty order, with Δ ≥ 0.15. *No
+crossover observed* is a valid result.
+
+Token question: does the Multi/Single token ratio grow, shrink or stay stable
+as difficulty rises? The Stage 0–1 easy tasks gave a median of about 1.8×
+input. The competing hypotheses, all recorded as plausible:
+
+* **H-overhead-constant**: roughly fixed session and handoff overhead, so the
+  ratio shrinks as intrinsic work grows.
+* **H-fanout-growth**: larger handoffs and duplicated contexts, so the ratio
+  stays high or grows.
+* **H-quality-efficiency**: even with more tokens per run, tokens *per success*
+  may fall if success rises enough.
+
+They are distinguished by the trend of the per-run ratios across strata and by
+the tokens-per-success and cost-per-success ratios.
+
+### 19.13 Decision tree and frozen thresholds (`quality_cost.decide`)
+
+Per stratum:
+
+* **Ceiling.** If the Single Strong evaluation rate is ≥ 0.9 in a non-easy
+  stratum, the outcome is *ceiling, not interpretable as a hard-task
+  comparison*. The labels are not changed, and it is never reported as
+  "multi-agent ineffective".
+* **Floor.** If every architecture is ≤ 0.1: *beyond current capability*, with
+  no cost conclusions.
+* **Otherwise,** by Δ = rate(M) − rate(A):
+  - |Δ| < 0.15 → *multi-agent unnecessary at this difficulty*;
+  - Δ ≤ −0.15 → *multi-agent worse*;
+  - Δ ≥ 0.15 → test H1, then H2, as below.
+* **H1** preserves most of the gain iff rate(H1) − rate(A) ≥ **0.8** × Δ
+  **and** H1's mean cost per run is below M's. If it does → *heterogeneous
+  routing useful*.
+* If not, the same test for **H2** → *implementation capability more important
+  than expected*.
+* If neither → *All-Strong capability may be necessary*.
+
+Cost is then assessed separately (cost per success, the frontier). Raw rates
+are always reported alongside every threshold decision.
+
+### 19.14 Quality–cost frontier (`quality_cost.frontier`)
+
+X dominates Y iff X is at least as successful and no more expensive, with at
+least one strict improvement. Per stratum, the nondominated sets are computed
+for:
+
+* success rate vs mean API-equivalent cost;
+* success rate vs mean strong-model cost (for routing).
+
+`runner.py stage2-frontier --json OUT` exports the plot-ready points. No graph
+is needed now.
+
+### 19.15 Roadmap
+
+1. **Layer 1**: does multi-agent decomposition improve difficult-task quality?
+2. **Layer 2**: can heterogeneous routing preserve that gain at lower cost?
+3. **Layer 3**, only if multi-agent decomposition is quality-justified: profile
+   the remaining overhead and reconsider shared context, artifact references,
+   compact structured handoffs, semantic IR and KV/prefix mechanisms.
+
+Layer 3 is **not** implemented now.
+
+Agent IR, artifact protocols and other communication mechanisms are not
+abandoned permanently. They are deferred until both hold:
+
+* multi-agent decomposition demonstrates a measurable quality or reliability
+  advantage;
+* communication or context remains a material part of cost.
+
+If those conditions never occur, the mechanisms remain unjustified.
+
+### 19.16 Budget estimate
+
+| Phase | Runs | Sessions |
+| --- | --- | --- |
+| C: calibration | 36–60 (12 × 3–5) | 1 per run |
+| E1: A vs M | 72–120 (≤ 12 tasks × 2 × 3–5), plus 2 EASY-control runs | A: 1, M: 5 |
+| E2: routing, gated | 0–144 (12 per task, gated strata only) | H1/H2/CM: 5, CS: 1 |
+| Total | about 110–326 | |
+
+The rough API-equivalent cost scales historical per-run costs by 1.5–3× for
+harder tasks. Historically, Single Strong cost 0.09–0.26 USD and Arm B 0.30–0.60
+USD per run:
+
+* calibration ≈ 10–45 USD;
+* E1 ≈ 50–250 USD;
+* E2 ≈ 0–200 USD.
+
+These are not amounts paid: execution is on the subscription.
+
+### 19.17 Accepted confounds
+
+* **Designer bias.** The fixtures were designed by people who know the
+  solutions; calibration measures difficulty empirically rather than trusting
+  the design.
+* **Scale and repetition.** The codebases are small and n is small.
+* **Frozen setup.** The prompts are frozen from Stage 0 and not tuned per
+  model, and the results depend on Claude Code 2.1.260 specifics and model
+  defaults.
+* **Turn-cap asymmetry.** Multi-agent runs get a per-session turn cap for each
+  of their sessions.
+* **Timing.** Calibration and evaluation run at different times; model drift
+  between them is not observable.
+* **Easy controls.** They are n = 1 and use the smoke limits.
+
+### 19.18 First commands (from `stage0/`, CLI pinned)
+
+    $env:STAGE0_CLAUDE_CLI = "$env:APPDATA\Claude\claude-code\2.1.260\claude.exe"
+    python runner.py diagnose
+    python runner.py calibrate --task s2t01_ledgerly --repeat-id 1
+    ... repeat ids 1-3 for each of the 12 candidates, then as difficulty-summary lists
+    python runner.py difficulty-summary
+    python runner.py difficulty-freeze
+    python runner.py evaluation-plan

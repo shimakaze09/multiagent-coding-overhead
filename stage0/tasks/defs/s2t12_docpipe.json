@@ -1,0 +1,45 @@
+{
+  "task_id": "s2t12_docpipe",
+  "category": "cross_file_bug",
+  "shape": "hidden_regression",
+  "repo": "s2t12_docpipe",
+  "statement": "Security: user comments rendered with docpipe can contain clickable script links.\n\n    >>> from docpipe import render\n    >>> render(\"[click me](javascript:alert(document.cookie))\\n\")\n    '<p><a href=\"javascript:alert(document.cookie)\">click me</a></p>'\n\nWe render untrusted user documents with the default options. An untrusted document must never produce a dangerous link (see the project's security notes).\n\nThe tests under `tests/` are owned by QA and are read-only; do not modify them. Make sure the existing test suite still passes.",
+  "verifier_source": "s2t12_docpipe/test_holdout_docpipe_links.py",
+  "verifier_dest_name": "test_holdout_docpipe_links.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_docpipe_links.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "docpipe/render_html.py"
+  ],
+  "expected_edit_paths": [
+    "docpipe/render_html.py"
+  ],
+  "supporting_paths": [
+    "docs/security.md",
+    "docpipe/options.py"
+  ],
+  "notes": "visit_link writes any href. The documented policy: only relative, http, https and mailto targets become links; schemes case-insensitive with whitespace/control characters ignored; unsafe links render as their text; safe_links=False opts out. ANALYSIS ONLY: never shown to agents."
+}

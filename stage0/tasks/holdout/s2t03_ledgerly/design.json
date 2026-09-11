@@ -1,0 +1,65 @@
+{
+  "task_id": "s2t03_ledgerly",
+  "analysis_only": true,
+  "codebase": "ledgerly",
+  "design_features": {
+    "task_family": "long_horizon_migration",
+    "estimated_reasoning_depth": 2,
+    "subsystems_touched": [
+      "journal",
+      "ledger",
+      "importers",
+      "billing",
+      "store",
+      "reports",
+      "docs"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 6,
+      "approx_changed_lines": 90
+    },
+    "hidden_constraints_count": 5,
+    "plausible_root_causes": [
+      "library code left on the deprecated keyword form",
+      "schema-2 files no longer load",
+      "new files still written as schema 2",
+      "signed totals not used by the ledger"
+    ],
+    "cross_file_dependency_count": 6,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": true
+  },
+  "task_family": "long_horizon_migration",
+  "difficulty_dimensions": {
+    "depth": "low",
+    "breadth": "high",
+    "long_horizon": "high",
+    "hidden_interaction": "medium",
+    "misleading_evidence": "none",
+    "constraint_density": "high",
+    "independent_verification_value": "high",
+    "search_space_width": "low"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "signed-amount Line API",
+      "C2": "legacy keywords still work and warn",
+      "C3": "library code never uses the deprecated form",
+      "C4": "schema 3 written, schema 2 still read",
+      "C5": "entries and ledger use signed totals"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "docs/conventions.md",
+    "ledgerly/billing.py",
+    "ledgerly/importers.py",
+    "ledgerly/journal.py",
+    "ledgerly/ledger.py",
+    "ledgerly/store.py"
+  ],
+  "naive_variants": [
+    "journal_only"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

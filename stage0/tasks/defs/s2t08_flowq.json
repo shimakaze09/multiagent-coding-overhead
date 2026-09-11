@@ -1,0 +1,46 @@
+{
+  "task_id": "s2t08_flowq",
+  "category": "cross_file_bug",
+  "shape": "hidden_regression",
+  "repo": "s2t08_flowq",
+  "statement": "Jobs of equal priority do not start first come, first served.\n\nWith one slot, a job that has been waiting is overtaken by a job that became ready later, apparently because of its name:\n\n    >>> from flowq import Engine, spec\n    >>> wf = spec.parse({\"version\": 2, \"jobs\": {\n    ...     \"first\": {\"duration_s\": 2, \"priority\": 9},\n    ...     \"zeta\":  {\"duration_s\": 1},                         # ready at t=0\n    ...     \"alpha\": {\"deps\": [\"first\"], \"duration_s\": 1}}})    # ready at t=2\n    >>> eng = Engine(wf, max_parallel=1)\n    >>> _ = eng.run()\n    >>> [(e.job, e.t) for e in eng.log.of_kind(\"started\")]\n    [('first', 0.0), ('alpha', 2.0), ('zeta', 3.0)]        # zeta was waiting first\n\nOur scheduling documentation promises first come, first served among jobs of equal priority.\n\nThe tests under `tests/` are owned by QA and are read-only; do not modify them. Make sure the existing test suite still passes.",
+  "verifier_source": "s2t08_flowq/test_holdout_flowq_fifo.py",
+  "verifier_dest_name": "test_holdout_flowq_fifo.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_flowq_fifo.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "flowq/engine.py"
+  ],
+  "expected_edit_paths": [
+    "flowq/persistence.py",
+    "flowq/scheduler.py"
+  ],
+  "supporting_paths": [
+    "docs/scheduling.md",
+    "flowq/graph.py"
+  ],
+  "notes": "scheduler.order_key ignores ready_since and snapshots do not record it. Adding ready_since to the sort key fixes the reported case but a resumed run loses the order unless snapshots keep ready times. ANALYSIS ONLY: never shown to agents."
+}

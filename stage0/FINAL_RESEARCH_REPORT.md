@@ -347,3 +347,10 @@ current data:
 runner.py stage1-summary` rebuilds the index and summaries from raw telemetry.
 `sha256sum -c` on the four `run_manifests/` files verifies the raw data. The
 local test suite (645 tests) runs without launching Claude.
+
+## Addendum (2026-09-11): the scope of this conclusion
+
+Stage 0–1 characterized overhead in tasks where Single Strong already achieved
+ceiling performance. Stage 2 investigates whether the cost–quality tradeoff
+changes when that ceiling is removed (PREREGISTRATION section 19). The
+conclusions above are unchanged.

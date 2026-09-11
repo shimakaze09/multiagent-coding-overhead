@@ -1,0 +1,61 @@
+{
+  "task_id": "s2t07_flowq",
+  "analysis_only": true,
+  "codebase": "flowq",
+  "design_features": {
+    "task_family": "long_horizon_migration",
+    "estimated_reasoning_depth": 2,
+    "subsystems_touched": [
+      "spec",
+      "engine",
+      "package exports",
+      "docs"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 4,
+      "approx_changed_lines": 80
+    },
+    "hidden_constraints_count": 6,
+    "plausible_root_causes": [
+      "retries mapped to max_attempts without the +1",
+      "v1 backoff not preserved",
+      "dump still writes version 1",
+      "v2 documents warn"
+    ],
+    "cross_file_dependency_count": 3,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": true
+  },
+  "task_family": "long_horizon_migration",
+  "difficulty_dimensions": {
+    "depth": "low",
+    "breadth": "medium",
+    "long_horizon": "medium",
+    "hidden_interaction": "medium",
+    "misleading_evidence": "low",
+    "constraint_density": "high",
+    "independent_verification_value": "high",
+    "search_space_width": "low"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "version-2 retry policies",
+      "C2": "backoff and the engine follow the policy",
+      "C3": "version 1 means retries + 1 and runs exactly as before",
+      "C4": "dump writes version 2 and round-trips",
+      "C5": "retries is a deprecated alias",
+      "C6": "version 2 is silent and strict"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "docs/workflows.md",
+    "flowq/__init__.py",
+    "flowq/engine.py",
+    "flowq/spec.py"
+  ],
+  "naive_variants": [
+    "retries_as_max_attempts"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

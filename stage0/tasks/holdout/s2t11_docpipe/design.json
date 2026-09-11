@@ -1,0 +1,65 @@
+{
+  "task_id": "s2t11_docpipe",
+  "analysis_only": true,
+  "codebase": "docpipe",
+  "design_features": {
+    "task_family": "long_horizon_migration",
+    "estimated_reasoning_depth": 3,
+    "subsystems_touched": [
+      "render_html",
+      "render_text",
+      "pipeline",
+      "cache",
+      "package exports",
+      "docs"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 6,
+      "approx_changed_lines": 160
+    },
+    "hidden_constraints_count": 6,
+    "plausible_root_causes": [
+      "cache key ignores renderer class and registered rules",
+      "legacy rules no longer apply",
+      "subclass methods lose to legacy rules",
+      "library code triggers its own deprecation"
+    ],
+    "cross_file_dependency_count": 5,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": true
+  },
+  "task_family": "long_horizon_migration",
+  "difficulty_dimensions": {
+    "depth": "medium",
+    "breadth": "medium",
+    "long_horizon": "high",
+    "hidden_interaction": "high",
+    "misleading_evidence": "none",
+    "constraint_density": "high",
+    "independent_verification_value": "high",
+    "search_space_width": "low"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "a subclass overrides one kind",
+      "C2": "legacy rule functions still work",
+      "C3": "a subclass method beats a legacy rule",
+      "C4": "the cache never mixes renderers or rules",
+      "C5": "the text renderer has the same API",
+      "C6": "docpipe never uses the deprecated API"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "docpipe/__init__.py",
+    "docpipe/cache.py",
+    "docpipe/pipeline.py",
+    "docpipe/render_html.py",
+    "docpipe/render_text.py",
+    "docs/extending.md"
+  ],
+  "naive_variants": [
+    "cache_key_unchanged"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

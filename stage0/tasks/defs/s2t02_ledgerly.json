@@ -1,0 +1,50 @@
+{
+  "task_id": "s2t02_ledgerly",
+  "category": "cross_file_feature",
+  "shape": "cross_subsystem_change",
+  "repo": "s2t02_ledgerly",
+  "statement": "Feature request: support Japanese yen (JPY) and Kuwaiti dinar (KWD).\n\nOur Tokyo and Kuwait subsidiaries need to book in their own currencies, but today `Money(\"1000\", \"JPY\")` raises `UnknownCurrency`.\n\nRequirements:\n\n* JPY has no minor unit (whole yen); KWD has three decimal places.\n* Everywhere ledgerly rounds, allocates, imports, converts, stores or reports an amount, a JPY or KWD amount must follow its own currency's minor unit, with the project's existing rounding rule. For example, importing `1,234.5` as JPY must be rejected while `1,234.567` is a valid KWD amount, and reports show `1,235 JPY` and `12.345 KWD`.\n* Nothing may change for the currencies that are already supported.\n\nThe tests under `tests/` are owned by QA and are read-only; do not modify them. Make sure the existing test suite still passes.",
+  "verifier_source": "s2t02_ledgerly/test_holdout_ledgerly_currencies.py",
+  "verifier_dest_name": "test_holdout_ledgerly_currencies.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_ledgerly_currencies.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "ledgerly/currency.py"
+  ],
+  "expected_edit_paths": [
+    "docs/conventions.md",
+    "ledgerly/currency.py",
+    "ledgerly/importers.py",
+    "ledgerly/money.py",
+    "ledgerly/reports.py"
+  ],
+  "supporting_paths": [
+    "ledgerly/fx.py",
+    "ledgerly/store.py",
+    "ledgerly/billing.py"
+  ],
+  "notes": "Two decimals are hard-coded in money.py (CENT), importers.py and reports.py, and currency.py lists only two-decimal currencies. The reference moves every one of them to currency.minor_units/quantum. Adding the table entries alone leaves rounding, allocation, import and formatting in cents. ANALYSIS ONLY: never shown to agents."
+}

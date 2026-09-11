@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "jobs": {
+    "Build": {"duration_s": 10, "priority": 2},
+    "Unit Tests": {"deps": ["build"], "duration_s": 15},
+    "Lint": {"deps": ["Build"], "duration_s": 5},
+    "Package": {"deps": ["unit tests", "LINT"], "duration_s": 8},
+    "deploy": {"deps": ["Package"], "duration_s": 12,
+               "retry": {"max_attempts": 2, "backoff": {"initial_s": 3}}}
+  }
+}

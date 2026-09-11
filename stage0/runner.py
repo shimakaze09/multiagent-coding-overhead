@@ -10,6 +10,13 @@
                                          Stage 2A heterogeneous model routing
     python runner.py stage2-report --task T  Stage 2A per-task report (no Claude)
     python runner.py stage2-summary      Stage 2A 4-task summary (no Claude)
+  Stage 2 difficulty amendment (PREREGISTRATION section 19):
+    python runner.py calibrate --task T --repeat-id N      Phase C, Single Strong only
+    python runner.py difficulty-summary                    calibration status (no Claude)
+    python runner.py difficulty-freeze                     freeze strata + benchmark (no Claude)
+    python runner.py evaluate --task T --arm ARM --repeat-id N   Phase E
+    python runner.py evaluation-plan                       next preregistered runs (no Claude)
+    python runner.py stage2-frontier [--json OUT]          quality x cost x difficulty (no Claude)
 
 Subscription usage protection: every command except `pilot` is capped by
 config.SMOKE_LIMITS, and `pilot` refuses to start without --confirm-pilot.
@@ -30,6 +37,7 @@ from typing import Optional
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import config
+from analysis import difficulty as difficulty_mod, quality_cost
 from analysis import ingest as ingest_mod, report as report_mod, stage2 as stage2_mod
 from arms import c1_shared_worker, multi_nl, s2_routing, single
 from harness import claude_cli
@@ -516,6 +524,100 @@ def cmd_stage2_summary(args) -> int:
     return 0
 
 
+def _stage2_entries(runs_dir, tasks):
+    return stage2_mod.load_entries(ingest_mod.discover_runs(runs_dir), tasks=tuple(tasks))
+
+
+def _stage2_run(task, arm, repeat_id, phase, difficulty=None):
+    cli, caps = _require_ready()
+    cfg = config.RunConfig(model=config.STRONG_MODEL, limits=config.stage2_limits_for(task.task_id))
+    summary = s2_routing.run(arm=arm, task=task, repeat_id=repeat_id, cfg=cfg, cli=cli,
+                             capability_report=caps.as_dict(), phase=phase, difficulty=difficulty)
+    print(f"run {summary['run_id']}: solved={summary['solved']} sessions={summary['session_count']} "
+          f"phase={phase}")
+    return 0
+
+
+def cmd_calibrate(args) -> int:
+    """Phase C: one Single-Strong run on a candidate task (checks before any probe)."""
+    if args.task not in config.STAGE2_CANDIDATES:
+        raise SystemExit(f"{args.task!r} is not a Stage-2 candidate task")
+    if difficulty_mod.load_labels() is not None:
+        raise SystemExit("difficulty labels are frozen: calibration is closed")
+    _stage2_run(registry.get_task(args.task), config.STAGE2_CALIBRATION_ARM, args.repeat_id,
+                "calibration")
+    print("next: python runner.py difficulty-summary")
+    return 0
+
+
+def cmd_difficulty_summary(args) -> int:
+    entries = _stage2_entries(args.runs_dir, config.STAGE2_CANDIDATES)
+    print(difficulty_mod.render_summary(entries, difficulty_mod.load_labels()))
+    return 0
+
+
+def cmd_difficulty_freeze(args) -> int:
+    entries = _stage2_entries(args.runs_dir, config.STAGE2_CANDIDATES)
+    try:
+        labels = difficulty_mod.freeze_labels(entries)
+        sha = difficulty_mod.write_labels(labels)
+    except (ValueError, FileExistsError) as exc:
+        raise SystemExit(str(exc))
+    print(f"frozen {config.STAGE2_DIFFICULTY_LABELS} sha256={sha}")
+    print(f"benchmark: {labels['benchmark']}")
+    return 0
+
+
+def cmd_evaluate(args) -> int:
+    """Phase E: one run of an architecture on a frozen benchmark task or an
+    EASY control (checks before any probe)."""
+    labels = difficulty_mod.load_labels()
+    if labels is None:
+        raise SystemExit("difficulty labels are not frozen: run calibration and difficulty-freeze first")
+    stratum = difficulty_mod.task_stratum(labels, args.task)
+    if stratum is None:
+        raise SystemExit(f"{args.task!r} is not in the frozen benchmark or the easy controls")
+    if args.arm not in config.STAGE2_E1_ARMS + config.STAGE2_E2_ARMS:
+        raise SystemExit(f"{args.arm!r} is not a Stage-2 evaluation architecture")
+    if args.arm in config.STAGE2_E2_ARMS:
+        entries = _stage2_entries(args.runs_dir, config.STAGE2_CANDIDATES)
+        tasks = labels["benchmark"].get(stratum, [])
+        gate = quality_cost.stratum_e1(None, tasks, quality_cost.grouped(entries, labels)["by_task"])
+        if stratum == difficulty_mod.EASY_CONTROL_STRATUM or not gate["e2_gate_open"]:
+            raise SystemExit(f"E2 gate closed for stratum {stratum!r} (E1 complete: {gate['complete']}, "
+                             f"M - A = {gate['delta']}); routing runs are not preregistered here")
+    _stage2_run(registry.get_task(args.task), args.arm, args.repeat_id, "evaluation",
+                {"stratum": stratum, "labels_sha256": difficulty_mod.labels_sha256()})
+    return 0
+
+
+def cmd_evaluation_plan(args) -> int:
+    labels = difficulty_mod.load_labels()
+    if labels is None:
+        print("difficulty labels are not frozen yet; see python runner.py difficulty-summary")
+        return 0
+    entries = _stage2_entries(args.runs_dir, config.STAGE2_CANDIDATES + config.STAGE2_EASY_CONTROLS)
+    plan = quality_cost.evaluation_plan(entries, labels)
+    for p in plan:
+        for rep in p["repeat_ids"]:
+            print(f"python runner.py evaluate --task {p['task']} --arm {p['arm']} --repeat-id {rep}")
+    if not plan:
+        print("no preregistered evaluation runs outstanding")
+    return 0
+
+
+def cmd_stage2_frontier(args) -> int:
+    labels = difficulty_mod.load_labels()
+    entries = _stage2_entries(args.runs_dir, config.STAGE2_CANDIDATES + config.STAGE2_EASY_CONTROLS)
+    result = quality_cost.analyse(entries, labels)
+    print(quality_cost.render(result, labels))
+    if args.json:
+        Path(args.json).write_text(json.dumps(result, indent=2, sort_keys=True, default=str) + "\n",
+                                   encoding="utf-8")
+        print(f"wrote {args.json}")
+    return 0
+
+
 def cmd_summary(args) -> int:
     """Stage-0.5 cross-task A/B summary over every run found (no Claude)."""
     runs = ingest_mod.discover_runs(args.runs_dir)
@@ -608,6 +710,35 @@ def main(argv=None) -> int:
     s2s = sub.add_parser("stage2-summary", help="Stage-2A summary, comparisons A-D, cases A-E (no Claude)")
     s2s.add_argument("--runs-dir", dest="runs_dir")
     s2s.set_defaults(func=cmd_stage2_summary)
+
+    cal = sub.add_parser("calibrate", help="Stage-2 Phase C: one Single-Strong calibration run")
+    cal.add_argument("--task", required=True)
+    cal.add_argument("--repeat-id", dest="repeat_id", type=int, required=True)
+    cal.set_defaults(func=cmd_calibrate)
+
+    ds = sub.add_parser("difficulty-summary", help="Stage-2 calibration status (no Claude)")
+    ds.add_argument("--runs-dir", dest="runs_dir")
+    ds.set_defaults(func=cmd_difficulty_summary)
+
+    df = sub.add_parser("difficulty-freeze", help="freeze difficulty strata and the benchmark (no Claude)")
+    df.add_argument("--runs-dir", dest="runs_dir")
+    df.set_defaults(func=cmd_difficulty_freeze)
+
+    ev = sub.add_parser("evaluate", help="Stage-2 Phase E: one evaluation run")
+    ev.add_argument("--task", required=True)
+    ev.add_argument("--arm", required=True)
+    ev.add_argument("--repeat-id", dest="repeat_id", type=int, required=True)
+    ev.add_argument("--runs-dir", dest="runs_dir")
+    ev.set_defaults(func=cmd_evaluate)
+
+    ep = sub.add_parser("evaluation-plan", help="next preregistered evaluation runs (no Claude)")
+    ep.add_argument("--runs-dir", dest="runs_dir")
+    ep.set_defaults(func=cmd_evaluation_plan)
+
+    fr = sub.add_parser("stage2-frontier", help="quality x cost x difficulty analysis (no Claude)")
+    fr.add_argument("--runs-dir", dest="runs_dir")
+    fr.add_argument("--json", help="also write the analysis as JSON (plot-ready points included)")
+    fr.set_defaults(func=cmd_stage2_frontier)
 
     x = sub.add_parser("summary", help="Stage-0.5 cross-task A/B summary (no Claude)")
     x.add_argument("--runs-dir", dest="runs_dir")

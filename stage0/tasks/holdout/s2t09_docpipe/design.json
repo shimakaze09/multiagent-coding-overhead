@@ -1,0 +1,59 @@
+{
+  "task_id": "s2t09_docpipe",
+  "analysis_only": true,
+  "codebase": "docpipe",
+  "design_features": {
+    "task_family": "deep_diagnosis",
+    "estimated_reasoning_depth": 4,
+    "subsystems_touched": [
+      "render_html",
+      "transforms",
+      "slug",
+      "inline",
+      "cache"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 1,
+      "approx_changed_lines": 4
+    },
+    "hidden_constraints_count": 5,
+    "plausible_root_causes": [
+      "slugify punctuation handling",
+      "TOC builder",
+      "stale render cache",
+      "heading level offset handling",
+      "renderer computes its own ids from raw markup with its own counter"
+    ],
+    "cross_file_dependency_count": 4,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": false
+  },
+  "task_family": "deep_diagnosis",
+  "difficulty_dimensions": {
+    "depth": "high",
+    "breadth": "medium",
+    "long_horizon": "low",
+    "hidden_interaction": "medium",
+    "misleading_evidence": "high",
+    "constraint_density": "medium",
+    "independent_verification_value": "medium",
+    "search_space_width": "high"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "every TOC entry points at its heading; ids follow the documented rule",
+      "C2": "deeper headings still count for duplicates",
+      "C3": "heading_offset changes levels not ids",
+      "C4": "the anchor check agrees with the HTML",
+      "C5": "ids are stable across renders and renderer reuse"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "docpipe/render_html.py"
+  ],
+  "naive_variants": [
+    "plain_text_slug_on_renderer"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

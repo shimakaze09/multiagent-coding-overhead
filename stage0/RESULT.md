@@ -84,3 +84,10 @@ optimization directions before substantial effort went into building them.
 Possible future work belongs to new experiments: harder tasks, specialist
 models, local inference with real KV control, quality objectives, long-horizon
 work. The current data does not justify it as a continuation.
+
+## Addendum (2026-09-11): the scope of this conclusion
+
+Stage 0–1 characterized overhead in tasks where Single Strong already achieved
+ceiling performance. Stage 2 investigates whether the cost–quality tradeoff
+changes when that ceiling is removed (PREREGISTRATION section 19). The
+conclusions above are unchanged.

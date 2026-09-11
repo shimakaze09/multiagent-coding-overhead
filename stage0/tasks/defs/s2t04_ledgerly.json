@@ -1,0 +1,46 @@
+{
+  "task_id": "s2t04_ledgerly",
+  "category": "cross_file_bug",
+  "shape": "hidden_regression",
+  "repo": "s2t04_ledgerly",
+  "statement": "Posting some invoices with a revenue split fails.\n\n    >>> from datetime import date\n    >>> from ledgerly import Account, Chart, Ledger, Money, billing\n    >>> chart = Chart([Account(\"1100\", \"Receivables\", \"asset\"), Account(\"4000\", \"Licences\", \"income\"),\n    ...                Account(\"4100\", \"Support\", \"income\"), Account(\"4200\", \"Training\", \"income\")])\n    >>> ledger = Ledger(chart)\n    >>> ledger.post(billing.split_invoice(\"INV-7\", date(2024, 4, 1), Money(\"100.00\", \"EUR\"), \"1100\",\n    ...                                   {\"4000\": 1, \"4100\": 1, \"4200\": 1}))\n    Traceback (most recent call last):\n      ...\n    UnbalancedEntry: INV-7: EUR lines do not balance (0.01 EUR)\n\nSplitting the same invoice two ways works. Every split has to post.\n\nThe tests under `tests/` are owned by QA and are read-only; do not modify them. Make sure the existing test suite still passes.",
+  "verifier_source": "s2t04_ledgerly/test_holdout_ledgerly_allocate.py",
+  "verifier_dest_name": "test_holdout_ledgerly_allocate.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_ledgerly_allocate.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "ledgerly/billing.py",
+    "ledgerly/journal.py"
+  ],
+  "expected_edit_paths": [
+    "ledgerly/money.py"
+  ],
+  "supporting_paths": [
+    "docs/conventions.md",
+    "ledgerly/currency.py"
+  ],
+  "notes": "Money.allocate rounds each proportional part on its own, so parts can miss the total by a minor unit. The documented rule is largest remainder with ties to the earlier part, negatives mirrored and zero ratios zero. Giving the difference to the last part fixes the reported invoice but violates the rule. ANALYSIS ONLY: never shown to agents."
+}

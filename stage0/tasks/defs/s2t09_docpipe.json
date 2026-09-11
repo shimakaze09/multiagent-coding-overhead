@@ -1,0 +1,46 @@
+{
+  "task_id": "s2t09_docpipe",
+  "category": "cross_file_bug",
+  "shape": "deep_diagnosis",
+  "repo": "s2t09_docpipe",
+  "statement": "Some entries in the table of contents of our generated user guide do nothing when clicked, while others work. In-page links that `docpipe.check()` accepts are dead in the rendered HTML for the same sections. Among the affected headings:\n\n    ## Configuring [the CLI](cli.md)\n    # Setup[^first-run]\n\nWe render with `docpipe.render(source, options=Options(toc=True))`, sometimes with a `RenderCache` and a `heading_offset`. The headings themselves look right.\n\nThe tests under `tests/` are owned by QA and are read-only; do not modify them. Make sure the existing test suite still passes.",
+  "verifier_source": "s2t09_docpipe/test_holdout_docpipe_ids.py",
+  "verifier_dest_name": "test_holdout_docpipe_ids.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_docpipe_ids.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "docpipe/transforms.py"
+  ],
+  "expected_edit_paths": [
+    "docpipe/render_html.py"
+  ],
+  "supporting_paths": [
+    "docpipe/slug.py",
+    "docpipe/inline.py",
+    "docs/syntax.md"
+  ],
+  "notes": "HtmlRenderer.visit_heading slugs the heading's raw markup with a Slugger kept on the renderer instead of using the id transforms.assign_heading_ids gave the node, so markup in headings and renderer reuse produce ids the TOC and check() do not know. ANALYSIS ONLY: never shown to agents."
+}

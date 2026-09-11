@@ -1,0 +1,50 @@
+{
+  "task_id": "s2t06_flowq",
+  "category": "cross_file_feature",
+  "shape": "cross_subsystem_change",
+  "repo": "s2t06_flowq",
+  "statement": "Feature request: per-resource capacity.\n\nAn engine only limits how many jobs run at once (`max_parallel`). We need jobs to declare what they hold while running, for example GPU training jobs.\n\n* A version-2 job may declare `\"resources\": {\"cpu\": 2, \"gpu\": 1}`: non-negative integers, at least one resource, default `{\"cpu\": 1}`. Invalid declarations are `SpecError`s. `Workflow.dump()` includes them.\n* `Engine(workflow, handlers, capacity={\"cpu\": 4, \"gpu\": 1})` sets the capacity per resource. `max_parallel=n` keeps working and means `{\"cpu\": n}`; passing both is a `ValueError`; the default stays two cpus. A job needing a resource that has no capacity, or more than the capacity, is rejected with `SpecError` when the engine is created.\n* Running jobs must never exceed any resource's capacity. Jobs still start in the existing scheduling order, and the first job that does not fit blocks every job after it (no backfilling), so a large high-priority job is never starved.\n* Snapshots must record the capacity and `persistence.restore` must use it. Snapshots written by the current release, which record `max_parallel`, must still restore.\n* The run summary (`report.summarize`) gains `\"capacity\"` and `\"peak\"` (the highest simultaneous use of each resource), and `report.render` shows peak usage per resource, e.g. `gpu 1/1`.\n* Update the documentation.\n\nThe tests under `tests/` are owned by QA and are read-only; do not modify them. Make sure the existing test suite still passes.",
+  "verifier_source": "s2t06_flowq/test_holdout_flowq_resources.py",
+  "verifier_dest_name": "test_holdout_flowq_resources.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_flowq_resources.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "flowq/engine.py"
+  ],
+  "expected_edit_paths": [
+    "docs/scheduling.md",
+    "docs/workflows.md",
+    "flowq/engine.py",
+    "flowq/persistence.py",
+    "flowq/report.py",
+    "flowq/scheduler.py",
+    "flowq/spec.py"
+  ],
+  "supporting_paths": [
+    "flowq/state.py"
+  ],
+  "notes": "Per-resource capacity across spec, scheduler, engine, snapshots and reports, keeping max_parallel and old snapshots working. ANALYSIS ONLY: never shown to agents."
+}

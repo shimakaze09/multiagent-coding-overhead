@@ -1,0 +1,47 @@
+{
+  "task_id": "s2t05_flowq",
+  "category": "cross_file_bug",
+  "shape": "deep_diagnosis",
+  "repo": "s2t05_flowq",
+  "statement": "After a crash, resuming our release workflow re-runs jobs that had already finished; we have seen duplicate deployments. It does not happen with every workflow.\n\n    >>> from flowq import Engine, persistence, spec\n    >>> wf = spec.load(\"examples/release.json\")\n    >>> first = Engine(wf)\n    >>> _ = first.run(until=20)          # the process dies at t=20\n    >>> second = persistence.restore(wf, persistence.snapshot(first))\n    >>> _ = second.run()\n    >>> second.log.started()\n    ['Build', 'Lint', 'Unit Tests', 'Package', 'deploy']     # Build and Lint had already finished\n\nResuming must never repeat finished work (see the scheduling documentation).\n\nThe tests under `tests/` are owned by QA and are read-only; do not modify them. Make sure the existing test suite still passes.",
+  "verifier_source": "s2t05_flowq/test_holdout_flowq_resume.py",
+  "verifier_dest_name": "test_holdout_flowq_resume.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_flowq_resume.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "flowq/engine.py"
+  ],
+  "expected_edit_paths": [
+    "flowq/persistence.py"
+  ],
+  "supporting_paths": [
+    "flowq/names.py",
+    "flowq/spec.py",
+    "docs/scheduling.md",
+    "docs/workflows.md"
+  ],
+  "notes": "persistence.restore looks up snapshot entries (keyed by display name) with the normalized job key, so any job whose name is not already lower-case and single-spaced restarts from scratch. Writing normalized keys breaks the documented display names and existing snapshots; looking up by display name breaks respelled workflows. ANALYSIS ONLY: never shown to agents."
+}

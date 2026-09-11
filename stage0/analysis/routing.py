@@ -66,6 +66,7 @@ def check_run(raw: dict) -> dict:
             "api_error_status": (res or {}).get("api_error_status"),
             "wall_seconds": float((sa.exit or {}).get("wall_seconds") or 0.0),
             "duration_api_ms": (res or {}).get("duration_api_ms"),
+            "api_messages": obs["api_messages"],
         })
     expected = len(topo.get("invocations") or []) or len(rows)
     failed = [f"{r['session_key']}: {k}" for r in rows

@@ -1,0 +1,59 @@
+{
+  "task_id": "s2t05_flowq",
+  "analysis_only": true,
+  "codebase": "flowq",
+  "design_features": {
+    "task_family": "deep_diagnosis",
+    "estimated_reasoning_depth": 4,
+    "subsystems_touched": [
+      "persistence",
+      "names",
+      "spec",
+      "engine"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 1,
+      "approx_changed_lines": 2
+    },
+    "hidden_constraints_count": 5,
+    "plausible_root_causes": [
+      "interrupted jobs reset to ready",
+      "event replay after restore",
+      "scheduler readiness after restore",
+      "snapshot taken mid-tick",
+      "snapshot keys (display names) looked up by normalized job key"
+    ],
+    "cross_file_dependency_count": 4,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": true
+  },
+  "task_family": "deep_diagnosis",
+  "difficulty_dimensions": {
+    "depth": "high",
+    "breadth": "medium",
+    "long_horizon": "low",
+    "hidden_interaction": "medium",
+    "misleading_evidence": "high",
+    "constraint_density": "medium",
+    "independent_verification_value": "medium",
+    "search_space_width": "high"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "finished jobs never run again after a resume",
+      "C2": "attempt counts and retry times survive a resume",
+      "C3": "snapshot files keep display names and load from disk",
+      "C4": "resume after the workflow's names were respelled",
+      "C5": "interrupted and newly added jobs"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "flowq/persistence.py"
+  ],
+  "naive_variants": [
+    "lookup_by_display_name",
+    "snapshot_normalized_keys"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

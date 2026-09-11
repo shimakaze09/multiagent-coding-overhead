@@ -1,0 +1,49 @@
+{
+  "task_id": "s2t03_ledgerly",
+  "category": "repo_wide_change",
+  "shape": "long_horizon_migration",
+  "repo": "s2t03_ledgerly",
+  "statement": "Migrate journal lines to signed amounts.\n\nToday a line is `Line(account, debit=None, credit=None, memo=\"\")` with exactly one positive side. The next release moves to a single signed amount:\n\n* `Line(account, amount, memo=\"\")`, where `amount` is `Money`: positive is a debit, negative is a credit. A zero amount is rejected with `ValueError` and a non-`Money` amount with `TypeError`.\n* Lines expose `amount`, `memo`, `currency`, and read-only `side` (`\"debit\"` or `\"credit\"`), `debit` and `credit` (the positive amount of that side, or `None`).\n* The keyword forms `Line(account, debit=...)` and `Line(account, credit=...)` must keep working for one more release but emit a `DeprecationWarning`. Nothing inside ledgerly itself may use the deprecated forms.\n* Ledger files: `store.save` must write schema 3, storing each line as `{\"account\", \"amount\", \"currency\", \"memo\"}` with `amount` the signed decimal string. Files written by the current release (schema 2) must still load. Keep `store.SCHEMA` and `store.READABLE_SCHEMAS` accurate.\n* Move the rest of the library to the new model and update the project conventions document.\n\nThe tests under `tests/` are owned by QA, are read-only and must keep passing; do not modify them.",
+  "verifier_source": "s2t03_ledgerly/test_holdout_ledgerly_lines.py",
+  "verifier_dest_name": "test_holdout_ledgerly_lines.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_ledgerly_lines.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "ledgerly/journal.py"
+  ],
+  "expected_edit_paths": [
+    "docs/conventions.md",
+    "ledgerly/billing.py",
+    "ledgerly/importers.py",
+    "ledgerly/journal.py",
+    "ledgerly/ledger.py",
+    "ledgerly/store.py"
+  ],
+  "supporting_paths": [
+    "ledgerly/reports.py"
+  ],
+  "notes": "Migration across journal, ledger, importers, billing and store with a compatibility shim; the old visible tests use the keyword form and must keep passing. ANALYSIS ONLY: never shown to agents."
+}

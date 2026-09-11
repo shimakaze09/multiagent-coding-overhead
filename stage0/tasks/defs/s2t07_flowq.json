@@ -1,0 +1,48 @@
+{
+  "task_id": "s2t07_flowq",
+  "category": "repo_wide_change",
+  "shape": "long_horizon_migration",
+  "repo": "s2t07_flowq",
+  "statement": "Migrate workflow documents to version 2, with a retry policy per job.\n\nToday a document has per-job `\"duration\"` and `\"retries\"` (extra attempts after the first) and one workflow-level `\"backoff_s\"`; after failed attempt n a job waits `min(backoff_s * 2 ** (n - 1), 60)` seconds. Version 2 looks like this:\n\n    {\"version\": 2,\n     \"jobs\": {\"Build\": {\"deps\": [], \"duration_s\": 10, \"priority\": 0,\n                        \"retry\": {\"max_attempts\": 3,\n                                  \"backoff\": {\"initial_s\": 5, \"factor\": 2, \"max_s\": 60}}}}}\n\n* Defaults: `deps` none, `duration_s` 1, `priority` 0, `max_attempts` 1, `initial_s` 1, `factor` 2, `max_s` 60. Unknown keys (including the version-1 names) are `SpecError`s, and so are `max_attempts` below 1, a negative time, a factor below 1 and an unknown `\"version\"`.\n* After failed attempt n a job waits `min(initial_s * factor ** (n - 1), max_s)` seconds.\n* Each `JobSpec` carries its policy as `retry`, a `flowq.RetryPolicy(max_attempts=1, initial_s=1.0, factor=2.0, max_s=60.0)` with a `delay(n)` method. `JobSpec.retries` stays available as a deprecated read-only alias (`max_attempts - 1`, emitting a `DeprecationWarning`).\n* Version-1 documents (no `\"version\"`) must keep loading and must behave exactly as they do today, but loading one emits a `DeprecationWarning`. Version-2 documents never warn.\n* `Workflow.dump()` writes version 2.\n* Update the documentation.\n\nThe tests under `tests/` are owned by QA, are read-only and must keep passing; do not modify them.",
+  "verifier_source": "s2t07_flowq/test_holdout_flowq_retry.py",
+  "verifier_dest_name": "test_holdout_flowq_retry.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_flowq_retry.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "flowq/spec.py"
+  ],
+  "expected_edit_paths": [
+    "docs/workflows.md",
+    "flowq/__init__.py",
+    "flowq/engine.py",
+    "flowq/spec.py"
+  ],
+  "supporting_paths": [
+    "flowq/persistence.py",
+    "docs/scheduling.md"
+  ],
+  "notes": "Schema migration with an exact behavioural mapping for version-1 documents. ANALYSIS ONLY: never shown to agents."
+}

@@ -1,0 +1,47 @@
+{
+  "task_id": "s2t01_ledgerly",
+  "category": "cross_file_bug",
+  "shape": "deep_diagnosis",
+  "repo": "s2t01_ledgerly",
+  "statement": "Our EUR trial balance values the GBP bank account differently from treasury's hand calculation on some dates, although both use the same monthly rate file (`examples/rates_2024_03.csv`) and the same postings.\n\n    >>> from datetime import date\n    >>> from ledgerly import Account, Chart, Entry, Ledger, Line, Money, importers, reports\n    >>> rates = importers.parse_rates_csv(open(\"examples/rates_2024_03.csv\").read())\n    >>> ledger = Ledger(Chart([Account(\"1010\", \"Bank GBP\", \"asset\"),\n    ...                        Account(\"4000\", \"Sales\", \"income\")]), rates)\n    >>> for eid, on, amount in ((\"R-1\", date(2024, 3, 5), \"5000\"), (\"R-2\", date(2024, 3, 20), \"3000\")):\n    ...     m = Money(amount, \"GBP\")\n    ...     ledger.post(Entry(eid, on, [Line(\"1010\", m), Line(\"4000\", -m)]))\n    >>> reports.format_money(ledger.balance_in(\"1010\", date(2024, 3, 21)))\n    '9,342.76 EUR'          # treasury: 9,318.06 EUR\n\nBalances early in the month agree. Treasury follows the documented rate rules.\n\nConstraints: the rate file comes from our provider as-is and must not be edited. The tests under `tests/` are owned by QA and are read-only; do not modify them. Make sure the existing test suite still passes.",
+  "verifier_source": "s2t01_ledgerly/test_holdout_ledgerly_rates.py",
+  "verifier_dest_name": "test_holdout_ledgerly_rates.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_ledgerly_rates.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "ledgerly/reports.py",
+    "ledgerly/ledger.py"
+  ],
+  "expected_edit_paths": [
+    "ledgerly/fx.py"
+  ],
+  "supporting_paths": [
+    "ledgerly/importers.py",
+    "ledgerly/store.py",
+    "docs/conventions.md"
+  ],
+  "notes": "Root cause: RateTable.add appends a rate for an earlier date to the end of the pair's series instead of inserting it in date order, while lookups bisect assuming ascending dates. A late correction in the provider file therefore yields the wrong rate for dates after it. Fix: keep the series sorted on insertion (replace on the same date). Sorting only at lookup leaves history() and saved files unsorted; sorting only the file rows leaves direct out-of-order adds wrong. ANALYSIS ONLY: never shown to agents."
+}

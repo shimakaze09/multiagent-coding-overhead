@@ -1,0 +1,57 @@
+{
+  "task_id": "s2t12_docpipe",
+  "analysis_only": true,
+  "codebase": "docpipe",
+  "design_features": {
+    "task_family": "hidden_regression",
+    "estimated_reasoning_depth": 2,
+    "subsystems_touched": [
+      "render_html",
+      "options",
+      "inline"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 1,
+      "approx_changed_lines": 15
+    },
+    "hidden_constraints_count": 6,
+    "plausible_root_causes": [
+      "no scheme filtering at all",
+      "a javascript: prefix check only",
+      "an http/https allowlist that breaks mailto and relative links"
+    ],
+    "cross_file_dependency_count": 2,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": true
+  },
+  "task_family": "hidden_regression",
+  "difficulty_dimensions": {
+    "depth": "low",
+    "breadth": "low",
+    "long_horizon": "low",
+    "hidden_interaction": "medium",
+    "misleading_evidence": "low",
+    "constraint_density": "high",
+    "independent_verification_value": "high",
+    "search_space_width": "medium"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "javascript: is never a link",
+      "C2": "whitespace and control characters do not hide a scheme",
+      "C3": "only http, https and mailto schemes",
+      "C4": "safe targets stay links, written unchanged",
+      "C5": "unsafe link text keeps its markup",
+      "C6": "trusted mode and text output"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "docpipe/render_html.py"
+  ],
+  "naive_variants": [
+    "http_allowlist",
+    "javascript_prefix_only"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

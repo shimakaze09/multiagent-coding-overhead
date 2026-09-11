@@ -1,0 +1,72 @@
+{
+  "task_id": "s2t10_docpipe",
+  "analysis_only": true,
+  "codebase": "docpipe",
+  "design_features": {
+    "task_family": "cross_subsystem_change",
+    "estimated_reasoning_depth": 2,
+    "subsystems_touched": [
+      "lexer",
+      "inline",
+      "nodes",
+      "parser",
+      "transforms",
+      "render_html",
+      "render_text",
+      "pipeline",
+      "docs"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 10,
+      "approx_changed_lines": 110
+    },
+    "hidden_constraints_count": 6,
+    "plausible_root_causes": [
+      "numbering by definition order",
+      "definition lines rendered as paragraphs",
+      "references in headings change ids",
+      "text renderer ignores notes"
+    ],
+    "cross_file_dependency_count": 8,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": true
+  },
+  "task_family": "cross_subsystem_change",
+  "difficulty_dimensions": {
+    "depth": "low",
+    "breadth": "high",
+    "long_horizon": "high",
+    "hidden_interaction": "medium",
+    "misleading_evidence": "none",
+    "constraint_density": "high",
+    "independent_verification_value": "high",
+    "search_space_width": "low"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "notes numbered by first reference",
+      "C2": "the notes section",
+      "C3": "undefined, unused and duplicate notes",
+      "C4": "text renderer",
+      "C5": "definitions, headings and the TOC",
+      "C6": "references in lists, quotes and emphasis"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "README.md",
+    "docpipe/inline.py",
+    "docpipe/lexer.py",
+    "docpipe/nodes.py",
+    "docpipe/parser.py",
+    "docpipe/pipeline.py",
+    "docpipe/render_html.py",
+    "docpipe/render_text.py",
+    "docpipe/transforms.py",
+    "docs/syntax.md"
+  ],
+  "naive_variants": [
+    "numbered_by_definition_order"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

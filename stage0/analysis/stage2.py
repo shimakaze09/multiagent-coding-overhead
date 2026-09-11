@@ -186,6 +186,15 @@ def load_entry(run_dir: Path) -> Optional[dict]:
     if not routing.is_stage2_arm(arm) and not mr["verified"]:
         reasons.append(f"model routing not verified: {mr['failed_checks']}")
     stored_prompts = {sa.session_key: sa.invocation.get("stdin_text") for sa in raw["sessions"]}
+    try:
+        from analysis import quality
+        run_quality = quality.run_quality(run_dir)
+    except Exception:  # a task without a verifier on disk, etc.
+        run_quality = None
+    calls = {"STRONG": 0, "CHEAP": 0}
+    for x in mr["invocations"]:
+        if x.get("model_class") in calls:
+            calls[x["model_class"]] += int(x.get("api_messages") or 0)
     return {
         "run_id": r["run_id"],
         "run_dir": str(run_dir),
@@ -208,6 +217,14 @@ def load_entry(run_dir: Path) -> Optional[dict]:
         "handoff_texts": _handoff_texts(raw),
         "last_agent_test_run": _last_agent_test_run(raw),
         "stored_prompts": stored_prompts,
+        # Stage 2 amendment (section 19): phase, frozen stratum, quality, calls
+        "stage2_phase": meta.get("stage2_phase"),
+        "stage2_difficulty": meta.get("stage2_difficulty"),
+        "quality": run_quality,
+        "tool_calls": r.get("tool_calls_total"),
+        "model_calls": r.get("api_assistant_messages"),
+        "strong_model_calls": calls["STRONG"],
+        "cheap_model_calls": calls["CHEAP"],
     }
 
 
@@ -277,6 +294,68 @@ def select_single_strong(entries: Sequence[dict], task_id: str) -> dict:
                 return {"entry": e, "source": "historical Arm A" if arm == "A" else "fresh S2_SS",
                         "considered": considered}
     return {"entry": None, "source": "pending: a fresh Single-Strong (S2_SS) run is required",
+            "considered": considered}
+
+
+_ARM_B_SEQUENCE = ("coordinator", "investigator", "coordinator", "implementer", "coordinator")
+
+
+def _arm_b_prompts(task, h: dict) -> Optional[list]:
+    from arms import multi_nl
+    try:
+        return [multi_nl.coordinator_kickoff_prompt(task),
+                multi_nl.investigator_prompt(task, h["investigation_instruction"]),
+                multi_nl.coordinator_after_investigation_prompt(h["investigation_report"]),
+                multi_nl.implementer_prompt(task, h["implementation_instruction"],
+                                            h["forwarded_investigation_report"]),
+                multi_nl.coordinator_wrapup_prompt(h["implementation_report"])]
+    except KeyError:
+        return None
+
+
+def multi_strong_parity(e: dict, reference_base_commit: Optional[str] = None) -> dict:
+    """Exact parity of an All-Strong Multi candidate (historical Arm B or S2_M)
+    with the Stage-2 S2_M configuration (section 19.10)."""
+    task = registry.get_task(e["task_id"])
+    cur = task.as_dict()
+    mr = e["model_routing"]
+    rows = mr["invocations"]
+    prompts = [e.get("stored_prompts", {}).get(x["session_key"]) for x in rows]
+    expected = _arm_b_prompts(task, e.get("handoff_texts") or {})
+    checks = {
+        "Arm-B topology, five invocations": e["arm"] in ("B", "S2_M")
+        and tuple(x["logical_role"] for x in rows) == _ARM_B_SEQUENCE,
+        "base config identical (model request, tools, permission policy, limits, turn counting)":
+            e["base_config_hash"] == A_BASE_CONFIG_HASH
+            and (e["arm"] != "B" or e["config_hash"] == A_BASE_CONFIG_HASH),
+        "task commit": bool(e["base_commit"]) and (reference_base_commit is None
+                                                   or e["base_commit"] == reference_base_commit),
+        "Claude Code version": e["cli_versions"] == [PINNED_CLI_VERSION],
+        "every role requested 'sonnet', resolved claude-sonnet-5": bool(rows) and all(
+            x["requested_model"] == config.STRONG_MODEL
+            and x["verification"].get("resolved_canonical") == STRONG_CANON for x in rows)
+            and mr["verified"],
+        "prompts byte-identical to Arm B's": expected is not None and prompts == expected,
+        "task statement, held-out verifier, protected paths": all(
+            e["task_meta"].get(k) == cur.get(k) for k in _TASK_FIELDS),
+        "valid run": e["valid"],
+    }
+    return {"exact": all(checks.values()), "checks": checks}
+
+
+def select_all_strong_multi(entries: Sequence[dict], task_id: str) -> dict:
+    """Historical Arm B with exact parity first, then the first valid S2_M."""
+    ref = _reference_commit(entries, task_id)
+    considered = []
+    for arm in ("B", "S2_M"):
+        for e in sorted((x for x in entries if x["task_id"] == task_id and x["arm"] == arm),
+                        key=lambda x: x["run_id"]):
+            p = multi_strong_parity(e, ref)
+            considered.append({"run_id": e["run_id"], "arm": arm, "parity": p})
+            if p["exact"]:
+                return {"entry": e, "source": "historical Arm B" if arm == "B" else "fresh S2_M",
+                        "considered": considered}
+    return {"entry": None, "source": "pending: a fresh All-Strong Multi (S2_M) run is required",
             "considered": considered}
 
 

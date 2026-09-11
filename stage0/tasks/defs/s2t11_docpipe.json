@@ -1,0 +1,50 @@
+{
+  "task_id": "s2t11_docpipe",
+  "category": "repo_wide_change",
+  "shape": "long_horizon_migration",
+  "repo": "s2t11_docpipe",
+  "statement": "Migrate the renderer extension API to renderer classes.\n\nToday each renderer is a global table of rule functions (`register_html(kind, fn)` / `register_text(kind, fn)`, with `fn(node, ctx)`). The next release moves to classes:\n\n* `docpipe.HtmlRenderer` and `docpipe.TextRenderer`, each with one `visit_<kind>(self, node)` method per node kind (for example `visit_quote`, `visit_code`), plus `self.render_children(node)` and `self.options`. A renderer's `render(doc)` takes a parsed document.\n* `docpipe.render(source, fmt=\"html\", options=None, *, cache=None, renderer=None)`: `renderer` is a renderer class, typically a subclass, used instead of the format's default. The existing call signature keeps working and the default output must not change.\n* `register_html` / `register_text` must keep working for one more release but emit a `DeprecationWarning`; `unregister_html` / `unregister_text` keep removing a registration. A registered rule applies to every renderer, except that a subclass's own `visit_<kind>` method takes precedence over it. Nothing inside docpipe may trigger the deprecation warning.\n* The render cache must never return output produced by a different renderer class or under different registered rules.\n* Update the extension documentation.\n\nThe tests under `tests/` are owned by QA, are read-only and must keep passing; do not modify them.",
+  "verifier_source": "s2t11_docpipe/test_holdout_docpipe_renderers.py",
+  "verifier_dest_name": "test_holdout_docpipe_renderers.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_docpipe_renderers.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "docpipe/render_html.py"
+  ],
+  "expected_edit_paths": [
+    "docpipe/__init__.py",
+    "docpipe/cache.py",
+    "docpipe/pipeline.py",
+    "docpipe/render_html.py",
+    "docpipe/render_text.py",
+    "docs/extending.md"
+  ],
+  "supporting_paths": [
+    "docpipe/options.py",
+    "docs/security.md"
+  ],
+  "notes": "Plugin-API migration from global rule tables to renderer classes with a deprecated compatibility layer and a correct cache key. ANALYSIS ONLY: never shown to agents."
+}

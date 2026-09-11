@@ -36,6 +36,7 @@ EXPECTED_REQUESTS = {
     "S2_R3": {"coordinator": HAIKU, "investigator": HAIKU, "implementer": HAIKU},
     "S2_S": {"solo": HAIKU},
     "S2_SS": {"solo": "sonnet"},
+    "S2_M": {"coordinator": "sonnet", "investigator": "sonnet", "implementer": "sonnet"},
 }
 # topology_config_hash(RunConfig(), stage2_topology(arm)), frozen with section 18.
 PINNED_S2_HASHES = {
@@ -44,6 +45,7 @@ PINNED_S2_HASHES = {
     "S2_R3": "4b75b94f619fe83c93aa3582a3da0aa3",
     "S2_S": "d9e92534b466f8793b390b222c18fe76",
     "S2_SS": "d2cd1cf2024412d57d685340261f5fe5",
+    "S2_M": "d5459739f84ac4c5202bb144b45507da",   # added by section 19; the five above are unchanged
 }
 
 

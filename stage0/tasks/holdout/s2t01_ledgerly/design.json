@@ -1,0 +1,60 @@
+{
+  "task_id": "s2t01_ledgerly",
+  "analysis_only": true,
+  "codebase": "ledgerly",
+  "design_features": {
+    "task_family": "deep_diagnosis",
+    "estimated_reasoning_depth": 5,
+    "subsystems_touched": [
+      "reports",
+      "ledger",
+      "fx",
+      "importers",
+      "store"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 1,
+      "approx_changed_lines": 8
+    },
+    "hidden_constraints_count": 5,
+    "plausible_root_causes": [
+      "rounding of converted balances",
+      "triangulation through USD",
+      "as-of date boundary in balance_in",
+      "rate-file parsing",
+      "rate series not kept in date order when a late correction is added"
+    ],
+    "cross_file_dependency_count": 4,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": false
+  },
+  "task_family": "deep_diagnosis",
+  "difficulty_dimensions": {
+    "depth": "high",
+    "breadth": "low",
+    "long_horizon": "low",
+    "hidden_interaction": "medium",
+    "misleading_evidence": "medium",
+    "constraint_density": "medium",
+    "independent_verification_value": "medium",
+    "search_space_width": "high"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "lookups are independent of insertion order",
+      "C2": "a same-date rate replaces the earlier one, in any order",
+      "C3": "history() is chronological with one rate per date; files store rates oldest first",
+      "C4": "inverse and triangulated lookups follow out-of-order corrections",
+      "C5": "the provider rate file with a late correction, end to end"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "ledgerly/fx.py"
+  ],
+  "naive_variants": [
+    "sort_at_lookup",
+    "sort_file_rows"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

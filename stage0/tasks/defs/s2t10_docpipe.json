@@ -1,0 +1,54 @@
+{
+  "task_id": "s2t10_docpipe",
+  "category": "cross_file_feature",
+  "shape": "cross_subsystem_change",
+  "repo": "s2t10_docpipe",
+  "statement": "Feature request: footnotes.\n\nAuthors want footnotes: a reference `[^label]` in the text and a definition line `[^label]: text`.\n\n* Notes are numbered 1, 2, 3... in the order of their first reference; a note referenced again keeps its number.\n* HTML: a reference renders as `<sup class=\"footnote-ref\"><a href=\"#fn-N\" id=\"fnref-N\">N</a></sup>`, and later references to the same note get the ids `fnref-N-2`, `fnref-N-3`... The notes follow the document as `<section class=\"footnotes\"><ol><li id=\"fn-N\">text <a href=\"#fnref-N\" class=\"footnote-back\">↩</a></li>...</ol></section>`.\n* Text output: a reference renders as `[N]`, and the notes follow the last block as `[N] text` lines.\n* A definition line is not rendered where it appears. A definition that is never referenced is dropped, a reference to an undefined note stays as written, and a second definition of a label is ignored. `docpipe.check()` reports these as `unused footnote definition [^label]`, `undefined footnote [^label]` and `duplicate footnote definition [^label] ignored`.\n* Footnotes never appear in the table of contents, and a reference inside a heading does not change the heading's id.\n* Existing syntax, including `[text](url)` links and other brackets, renders as before. Document the new syntax.\n\nThe tests under `tests/` are owned by QA and are read-only; do not modify them. Make sure the existing test suite still passes.",
+  "verifier_source": "s2t10_docpipe/test_holdout_docpipe_footnotes.py",
+  "verifier_dest_name": "test_holdout_docpipe_footnotes.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "test_holdout_docpipe_footnotes.py"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "-rA",
+    "tests"
+  ],
+  "read_only_paths": [
+    "tests/*"
+  ],
+  "symptom_paths": [
+    "docpipe/inline.py"
+  ],
+  "expected_edit_paths": [
+    "README.md",
+    "docpipe/inline.py",
+    "docpipe/lexer.py",
+    "docpipe/nodes.py",
+    "docpipe/parser.py",
+    "docpipe/pipeline.py",
+    "docpipe/render_html.py",
+    "docpipe/render_text.py",
+    "docpipe/transforms.py",
+    "docs/syntax.md"
+  ],
+  "supporting_paths": [
+    "docpipe/slug.py",
+    "docpipe/options.py"
+  ],
+  "notes": "A feature spanning lexer, inline parser, nodes, parser, transforms, both renderers, the pipeline and the syntax docs. ANALYSIS ONLY: never shown to agents."
+}

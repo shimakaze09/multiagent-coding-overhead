@@ -1,0 +1,56 @@
+{
+  "task_id": "s2t08_flowq",
+  "analysis_only": true,
+  "codebase": "flowq",
+  "design_features": {
+    "task_family": "hidden_regression",
+    "estimated_reasoning_depth": 3,
+    "subsystems_touched": [
+      "scheduler",
+      "engine",
+      "persistence"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 2,
+      "approx_changed_lines": 10
+    },
+    "hidden_constraints_count": 4,
+    "plausible_root_causes": [
+      "scheduler sort key",
+      "ready time not recorded on promotion",
+      "retry promotion",
+      "snapshots lose ready times"
+    ],
+    "cross_file_dependency_count": 3,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": true
+  },
+  "task_family": "hidden_regression",
+  "difficulty_dimensions": {
+    "depth": "medium",
+    "breadth": "medium",
+    "long_horizon": "low",
+    "hidden_interaction": "high",
+    "misleading_evidence": "medium",
+    "constraint_density": "medium",
+    "independent_verification_value": "high",
+    "search_space_width": "medium"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "the earliest ready job starts first",
+      "C2": "a retried job queues behind jobs already waiting",
+      "C3": "priority first, then ready time, then name",
+      "C4": "resume keeps the waiting order"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "flowq/persistence.py",
+    "flowq/scheduler.py"
+  ],
+  "naive_variants": [
+    "scheduler_only"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

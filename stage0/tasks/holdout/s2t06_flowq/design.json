@@ -1,0 +1,66 @@
+{
+  "task_id": "s2t06_flowq",
+  "analysis_only": true,
+  "codebase": "flowq",
+  "design_features": {
+    "task_family": "cross_subsystem_change",
+    "estimated_reasoning_depth": 3,
+    "subsystems_touched": [
+      "spec",
+      "scheduler",
+      "engine",
+      "persistence",
+      "report",
+      "docs"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 7,
+      "approx_changed_lines": 70
+    },
+    "hidden_constraints_count": 6,
+    "plausible_root_causes": [
+      "first-fit backfilling starves large jobs",
+      "capacity not validated at creation",
+      "old max_parallel snapshots no longer restore",
+      "peak usage measured wrongly"
+    ],
+    "cross_file_dependency_count": 5,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": true
+  },
+  "task_family": "cross_subsystem_change",
+  "difficulty_dimensions": {
+    "depth": "medium",
+    "breadth": "high",
+    "long_horizon": "medium",
+    "hidden_interaction": "high",
+    "misleading_evidence": "none",
+    "constraint_density": "high",
+    "independent_verification_value": "high",
+    "search_space_width": "medium"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "resources declared, validated and dumped",
+      "C2": "capacity is never exceeded",
+      "C3": "a blocked job blocks lower-priority jobs (no backfilling)",
+      "C4": "engine validates resources and capacity arguments",
+      "C5": "snapshots carry capacity; old snapshots still restore",
+      "C6": "summary reports peak usage"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "docs/scheduling.md",
+    "docs/workflows.md",
+    "flowq/engine.py",
+    "flowq/persistence.py",
+    "flowq/report.py",
+    "flowq/scheduler.py",
+    "flowq/spec.py"
+  ],
+  "naive_variants": [
+    "first_fit_backfilling"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

@@ -1079,3 +1079,51 @@ are unchanged.
   like 2.1.260, reports per-model `modelUsage` with an auxiliary Haiku entry,
   and has a forced-mismatch test hook. Its A/B/C1 output (`mock-sonnet`) is
   unchanged.
+
+## 24. Stage 2 amendment: difficulty-calibrated quality × cost (2026-09-11)
+
+Preregistered in PREREGISTRATION section 19. The section-18 routing
+infrastructure is unchanged.
+
+* `config.py`:
+  - `STAGE2_CONFIGS["S2_M"]`: All-Strong Multi, with Arm-B topology and every
+    role STRONG;
+  - `STAGE2_PHASES`;
+  - `STAGE2_ARCHITECTURES` (A, M, H1, H2, CM, CS);
+  - `STAGE2_E1_ARMS` and `STAGE2_E2_ARMS`;
+  - `STAGE2_CANDIDATES` (12 tasks) and `STAGE2_EASY_CONTROLS` (the four
+    Stage-0.5 tasks);
+  - `STAGE2_LIMITS` (60 turns, 1,800 s per session) and `stage2_limits_for`;
+  - `STAGE2_DIFFICULTY_LABELS`.
+* Fixtures:
+  - `tasks/repos/s2t01_ledgerly` … `s2t12_docpipe`: three codebases
+    (`ledgerly`, `flowq`, `docpipe`), four tasks each, one per family.
+  - `tasks/holdout/<task>/` holds everything that carries solution knowledge:
+    the verifier, `reference/`, `naive/<variant>/` and `design.json`.
+  - `tasks/stage2_design.py` loads the design metadata; it is analysis-only.
+* `arms/s2_routing.run(..., phase=, difficulty=)`: records `stage2_phase` and
+  `stage2_difficulty` as run metadata only.
+* `analysis/quality.py`: Q1–Q5 from `pytest -rA` output, the verifier source,
+  the visible-test output and the workspace diff.
+* `analysis/difficulty.py`:
+  - Phase C: calibration-only filtering and the sequential rule;
+  - strata and deterministic benchmark selection;
+  - the freeze (`results/stage2/difficulty_labels.json`, write-once).
+* `analysis/quality_cost.py`:
+  - Phase E: evaluation-only filtering, and EASY controls from exact-parity
+    historical runs;
+  - the E1 rule and the E2 gate; the evaluation plan;
+  - Wilson intervals; cost, wall time and tokens per success;
+  - the M/A and hybrid/A ratios; the decision tree; the frontier (dominance);
+    the crossover.
+* `analysis/stage2.py`:
+  - `multi_strong_parity` and `select_all_strong_multi`, historical Arm B as
+    `S2_M` for the EASY controls;
+  - entries gain phase, difficulty, quality and call counts.
+* `analysis/routing.check_run`: per-invocation `api_messages`.
+* `runner.py`:
+  - `calibrate`, `difficulty-summary`, `difficulty-freeze`;
+  - `evaluate`, `evaluation-plan`;
+  - `stage2-frontier [--json]`.
+
+  Each command validates its arguments before probing the CLI.

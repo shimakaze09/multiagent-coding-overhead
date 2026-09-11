@@ -265,9 +265,15 @@ def _run_multi(rt: _Router, task: Task) -> dict:
 
 
 def run(*, arm: str, task: Task, repeat_id: int, cfg: config.RunConfig,
-        cli: config.ClaudeCli, capability_report: dict, runs_dir=None) -> dict:
+        cli: config.ClaudeCli, capability_report: dict, runs_dir=None,
+        phase: Optional[str] = None, difficulty: Optional[dict] = None) -> dict:
+    """``phase`` ("calibration" / "evaluation", section 19) and ``difficulty``
+    (the frozen stratum and labels hash) are run METADATA only: nothing here
+    passes them to a prompt, a flag or the environment of a Claude process."""
     if arm not in config.STAGE2_CONFIGS:
         raise KeyError(f"not a Stage-2 configuration: {arm!r}")
+    if phase is not None and phase not in config.STAGE2_PHASES:
+        raise ValueError(f"unknown Stage-2 phase {phase!r}")
     if cfg.model != config.STRONG_MODEL:
         raise ValueError(
             "Stage-2 runs use the unchanged base configuration (model 'sonnet'); "
@@ -282,6 +288,9 @@ def run(*, arm: str, task: Task, repeat_id: int, cfg: config.RunConfig,
     session.metadata["stage2_identity"] = stage2_identity(arm, cfg, session)
     session.metadata["model_routing_env_guard"] = env_guard
     session.metadata["prompt_sources_checked"] = prompts
+    session.metadata["stage2_phase"] = phase or "unassigned"
+    if difficulty is not None:
+        session.metadata["stage2_difficulty"] = dict(difficulty)
     (session.run_dir / "metadata.json").write_text(
         json.dumps(session.metadata, indent=2, sort_keys=True), encoding="utf-8")
 

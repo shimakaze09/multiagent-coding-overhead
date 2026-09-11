@@ -1,0 +1,57 @@
+{
+  "task_id": "s2t04_ledgerly",
+  "analysis_only": true,
+  "codebase": "ledgerly",
+  "design_features": {
+    "task_family": "hidden_regression",
+    "estimated_reasoning_depth": 3,
+    "subsystems_touched": [
+      "money",
+      "billing",
+      "journal"
+    ],
+    "expected_minimum_edit_scope": {
+      "files": 1,
+      "approx_changed_lines": 12
+    },
+    "hidden_constraints_count": 6,
+    "plausible_root_causes": [
+      "Entry.validate balance tolerance",
+      "split_invoice rounding",
+      "Money.allocate rounds each part independently",
+      "Money.rounded mode"
+    ],
+    "cross_file_dependency_count": 2,
+    "requires_regression_preservation": true,
+    "requires_backward_compatibility": false
+  },
+  "task_family": "hidden_regression",
+  "difficulty_dimensions": {
+    "depth": "medium",
+    "breadth": "low",
+    "long_horizon": "low",
+    "hidden_interaction": "medium",
+    "misleading_evidence": "medium",
+    "constraint_density": "high",
+    "independent_verification_value": "high",
+    "search_space_width": "medium"
+  },
+  "heldout": {
+    "constraints": {
+      "C1": "parts always sum to the rounded total",
+      "C2": "leftover units to the largest remainders, ties to earlier parts",
+      "C3": "negative amounts mirror positive ones",
+      "C4": "zero ratios receive nothing",
+      "C5": "other minor units (JPY, KWD)",
+      "C6": "revenue splits always post"
+    },
+    "regression_test_prefix": "test_r_"
+  },
+  "reference_files": [
+    "ledgerly/money.py"
+  ],
+  "naive_variants": [
+    "remainder_to_last_part"
+  ],
+  "note": "Design features describe the task as built; they are not a difficulty score. Empirical difficulty comes only from Phase-C calibration."
+}

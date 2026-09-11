@@ -554,6 +554,11 @@ STAGE2_CONFIGS = {
     # Only where no historical Arm A run has exact parity (section 18.6).
     "S2_SS": {"label": "Single Strong (fresh baseline)", "topology": _SINGLE,
               "role_classes": {"solo": "STRONG"}},
+    # Section 19 (difficulty amendment): the multi-agent quality reference. Arm B's
+    # topology and prompts with every role STRONG, under Stage-2 identity and
+    # routing verification. Not historical Arm B unless exact parity (19.10).
+    "S2_M": {"label": "All-Strong Multi", "topology": _SEPARATED,
+             "role_classes": {"coordinator": "STRONG", "investigator": "STRONG", "implementer": "STRONG"}},
 }
 STAGE2_ARMS = tuple(STAGE2_CONFIGS)
 STAGE2_PILOT_ARMS = ("S2_R1", "S2_R2", "S2_R3", "S2_S")
@@ -644,3 +649,62 @@ def preflight_model_routing_env(env: Optional[dict] = None) -> dict:
             "The harness will not unset them; remove them from this shell and re-run.")
     return {"vars_tested": list(MODEL_ROUTING_ENV_VARS), "present_reaching_child": [],
             "note": "presence-only; no value was read or logged"}
+
+
+# --------------------------------------------------------------------------
+# Stage 2 amendment: difficulty-calibrated quality-cost experiment
+# (PREREGISTRATION section 19). Supersedes the unexecuted 17-run plan of 18.11.
+# --------------------------------------------------------------------------
+#
+# Phase C (calibration) runs Single Strong only, on the candidate pool, to
+# assign empirical difficulty strata. Phase E (evaluation) re-measures every
+# architecture - Single Strong included - on the frozen benchmark with fresh,
+# independent runs, so no run both selects a task and scores an architecture.
+# Phase labels and strata are run metadata only: they never reach a prompt.
+
+STAGE2_PHASES = ("calibration", "evaluation")
+
+# Conceptual architecture -> Stage-2 configuration (section 19.6).
+STAGE2_ARCHITECTURES = {
+    "A": "S2_SS",   # Single Strong
+    "M": "S2_M",    # All-Strong Multi (primary comparison with A)
+    "H1": "S2_R1",  # Strong-Investigator Hybrid
+    "H2": "S2_R2",  # Strong-Implementer Hybrid
+    "CM": "S2_R3",  # All-Cheap Multi
+    "CS": "S2_S",   # Single Cheap
+}
+STAGE2_CALIBRATION_ARM = "S2_SS"
+STAGE2_E1_ARMS = ("S2_SS", "S2_M")
+STAGE2_E2_ARMS = ("S2_R1", "S2_R2", "S2_R3", "S2_S")
+
+# The candidate pool (section 19.3): 12 tasks, 4 families, 3 codebases. Task ids
+# are neutral on purpose; family and design features are analysis-only
+# (tasks/holdout/<task>/design.json).
+STAGE2_CANDIDATES = (
+    "s2t01_ledgerly", "s2t02_ledgerly", "s2t03_ledgerly", "s2t04_ledgerly",
+    "s2t05_flowq", "s2t06_flowq", "s2t07_flowq", "s2t08_flowq",
+    "s2t09_docpipe", "s2t10_docpipe", "s2t11_docpipe", "s2t12_docpipe",
+)
+# The four Stage-0.5 tasks: an EASY control stratum only (section 19.11).
+STAGE2_EASY_CONTROLS = STAGE2_TASKS
+
+STAGE2_RESULTS_DIR = STAGE0_ROOT / "results" / "stage2"
+STAGE2_DIFFICULTY_LABELS = STAGE2_RESULTS_DIR / "difficulty_labels.json"
+
+# Per-session limits for calibration and evaluation on the candidate pool
+# (section 19.7). The smoke limits (25 turns, 900 s) were sized for the Stage-0.5
+# tasks, where Single Strong used at most 18 model turns. On deliberately harder
+# tasks a 25-turn cap would bind first for the single agent (one session) and
+# could manufacture a multi-agent advantage (five sessions). Every architecture
+# in the calibrated strata gets these same limits; limit terminations remain
+# outcomes. The EASY controls keep SMOKE_LIMITS for historical parity.
+STAGE2_LIMITS = Limits(
+    max_tasks_per_invocation=1,
+    max_sessions_per_invocation=6,
+    max_turns_per_session=60,
+    max_wall_seconds_per_session=1800,
+)
+
+
+def stage2_limits_for(task_id: str) -> Limits:
+    return SMOKE_LIMITS if task_id in STAGE2_EASY_CONTROLS else STAGE2_LIMITS
