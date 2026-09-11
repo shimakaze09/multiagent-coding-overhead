@@ -1,0 +1,18 @@
+=== Stage 1 summary: B vs C1_shared_worker_context (4 prospective Stage-0.5 tasks) ===
+task                        B ok   C1 ok   B inv/fresh   C1 inv/fresh   B input    C1 input   C1/B in   B cw     C1 cw    C1/B cw   wall C1/B   cost C1/B   B hand   C1 hand   B gross/edit/disc   C1 gross/edit/disc   valid 
+shipping_inch_dimensions    True   True    5/3           5/2            289421     327761     1.132     33795    37072    1.097     0.789       1.018       11388    5830      1/1/0               0/0/0                yes   
+    note: base config differs only by amendment 7 (turn counting); the B run never reached the turn limit
+settings_list_fields        True   True    5/3           5/2            690719     485233     0.703     46946    50259    1.071     0.858       0.919       25781    18653     3/2/1               3/2/0                yes   
+rename_max_connections      True   True    5/3           5/2            494659     526850     1.065     53494    53714    1.004     1.040       0.976       22912    17516     5/5/0               0/0/0                yes   
+sla_weekend_hours           True   True    5/3           5/2            217260     471900     2.172     31379    42978    1.370     1.142       1.460       11921    11953     1/1/0               0/0/0                yes   
+
+valid B/C1 pairs: 4 (invalid pairs never enter aggregates)
+  C1/B total_input              n=4  mean 1.268  median 1.099  range 0.703-2.172
+  C1/B cache_write              n=4  mean 1.135  median 1.084  range 1.004-1.37
+  C1/B cache_read               n=4  mean 1.298  median 1.105  range 0.676-2.308
+  C1/B output                   n=4  mean 1.005  median 0.947  range 0.842-1.286
+  C1/B wall                     n=4  mean 0.957  median 0.949  range 0.789-1.142
+  C1/B cost                     n=4  mean 1.093  median 0.997  range 0.919-1.46
+  C1/B handoff_chars            n=4  mean 0.751  median 0.744  range 0.512-1.003
+  C1/B fresh_first_call_input   n=4  mean 0.559  median 0.559  range 0.544-0.574
+Descriptive only; ratios are C1 / B. Existing Stage-0.5 summary: python runner.py summary

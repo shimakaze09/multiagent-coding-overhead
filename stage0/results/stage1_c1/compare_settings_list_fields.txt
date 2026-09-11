@@ -1,0 +1,65 @@
+=== Stage 1 comparison: settings_list_fields  (primary: B vs C1_shared_worker_context) ===
+Arm A run : 20260911T015555Z_settings_list_fields_A_r2  (reference only)
+Arm B run : 20260911T015737Z_settings_list_fields_B_r2
+C1 run    : 20260911T030417Z_settings_list_fields_C1_r1
+
+-- parity (base configuration; topology differs by design) -----------
+  [PASS] same task
+  [PASS] same base config
+  [PASS] same base commit
+  [PASS] same Claude Code version
+  [PASS] same resolved main model
+  [PASS] same protected files
+  validity: B valid; C1 valid
+  C1 worker transition verified: True  (investigator init tools ['Bash', 'Glob', 'Grep', 'Read'], implementer init tools ['Bash', 'Edit', 'Glob', 'Grep', 'Read', 'Write'])
+
+                                                   Arm B          C1    C1/B       Arm A
+  SOLVED (held-out verifier)                        True        True                True
+  CLI invocations                                      5           5   1.000           1
+  fresh physical sessions                              3           2   0.667           1
+  resumed invocations                                  2           3   1.500           0
+  physical sessions                                    3           2   0.667           1
+  total input (main model)                        690719      485233   0.703      428650
+    uncached input                                    54          36   0.667          36
+    cache read                                    643719      434938   0.676      411611
+    cache write                                    46946       50259   1.071       17003
+  output (main model)                              14561       14085   0.967        6246
+  thinking tokens (all models)                       795         828   1.042         738
+  wall seconds                                    173.55      148.89   0.858       75.42
+  API-equivalent cost USD (not paid)            0.470576    0.432253   0.919    0.214218
+  repository acquisition chars                     11326        8414   0.743        6543
+  inter-agent handoff chars                        25781       18653   0.724           0
+    bytes                                          25923       18767   0.724           0
+    estimated tokens (chars/4)                      6445        4664   0.724           0
+    forwarded Investigator report chars             8659           0   0.000           0
+  handoff overlap v1 (all handoffs)                0.139      0.1912   1.376        None
+  handoff overlap v2 (all handoffs)               0.1206      0.1777   1.473        None
+  gross primed reacquisition                           3           3   1.000           0
+    edit-precondition-associated                       2           2   1.000           0
+    verification-associated                            0           1       -           0
+    discretionary                                      1           0   0.000           0
+    unknown                                            0           0       -           0
+  unprimed overlapping discoveries                     0           0       -           0
+  inter-agent overlapping acquisitions (all)           3           3   1.000           0
+  unique downstream: informational chars               0           0       -        None
+  unique downstream: self-generated chars           2029           0   0.000        None
+  first-call input, fresh sessions (sum)           49757       27195   0.547       17699
+  first-call input: Coordinator                     9665        9667   1.000        None
+  first-call input: Investigator / Worker          17620       17528   0.995        None
+  first-call input: Implementer (B fresh / C1 resume)       22472       27686   1.232        None
+  Implementer first call (uncached, cache read, cache write): B (2, 11393, 11077)  C1 (2, 11393, 16291)
+
+-- preregistered endpoints (PREREGISTRATION 16.5) -----------------------
+  E1 correctness       : B True  C1 True
+  E2 input             : total input C1 485233 vs B 690719 (C1/B 0.703)
+  E3 fresh context     : fresh sessions 3 -> 2; fresh first-call input 49757 -> 27195 (exact)
+  E4 cache write       : 46946 -> 50259 (C1/B 1.071)
+  E5 handoff           : inter-agent chars 25781 -> 18653; forwarded report 8659 -> 0
+  E6 rereads           : gross primed 3 -> 3 (edit 2 -> 2, disc 1 -> 0); unprimed overlapping 0 -> 0
+  E7 wall / cost       : wall 173.55 -> 148.89 (C1/B 0.858); cost 0.470576 -> 0.432253 (C1/B 0.919)
+
+Notes: provider usage is reported exactly; cache reads are billed input, not eliminated cost.
+The Worker's own history (incl. its report) is session context, not an inter-agent handoff.
+Frozen priming counts delivered messages only: in C1 the report is not re-delivered, so rereads
+primed only by the Worker's own report appear as unprimed overlapping discoveries (both shown).
+n=1 per arm and task: descriptive only.

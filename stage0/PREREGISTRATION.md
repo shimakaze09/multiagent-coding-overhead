@@ -1097,6 +1097,47 @@ All of the following are legitimate results:
 
 No historical metadata or B `config_hash` is rewritten.
 
+## 17. Stage 1 outcome (recorded 2026-09-11, after the runs)
+
+The four preregistered C1 runs ran once each at frozen commit `56f067b`, with
+Claude Code 2.1.260 pinned. All four are valid, and `worker_transition.verified`
+held on every run. Real Claude Code honoured the changed tool policy on
+`--resume`: Investigator phase `Bash,Glob,Grep,Read`; Implementer phase adds
+`Edit,Write`; the session id was preserved. No amendment, rerun or post-run
+instrumentation defect. Raw checksums are in
+`run_manifests/stage1_c1/raw_run_checksums.sha256`, and the derived records in
+`results/stage1_c1/`.
+
+| Task | B/C1 solved | C1/B input | C1/B cache write | C1/B cost | C1/B wall | Handoff chars B→C1 | Gross primed rereads B→C1 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| shipping_inch_dimensions | ✅/✅ | 1.132 | 1.097 | 1.018 | 0.789 | 11,388→5,830 | 1→0 |
+| settings_list_fields | ✅/✅ | 0.703 | 1.071 | 0.919 | 0.858 | 25,781→18,653 | 3→3 |
+| rename_max_connections | ✅/✅ | 1.065 | 1.004 | 0.976 | 1.040 | 22,912→17,516 | 5→0 |
+| sla_weekend_hours | ✅/✅ | 2.172 | 1.370 | 1.460 | 1.142 | 11,921→11,953 | 1→0 |
+
+Median C1/B ratios: input 1.099, cache write 1.084, cost 0.997, wall 0.949. Pooled
+over the four tasks: total input +7.1%, cache write +11.1%, API-equivalent cost
++4.7%, wall time −5.0%. Fresh-session first-call input fell 42.6–45.6% (exact).
+
+Endpoints:
+
+* E1: preserved, 4/4.
+* E2: not reduced overall.
+* E3: fresh-session context reduced.
+* E4: cache write not reduced; higher on all 4 tasks.
+* E5: the forwarded report disappeared, and total handoff chars fell by a median
+  of 25.6%.
+* E6: rereads fell (gross primed 10→3).
+* E7: wall time slightly lower, cost unchanged overall.
+
+Edit accepted an Investigator-phase Read after resume (no refusal on any run).
+Voluntary rereads that remained are counted as `edit_precondition_associated` by
+the frozen classifier, which is an upper bound for C1.
+
+Best-supported conclusion: **C1-C**, shared Worker context does not meaningfully
+reduce overhead. Decision: **D, stop multi-agent optimization for this
+experiment** (see `FINAL_RESEARCH_REPORT.md`).
+
 **Re-analysis (post-hoc, disclosed; no rerun).** Under v2 the same raw data
 gives coverage **1.000** (14 classified, 0 unknown), so the run is valid and the
 Task-4 rerun pair is valid. The v1 result (0.700, invalid) is recorded here and

@@ -59,3 +59,24 @@ Derived outputs (pair reports, cross-task summary, pilot tables) are in
 `../results/stage05_pilot/`.
 
     sha256sum -c run_manifests/stage05_pilot/raw_run_checksums.sha256
+
+## Stage 1: C1_shared_worker_context (2026-09-11)
+
+`stage1_c1/raw_run_checksums.sha256` covers the four C1 runs (164 files, 41 per
+run). Each run's checksums were taken right after the run and before any
+re-ingest:
+
+| Run | Files |
+| --- | --- |
+| `20260911T030211Z_shipping_inch_dimensions_C1_r1` | 41 |
+| `20260911T030417Z_settings_list_fields_C1_r1` | 41 |
+| `20260911T030731Z_rename_max_connections_C1_r1` | 41 |
+| `20260911T031118Z_sla_weekend_hours_C1_r1` | 41 |
+
+Like the pilot manifest, it lives in a subdirectory, so `historical_run_ids()`
+is unchanged. Derived outputs (the four B-vs-C1 comparisons and the Stage-1
+summary) are in `../results/stage1_c1/`.
+
+    sha256sum -c run_manifests/stage1_c1/raw_run_checksums.sha256
+
+Together, the four manifests cover all 18 real runs of the experiment.
