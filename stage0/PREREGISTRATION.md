@@ -589,3 +589,33 @@ Exclusions for the pair are sections 5 and 10 (amendment 6 isolation). Any
 number not in this list that is reported after seeing Pair 2 is labelled
 **exploratory**. No new headline metric will be introduced after seeing the
 result.
+
+## 14. Pair 2 outcome (recorded 2026-09-11, after the run)
+
+The pair was run once, as authorized, at frozen commit `b506137`: Arm A
+`20260911T004656Z_cart_invoice_rounding_A_r1`, Arm B
+`20260911T004825Z_cart_invoice_rounding_B_r1`. Claude Code was pinned to
+2.1.260. All six parity checks passed, both runs had acquisition coverage 1.000,
+and no exclusion applied. The run was accepted as a valid preregistered
+observation. Raw checksums are in `run_manifests/pair2_raw_run_checksums.sha256`,
+and the frozen pair summary is in `results/pair2_cart_invoice_rounding_report.txt`.
+
+Under the frozen section 11 definitions only:
+
+| | Result |
+| --- | --- |
+| SOLVED | A yes, B yes (160/160 held-out tests each) |
+| H1 | supported: 2 supporting-file discretionary rereads (`discounts.py`, `money.py`; 2,996 chars) |
+| H2 | supported: the single `cart.py` reread is `edit_precondition_associated` |
+| H3 | supported: 2 repository chunks in the report (quote fraction 0.0469) |
+| H4 | supported: 2 chunks in I∩H∩R (~330 chars, `cart.py` only) |
+| H5 | supported: 5 vs 1 sessions, 381,293 vs 129,667 total input tokens, 121.0 vs 28.1 s; SOLVED equal |
+
+Gross primed reacquisitions were 3: 1 edit-precondition, 0 verification, 2
+discretionary and 0 unknown.
+
+Disclosed limitation of the frozen H3 metric, not a defect: the Investigator
+quoted 12 source lines, 11 of them verbatim, but omitted the adjacent docstring
+and validation lines. The 3-line windows therefore matched only 2 chunks. This
+record does not change, and must never be changed to account for it. Section 15
+adds a separate, prospective metric.

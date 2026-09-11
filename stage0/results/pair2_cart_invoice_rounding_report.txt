@@ -1,0 +1,419 @@
+=== Stage 0 run report: 20260911T004656Z_cart_invoice_rounding_A_r1 ===
+task            : cart_invoice_rounding  (cross_file_bug)
+arm             : A   repeat_id=1
+model           : sonnet   claude code 2.1.260 (Claude Code)
+parser version  : raw run produced by v4; re-analysed by v4 (coverage formula v2)
+
+SOLVED          : YES   (held-out deterministic tests, exit=0, LLM judge: no)
+
+-- resources ------------------------------------------------------
+wall time            : 28.11 s
+claude sessions      : 1   logical agents: 1
+turn accounting (four different quantities - do not conflate):
+  assistant stream events (1 per block)  : 16
+    of which thinking-only stream events : 1
+  API assistant messages (model replies) : 6
+  tool_use blocks                        : 11
+  Claude CLI num_turns (per session)     : [12]
+
+-- tool activity --------------------------------------------------
+tool calls total : 11
+  Read           : 5
+  Grep           : 0
+  Glob           : 0
+  Bash           : 3
+  Edit/Write     : 3
+  test runs      : 1   (denied calls excluded)
+bash categories (derived from the raw command; raw text preserved):
+    bash_search                  1
+    bash_verification            1
+    tool_denied                  1
+PERMISSION-DENIED tool calls : 1   (the CLI refused these; nothing ran, nothing was acquired)
+    Bash  would_have_been=bash_verification
+      cd "D:/dev/subagent test/stage0/runs/20260911T004656Z_cart_invoice_rounding_A_r1/workspace" && python -c "
+from shopcart import Cart, Money, Invoice ... [+241 chars]
+
+-- acquisition volume ---------------------------------------------
+unique files read          : 5
+unique repository regions  : 177 (3-line shingles)
+unique result identities   : 6
+total acquired chars/bytes : 8885 / 8885
+files edited               : D:/dev/subagent test/stage0/runs/20260911T004656Z_cart_invoice_rounding_A_r1/workspace/shopcart/cart.py
+
+-- duplication (temporal availability: producer.end < consumer.start) --
+globally previously available   : 0
+  inter-agent duplicates        : 0
+  intra-agent repeats           : 0
+potentially avoidable (inter)   : 0
+  primed reacquisitions         : 0
+  unprimed overlapping discovery: 0
+  priming undetermined          : 0
+repeated searches (same query)  : 0
+repeated search results         : 0
+duplicate chars / bytes (inter) : 0 / 0
+duplicate content chunks        : 0
+pairs excluded by concurrency   : 0  (K(t): not yet available)
+
+-- oracle upper bound (mechanically removable, primed inter-agent only) --
+unit                        : physical (acquisitions / content chunks / bytes), not dollars
+primed repeated file reads  : 0
+primed repeated searches    : 0
+duplicate tool calls        : 0
+duplicate content chunks    : 0
+duplicate chars / bytes     : 0 / 0
+
+-- natural-language handoffs --------------------------------------
+handoffs               : 0
+total chars / bytes    : 0 / 0
+total estimated_tokens : 0  (estimated; NOT provider-billed tokens)
+
+-- communication duplication --------------------------------------
+no natural-language handoffs in this run
+
+-- reacquisition classification -----------------------------------
+gross primed reacquisitions        : 0
+  edit-precondition-associated     : 0   (0 chars, 0 chunks)
+  verification-associated          : 0   (0 chars, 0 chunks)
+  discretionary                    : 0   (0 chars, 0 chunks)
+  unknown                          : 0   (0 chars, 0 chunks)
+  edit precondition rule           : verified for Claude Code 2.1.260
+discretionary upper bound          : 0 tool calls, 0 chars
+handoff -> repository reacquisition overlap: not applicable
+
+-- visible tests and workspace integrity (NOT part of SOLVED) ------
+SOLVED basis                       : held-out verifier exit code only
+visible tests                      : PASS (exit 0)
+changed paths                      : ['shopcart/cart.py']
+read-only (protected) files        : 1   changed: []
+changed outside expected scope     : []
+held-out isolation breach suspected: False   (outside-workspace accesses 0, held-out/reference exposures 0; detection only)
+supporting-file discretionary rereads: 0 (gross primed 0, unprimed overlaps 0)
+
+-- observability --------------------------------------------------
+structured Read operations      : 5
+structured Grep/Glob operations : 0
+bash reads                      : 0
+bash searches                   : 1
+bash directory listings         : 0
+bash git inspections            : 0
+bash unknown (opaque)           : 0
+unknown tool events             : 0
+
+acquisition_classified          : 6
+acquisition_unknown             : 0
+acquisition_candidates (denom)  : 6
+non_acquisition (excluded)      : 4   [edits, verification, build, workspace mgmt, metadata]
+permission-denied (excluded)    : 1   [nothing ran, so nothing could be acquired]
+unknown CLI event types         : {}
+unrecognized system subtypes    : []
+CLI system subtypes seen        : {'init': 1, 'permission_denied': 1}
+unparsable stream lines         : 0
+acquisition_coverage            : 1.000   minimum required 0.9   [formula v2]
+  formula: acquisition_coverage = acquisition_classified / (acquisition_classified + acquisition_unknown); non-acquisition and permission-denied calls are excluded from both
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.87 overage=False execution_failure=False
+context residency level         : 2 (reconstructed from session event history)
+
+-- token / cache / cost telemetry ---------------------------------
+reported input tokens      : UNCACHED INPUT ONLY - not context length
+                             12  (reported)
+reported cache read tokens : 116688
+reported cache write tokens: 12967
+total INPUT tokens         : 129667   <- submitted context volume (input + cache_read + cache_write)
+reported output tokens     : 2152  (reported)
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=1265 out=19 cost_usd=0.00136
+    claude-sonnet-5                  in=12 out=2152 cost_usd=0.09674959999999999
+subscription_execution     : True
+API_charge                 : false_expected
+cli reported cost (per session, api-equivalent, NOT amount paid):
+    0.0981096
+
+-- integrity ------------------------------------------------------
+all sessions on subscription : True
+arm label valid              : True  - No internal subagent fan-out observed.
+base commit                  : a74bac3cf4e9df479992e572be68169d53aea697
+final tree hash              : 2756e217ab5940affa3d689c80028ced335cdaee
+diff bytes                   : 2682
+
+=== Stage 0 run report: 20260911T004825Z_cart_invoice_rounding_B_r1 ===
+task            : cart_invoice_rounding  (cross_file_bug)
+arm             : B   repeat_id=1
+model           : sonnet   claude code 2.1.260 (Claude Code)
+parser version  : raw run produced by v4; re-analysed by v4 (coverage formula v2)
+
+SOLVED          : YES   (held-out deterministic tests, exit=0, LLM judge: no)
+
+-- resources ------------------------------------------------------
+wall time            : 121.0 s
+claude sessions      : 5   logical agents: 3
+turn accounting (four different quantities - do not conflate):
+  assistant stream events (1 per block)  : 37
+    of which thinking-only stream events : 6
+  API assistant messages (model replies) : 17
+  tool_use blocks                        : 22
+  Claude CLI num_turns (per session)     : [1, 10, 1, 14, 1]
+
+-- tool activity --------------------------------------------------
+tool calls total : 22
+  Read           : 10
+  Grep           : 0
+  Glob           : 1
+  Bash           : 6
+  Edit/Write     : 5
+  test runs      : 2   (denied calls excluded)
+bash categories (derived from the raw command; raw text preserved):
+    bash_git_inspection          1
+    bash_search                  1
+    bash_verification            2
+    tool_denied                  2
+PERMISSION-DENIED tool calls : 2   (the CLI refused these; nothing ran, nothing was acquired)
+    Bash  would_have_been=bash_verification
+      cd "D:\dev\subagent test\stage0\runs\20260911T004825Z_cart_invoice_rounding_B_r1\workspace" && python -c "
+from shopcart import Cart, Money, Invoice
+c ... [+240 chars]
+    Bash  would_have_been=bash_unknown
+      cd "D:\dev\subagent test\stage0\runs\20260911T004825Z_cart_invoice_rounding_B_r1\workspace" && python _verify_manual.py
+
+-- acquisition volume ---------------------------------------------
+unique files read          : 10
+unique repository regions  : 231 (3-line shingles)
+unique result identities   : 10
+total acquired chars/bytes : 16492 / 16492
+files edited               : D:/dev/subagent test/stage0/runs/20260911T004825Z_cart_invoice_rounding_B_r1/workspace/_verify_manual.py, D:/dev/subagent test/stage0/runs/20260911T004825Z_cart_invoice_rounding_B_r1/workspace/shopcart/cart.py
+
+-- duplication (temporal availability: producer.end < consumer.start) --
+globally previously available   : 3
+  inter-agent duplicates        : 3
+  intra-agent repeats           : 0
+potentially avoidable (inter)   : 3
+  primed reacquisitions         : 3
+  unprimed overlapping discovery: 0
+  priming undetermined          : 0
+repeated searches (same query)  : 0
+repeated search results         : 0
+duplicate chars / bytes (inter) : 5336 / 5336
+duplicate content chunks        : 109
+pairs excluded by concurrency   : 0  (K(t): not yet available)
+
+-- oracle upper bound (mechanically removable, primed inter-agent only) --
+unit                        : physical (acquisitions / content chunks / bytes), not dollars
+primed repeated file reads  : 3
+primed repeated searches    : 0
+duplicate tool calls        : 3
+duplicate content chunks    : 109
+duplicate chars / bytes     : 5336 / 5336
+
+-- natural-language handoffs --------------------------------------
+handoffs               : 6
+total chars / bytes    : 19068 / 19200
+total estimated_tokens : 4766  (estimated; NOT provider-billed tokens)
+  [1] coordinator -> investigator  investigation_instruction          1760 chars  ~  440 est. tokens
+  [2] investigator -> coordinator   investigation_report               5713 chars  ~ 1428 est. tokens
+  [3] coordinator -> implementer   implementation_instruction         2688 chars  ~  672 est. tokens
+  [4] coordinator -> implementer   forwarded_investigation_report     5713 chars  ~ 1428 est. tokens
+  [5] implementer -> coordinator   implementation_report              2098 chars  ~  524 est. tokens
+  [6] coordinator -> user          final_result                       1096 chars  ~  274 est. tokens
+
+-- communication duplication --------------------------------------
+investigator acquired content      : 10016 chars, 198 content chunks
+investigator report size           : 5713 chars (~1428 estimated tokens)
+repository/tool chunks copied into report: 2 repository chunks; 2 chunks of the investigator's own tool output (~268 chars)
+handoff repository quote fraction  : report 0.0469; all handoffs 0.0281 (quoted-chars estimate / handoff chars)
+per handoff - chunks from repository / sender's own tool output / relayed:
+  [1]  coordinator -> investigator investigation_instruction        1760 ch  repo   0  tool   0  relay   0  quote 0.0
+  [2] investigator -> coordinator  investigation_report             5713 ch  repo   2  tool   2  relay   0  quote 0.0469
+  [3]  coordinator -> implementer  implementation_instruction       2688 ch  repo   0  tool   0  relay   0  quote 0.0
+  [4]  coordinator -> implementer  forwarded_investigation_report   5713 ch  repo   2  tool   0  relay  62  quote 0.0469
+  [5]  implementer -> coordinator  implementation_report            2098 ch  repo   0  tool  21  relay   0  quote 0.0
+  [6]  coordinator -> user         final_result                     1096 ch  repo   0  tool   0  relay   0  quote 0.0
+  (window {'lines': 3, 'min_alnum': 16, 'min_content_lines': 2, 'indentation': 'stripped'}; repository source base_commit)
+
+-- reacquisition classification -----------------------------------
+gross primed reacquisitions        : 3
+  edit-precondition-associated     : 1   (2340 chars, 50 chunks)
+  verification-associated          : 0   (0 chars, 0 chunks)
+  discretionary                    : 2   (2996 chars, 59 chunks)
+  unknown                          : 0   (0 chars, 0 chunks)
+  edit precondition rule           : verified for Claude Code 2.1.260
+discretionary upper bound          : 2 tool calls, 2996 chars
+handoff -> repository reacquisition overlap:
+  chunks in investigator acquisition      : 198
+  ... also copied into handoffs to impl.  : 2
+  ... also later reacquired by implementer: 109
+  in all three                            : 2 (~330 chars of implementer tool output)
+    shopcart/cart.py                         2 chunks, ~330 chars
+
+-- visible tests and workspace integrity (NOT part of SOLVED) ------
+SOLVED basis                       : held-out verifier exit code only
+visible tests                      : PASS (exit 0)
+changed paths                      : ['shopcart/cart.py']
+read-only (protected) files        : 1   changed: []
+changed outside expected scope     : []
+held-out isolation breach suspected: False   (outside-workspace accesses 0, held-out/reference exposures 0; detection only)
+supporting-file discretionary rereads: 2 (gross primed 2, unprimed overlaps 0)
+
+-- observability --------------------------------------------------
+structured Read operations      : 10
+structured Grep/Glob operations : 1
+bash reads                      : 0
+bash searches                   : 1
+bash directory listings         : 0
+bash git inspections            : 1
+bash unknown (opaque)           : 0
+unknown tool events             : 0
+
+acquisition_classified          : 13
+acquisition_unknown             : 0
+acquisition_candidates (denom)  : 13
+non_acquisition (excluded)      : 7   [edits, verification, build, workspace mgmt, metadata]
+permission-denied (excluded)    : 2   [nothing ran, so nothing could be acquired]
+unknown CLI event types         : {}
+unrecognized system subtypes    : []
+CLI system subtypes seen        : {'init': 5, 'thinking_tokens': 14, 'permission_denied': 2}
+unparsable stream lines         : 0
+acquisition_coverage            : 1.000   minimum required 0.9   [formula v2]
+  formula: acquisition_coverage = acquisition_classified / (acquisition_classified + acquisition_unknown); non-acquisition and permission-denied calls are excluded from both
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.87 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.87 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.87 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.87 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.88 overage=False execution_failure=False
+context residency level         : 2 (reconstructed from session event history)
+
+-- token / cache / cost telemetry ---------------------------------
+reported input tokens      : UNCACHED INPUT ONLY - not context length
+                             34  (reported)
+reported cache read tokens : 339350
+reported cache write tokens: 41909
+total INPUT tokens         : 381293   <- submitted context volume (input + cache_read + cache_write)
+reported output tokens     : 10443  (reported)
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=1320 out=21 cost_usd=0.001425
+    claude-sonnet-5                  in=2 out=608 cost_usd=0.0322196
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=1732 out=19 cost_usd=0.001827
+    claude-sonnet-5                  in=6 out=4659 cost_usd=0.1042978
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=4012 out=18 cost_usd=0.004102
+    claude-sonnet-5                  in=22 out=3662 cost_usd=0.16152700000000003
+subscription_execution     : True
+API_charge                 : false_expected
+cli reported cost (per session, api-equivalent, NOT amount paid):
+    0.0336446
+    0.106125
+    0.0253634
+    0.165629
+    0.0165962
+
+-- integrity ------------------------------------------------------
+all sessions on subscription : True
+arm label valid              : True  - No internal subagent fan-out observed.
+base commit                  : a74bac3cf4e9df479992e572be68169d53aea697
+final tree hash              : f21f1e88982794837b89e22a3cdefccfcd89bfa1
+diff bytes                   : 2941
+
+=== Stage 0 primary comparison: Arm B overhead over Arm A ===
+task: cart_invoice_rounding
+
+metric                                   Arm A       Arm B       delta       B/A
+solved                                    True        True           0       1.0
+claude sessions                              1           5           4       5.0
+Claude CLI num_turns (sum)                  12          27          15      2.25
+model calls (API messages)                   6          17          11     2.833
+wall seconds                             28.11       121.0       92.89     4.305
+tool calls                                  11          22          11       2.0
+Read calls                                   5          10           5       2.0
+Grep calls                                   0           0           0      None
+Glob calls                                   0           1           1      None
+Bash calls                                   3           6           3       2.0
+unique files read                            5          10           5       2.0
+unique repo regions                        177         231          54    1.3051
+acquired chars                            8885       16492        7607    1.8562
+acquired bytes                            8885       16492        7607    1.8562
+handoff chars                                0       19068       19068      None
+
+-- coordination redundancy (Arm B only concept) --
+inter-agent duplicate acquisitions : 3
+  of which primed reacquisition    : 3
+  of which unprimed discovery      : 0
+Arm A intra-agent repeats (control): 0
+
+-- observability gate --
+Arm A acquisition_coverage: 1.000   eligible for headline comparison: True
+Arm B acquisition_coverage: 1.000   eligible for headline comparison: True
+
+=== Stage 0 controlled pair: cart_invoice_rounding ===
+Arm A run: 20260911T004656Z_cart_invoice_rounding_A_r1
+Arm B run: 20260911T004825Z_cart_invoice_rounding_B_r1
+
+-- parity (all must PASS for the pair to be comparable) -----------
+  [PASS] same task
+  [PASS] same config_hash
+  [PASS] same base commit
+  [PASS] same Claude Code version
+  [PASS] same resolved main model
+  [PASS] same protected files
+  config_hash 22ce9b7e5249dd497ee7c4c0318216b4 / 22ce9b7e5249dd497ee7c4c0318216b4; CLI ['2.1.260'] / ['2.1.260']; model ['claude-sonnet-5'] / ['claude-sonnet-5']
+
+-- Arm A vs Arm B (descriptive; n=1 per arm) -----------------------
+                                                   Arm A         Arm B
+  solved (held-out verifier)                        True          True
+  Claude sessions                                      1             5
+  CLI turns (sum of num_turns)                        12            27
+  model calls (API assistant messages)                 6            17
+  tool calls                                          11            22
+  total input tokens (main model)                 129667        381293
+    uncached input                                    12            34
+    cache read                                    116688        339350
+    cache write                                    12967         41909
+  output tokens (main model)                        2152         10443
+  uncached input, all models (modelUsage)           1277          7098
+  API-equivalent cost USD (not paid)             0.09811      0.347358
+  wall seconds (sum of sessions)                   28.11         121.0
+  repository acquisition chars                      8885         16492
+  repository acquisition bytes                      8885         16492
+  unique repository regions                          177           231
+  unique files read                                    5            10
+
+-- Arm B coordination ----------------------------------------------
+  investigator  tool calls 9, reads 7, searches/listings 2, bash acquisitions 1, edits 0, tests 0; acquired 10016 chars, 206 regions
+  implementer   tool calls 13, reads 3, searches/listings 1, bash acquisitions 1, edits 5, tests 2; acquired 6476 chars, 134 regions
+  handoffs: 6, total 19068 chars; investigator report 5713 chars
+
+-- gross primed reacquisition (Arm B) ------------------------------
+  gross primed reacquisitions      : 3
+    edit-precondition-associated   : 1  (2340 chars, 50 chunks)
+    verification-associated        : 0  (0 chars, 0 chunks)
+    discretionary                  : 2  (2996 chars, 59 chunks)
+    unknown                        : 0  (0 chars, 0 chunks)
+  unprimed overlapping discoveries : 0
+  concurrency-excluded pairs       : 0
+  edit precondition verified for   : 2.1.260 (yes)
+
+-- supporting-file discretionary rereads (H1) ----------------------
+  total: gross primed 2, edit-precondition 0, verification 0, discretionary 2 (2996 chars), unknown 0, unprimed overlaps 0
+    shopcart/discounts.py      gross 1  edit 0  verif 0  disc 1  unknown 0  unprimed 0
+    shopcart/invoice.py        gross 0  edit 0  verif 0  disc 0  unknown 0  unprimed 0
+    shopcart/money.py          gross 1  edit 0  verif 0  disc 1  unknown 0  unprimed 0
+    shopcart/currency.py       gross 0  edit 0  verif 0  disc 0  unknown 0  unprimed 0
+
+-- file being fixed (H2) -------------------------------------------
+  total: gross primed 1, edit-precondition 1, verification 0, discretionary 0 (0 chars), unknown 0, unprimed overlaps 0
+    shopcart/cart.py           gross 1  edit 1  verif 0  disc 0  unknown 0  unprimed 0
+
+-- handoff repository-content duplication (H3) ---------------------
+  investigator acquired            : 10016 chars, 198 chunks
+  report repository chunks         : 2 (~268 chars from its own tool output)
+  quote fraction                   : report 0.0469, all handoffs 0.0281
+
+-- handoff_reacquisition_overlap (H4) ------------------------------
+  investigator 198 -> copied into handoffs 2 -> re-acquired 109; in all three 2 (~330 chars)
+    shopcart/cart.py                 2 chunks, ~330 chars
+
+-- observability and integrity -------------------------------------
+  Arm A: coverage 1.000, low_observability False, unknown CLI types {}, unknown tools 0, unclassified bash 0, unparsable lines 0
+         isolation breach suspected False, visible tests PASS, protected changed 0, outside expected scope [], permission denials 1, subscription True, arm label valid True
+  Arm B: coverage 1.000, low_observability False, unknown CLI types {}, unknown tools 0, unclassified bash 0, unparsable lines 0
+         isolation breach suspected False, visible tests PASS, protected changed 0, outside expected scope [], permission denials 2, subscription True, arm label valid True
+
+Anything not shown above is exploratory and must be labelled as such (PREREGISTRATION.md, Pair-2 primary outputs).
