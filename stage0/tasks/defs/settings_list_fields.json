@@ -1,0 +1,16 @@
+{
+  "task_id": "settings_list_fields",
+  "category": "cross_file_feature",
+  "shape": "cross_file_feature",
+  "repo": "confkit",
+  "statement": "Add list-valued settings to `confkit`.\n\nA setting declared with `type=list` and an `item_type` reads a comma-separated value:\n\n    >>> from confkit import Field, Schema, DictSource, load\n    >>> schema = Schema(Field(\"cache.hosts\", list, item_type=str),\n    ...                 Field(\"cache.ports\", list, item_type=int))\n    >>> load(schema, [DictSource({\"cache.hosts\": \"a.local, b.local\", \"cache.ports\": \"7000,7001\"})])\n    {'cache.hosts': ['a.local', 'b.local'], 'cache.ports': [7000, 7001]}\n\nRequired behaviour:\n\n- each item is converted by the same rules as a scalar setting of `item_type` (so a list of booleans accepts `yes`/`no` like a boolean setting does), and whitespace around items is ignored;\n- an empty value gives an empty list;\n- an invalid item raises `SettingsError` with a message that starts with the setting's key, like every other invalid setting;\n- list settings work the same way from every source, including environment variables;\n- declaring `type=list` without a valid scalar `item_type` is an error when the `Schema` is built.\n\nExisting settings must behave exactly as before. The tests under `tests/` are owned by QA and are read-only; do not modify them.",
+  "verifier_source": "settings_list_fields/test_holdout_confkit.py",
+  "verifier_dest_name": "test_holdout_confkit.py",
+  "verifier_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "test_holdout_confkit.py"],
+  "visible_test_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "tests"],
+  "read_only_paths": ["tests/*"],
+  "symptom_paths": [],
+  "expected_edit_paths": ["confkit/schema.py", "confkit/coerce.py"],
+  "supporting_paths": ["confkit/loader.py", "confkit/sources.py", "confkit/errors.py"],
+  "notes": "Stage-0.5 task 4 (cross-file feature). The natural implementation touches two production files: schema.py (a Field.item_type attribute and Schema validation) and coerce.py (a list converter that reuses the scalar converters). loader.py (errors are wrapped with the key), sources.py (sources never split or convert) and errors.py (message format) are the contracts it must respect. Putting the split in the loader or in a source can also pass, provided every held-out behaviour holds. SOLVED is the held-out exit code only. Naive variants that split without converting, or that turn an empty value into [''], fail. ANALYSIS ONLY: never shown to agents."
+}

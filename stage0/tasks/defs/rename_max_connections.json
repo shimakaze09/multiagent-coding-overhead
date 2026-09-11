@@ -1,0 +1,16 @@
+{
+  "task_id": "rename_max_connections",
+  "category": "repo_wide_change",
+  "shape": "repo_wide_refactor",
+  "repo": "dbclient",
+  "statement": "The database server now calls its connection limit `max_connections`, and our client should use the same name.\n\nRename `max_conn` to `max_connections` throughout the `dbclient` package: the configuration key, the `ClientConfig` field, the `Pool` constructor argument and attribute, the command-line option (which becomes `--max-connections`), and every user-visible message that mentions the setting.\n\nExisting configuration files and scripts still use the old names, so for one release:\n\n- the `max_conn` configuration key, the `--max-conn` option and the `Pool(max_conn=...)` keyword must keep working, each emitting a `DeprecationWarning` that mentions `max_connections`;\n- if a configuration gives both keys, `max_connections` wins (the old key still warns).\n\n`ClientConfig` and `Pool` do not need to keep a `max_conn` attribute. Apart from the name, behaviour must not change. The tests under `tests/` are owned by QA and are read-only; do not modify them.",
+  "verifier_source": "rename_max_connections/test_holdout_dbclient.py",
+  "verifier_dest_name": "test_holdout_dbclient.py",
+  "verifier_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "test_holdout_dbclient.py"],
+  "visible_test_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "tests"],
+  "read_only_paths": ["tests/*"],
+  "symptom_paths": [],
+  "expected_edit_paths": ["dbclient/config.py", "dbclient/pool.py", "dbclient/cli.py", "dbclient/stats.py", "dbclient/client.py"],
+  "supporting_paths": [],
+  "notes": "Stage-0.5 task 5 (repository-wide consistency change). The concept appears in five production modules, and each has to be read and edited, so edit-required rereads are expected to dominate. The success criterion is deterministic: new names everywhere, deprecation shims for the three old spellings, and unchanged behaviour. A plain search-and-replace without shims fails, and so does a shim in config.py alone. ANALYSIS ONLY: never shown to agents."
+}

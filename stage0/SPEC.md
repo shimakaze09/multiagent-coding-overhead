@@ -962,3 +962,34 @@ reporting and integrity only (amendment 6):
   checks the local copies.
 * `tests/conftest.py` refuses to launch any `claude`/`claude.exe` subprocess, so
   the local suite cannot consume subscription quota.
+
+## 21. Stage 0.5: decomposition instrumentation (2026-09-11)
+
+Preregistered in PREREGISTRATION section 15. Everything is prospective, and
+reports mark results on historical runs as `post_hoc_exploratory`.
+
+* `analysis/decomposition.py`:
+  - `api_calls` gives exact per-call usage from the raw stream;
+  - `decompose` breaks down session fanout, handoff context, the frozen
+    reacquisition subcategories, unique downstream acquisition, other tool
+    results and the unattributed remainder, each labelled exact /
+    reconstructed / estimated / unavailable;
+  - `pair_decomposition` gives the B − A rows;
+  - `unique_downstream` gives unique downstream acquisition with mechanical
+    materiality indicators.
+* `analysis/overlap_v2.py`: `handoff_repository_overlap_v2` (line level; see
+  PREREGISTRATION 15.3). v1 in `handoff.py` is untouched.
+* `analysis/leakage.py`: the held-out content check, complementing
+  `isolation.py` v1.
+* `report.run_report` adds `stage05_metrics_status`, `task_shape`,
+  `handoff_repository_overlap_v2`, `unique_downstream_acquisition`,
+  `overhead_decomposition`, `held_out_content_check`, `session_terminations`
+  and `validity`. `render_decomposition` prints the decomposition section after
+  the frozen pair summary; the frozen pair summary itself is unchanged.
+* `python runner.py summary` prints the cross-task table: one row per
+  (task, repeat) using the latest Arm A and Arm B run, validity and parity per
+  pair, means and medians over valid pairs only, and per-task repeat spread.
+* `Task` gains the analysis-only fields `symptom_paths` and `shape`;
+  `expected_edit_paths` is a synonym for `expected_modified_paths`. None of
+  them reaches a prompt.
+* New fixtures: `shipkit`, `confkit`, `dbclient`, `helpdesk` (tasks 3–6).

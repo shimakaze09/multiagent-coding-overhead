@@ -1,0 +1,16 @@
+{
+  "task_id": "sla_weekend_hours",
+  "category": "cross_file_bug",
+  "shape": "misleading_symptom_bug",
+  "repo": "helpdesk",
+  "statement": "The SLA breach report flags urgent tickets that were answered well within their target.\n\n    >>> from datetime import datetime\n    >>> from helpdesk import Ticket, breach_report\n    >>> t = Ticket(\"T-1\", \"urgent\",\n    ...            opened_at=datetime(2024, 3, 8, 16, 0),           # Friday 16:00\n    ...            first_response_at=datetime(2024, 3, 11, 11, 0))  # Monday 11:00\n    >>> breach_report([t], now=datetime(2024, 3, 11, 12, 0))\n    ['T-1']        # only 3 business hours elapsed; the urgent target is 4\n\nBusiness hours are 09:00-17:00, Monday to Friday.\n\nConstraints: the support policy (opening hours, business days and response targets) is shared with other teams' tools and must not change. The tests under `tests/` are owned by QA and are read-only; do not modify them.\n\nFix the defect and make sure the existing test suite still passes.",
+  "verifier_source": "sla_weekend_hours/test_holdout_helpdesk.py",
+  "verifier_dest_name": "test_holdout_helpdesk.py",
+  "verifier_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "test_holdout_helpdesk.py"],
+  "visible_test_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "tests"],
+  "read_only_paths": ["tests/*"],
+  "symptom_paths": ["helpdesk/report.py", "helpdesk/sla.py"],
+  "expected_edit_paths": ["helpdesk/workcal.py"],
+  "supporting_paths": ["helpdesk/policy.py", "helpdesk/rota.py", "helpdesk/tickets.py"],
+  "notes": "Stage-0.5 task 6 (cross-file bug, misleading symptom). The symptom appears in the breach report, and sla.py (with its response targets) is the obvious place to look, but it is correct. The cause is workcal.is_business_day using date.weekday() (Monday = 0) against policy.BUSINESS_DAYS, which policy.py documents as ISO weekday numbers (Monday = 1). So Saturday counts and Monday does not. rota.py uses the same policy correctly with isoweekday(). The small correct fix is in workcal.py (isoweekday(), or weekday() < 5). Changing policy.BUSINESS_DAYS breaks the rota and the pinned policy, and a partial patch that only excludes Saturday leaves Monday uncounted. Both fail the held-out tests. ANALYSIS ONLY: never shown to agents."
+}

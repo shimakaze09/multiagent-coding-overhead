@@ -1,0 +1,16 @@
+{
+  "task_id": "shipping_inch_dimensions",
+  "category": "cross_file_bug",
+  "shape": "cross_file_bug",
+  "repo": "shipkit",
+  "statement": "Shipping quotes are wrong for parcels whose dimensions are entered in inches.\n\n    >>> from shipkit import Parcel, quote\n    >>> box = Parcel(weight=1, weight_unit=\"lb\", length=10, width=8, height=4, dim_unit=\"in\")\n    >>> quote(box)\n    Decimal('5.00')        # the carrier's own calculator says 9.00\n\nThe same box entered in centimetres (25.4 x 20.32 x 10.16) is quoted 9.00, which is correct.\n\nConstraints: the rate card, the zone multipliers and the volumetric-weight rule come from the carrier and must not change. The tests under `tests/` are owned by QA and are read-only; do not modify them.\n\nFix the defect and make sure the existing test suite still passes.",
+  "verifier_source": "shipping_inch_dimensions/test_holdout_shipkit.py",
+  "verifier_dest_name": "test_holdout_shipkit.py",
+  "verifier_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "test_holdout_shipkit.py"],
+  "visible_test_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "tests"],
+  "read_only_paths": ["tests/*"],
+  "symptom_paths": ["shipkit/quote.py"],
+  "expected_edit_paths": ["shipkit/units.py"],
+  "supporting_paths": ["shipkit/parcel.py", "shipkit/rates.py", "shipkit/labels.py", "shipkit/zones.py"],
+  "notes": "Stage-0.5 task 3 (cross-file behavioural bug). The symptom is seen through quote() in shipkit/quote.py. The root cause is the inch entry of CM_PER in shipkit/units.py (0.3937 is inches per cm, not cm per inch), and the only production change needed is there. parcel.py (volumetric rule), rates.py (bands), zones.py and labels.py (a second consumer of units.to_cm) carry the constraints. A local inch conversion in parcel.py makes the example pass but leaves units.to_cm and the label wrong, so it fails the held-out tests. ANALYSIS ONLY: never shown to agents."
+}

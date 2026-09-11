@@ -51,6 +51,22 @@ class Task:
     # Files that carry constraints/evidence but must NOT need editing. Used only
     # for the per-file reacquisition breakdown (Pair-2 hypothesis H1).
     supporting_paths: tuple[str, ...] = ()
+    # Stage 0.5, ANALYSIS ONLY: never shown to Claude (prompts are built from
+    # `statement` alone). Where the symptom is observed, and the task shape for
+    # the cross-task report. A solution editing other files is not wrong: SOLVED
+    # is the held-out verifier's exit code only.
+    symptom_paths: tuple[str, ...] = ()
+    shape: str = ""
+
+    @property
+    def expected_edit_paths(self) -> tuple[str, ...]:
+        """Stage-0.5 name for `expected_modified_paths` (same data)."""
+        return self.expected_modified_paths
+
+    @property
+    def analysis_only_paths(self) -> tuple[str, ...]:
+        return tuple(dict.fromkeys(
+            self.symptom_paths + self.supporting_paths + self.expected_modified_paths))
 
     @property
     def source_tree(self) -> Path:
@@ -73,6 +89,8 @@ class Task:
         d["read_only_paths"] = list(self.read_only_paths)
         d["expected_modified_paths"] = list(self.expected_modified_paths)
         d["supporting_paths"] = list(self.supporting_paths)
+        d["symptom_paths"] = list(self.symptom_paths)
+        d["expected_edit_paths"] = list(self.expected_modified_paths)
         return d
 
 
@@ -88,6 +106,12 @@ def _from_json(path: Path) -> Task:
         raise TaskError(f"task def {path.name} missing fields: {missing}")
     if raw["category"] not in CATEGORIES:
         raise TaskError(f"task def {path.name} has unknown category {raw['category']!r}")
+    expected = raw.get("expected_modified_paths")
+    if "expected_edit_paths" in raw:
+        if expected is not None and list(expected) != list(raw["expected_edit_paths"]):
+            raise TaskError(f"task def {path.name}: expected_edit_paths and "
+                            "expected_modified_paths disagree")
+        expected = raw["expected_edit_paths"]
     return Task(
         task_id=raw["task_id"],
         category=raw["category"],
@@ -99,8 +123,10 @@ def _from_json(path: Path) -> Task:
         visible_test_command=tuple(raw.get("visible_test_command", ())),
         notes=raw.get("notes", ""),
         read_only_paths=tuple(raw.get("read_only_paths", ())),
-        expected_modified_paths=tuple(raw.get("expected_modified_paths", ())),
+        expected_modified_paths=tuple(expected or ()),
         supporting_paths=tuple(raw.get("supporting_paths", ())),
+        symptom_paths=tuple(raw.get("symptom_paths", ())),
+        shape=raw.get("shape", ""),
     )
 
 

@@ -11,7 +11,9 @@ from collections import Counter
 from pathlib import Path
 from typing import Optional, Sequence
 
-from analysis import handoff, ingest, isolation, metrics
+import statistics
+
+from analysis import decomposition, handoff, ingest, isolation, leakage, metrics, overlap_v2
 from harness import events as ev, telemetry, tools
 
 NA = "N/A - not exposed by subscription CLI telemetry"
@@ -59,12 +61,15 @@ def run_report(run_dir: str | Path) -> dict:
     ]
 
     repo_texts, repo_avail = handoff.repository_texts(run_dir, meta)
-    communication = handoff.analyze_loaded(
-        raw,
-        {sa.session_key: ingest.acquisitions_for_session(sa) for sa in sessions},
-        repo_texts,
-        repo_avail,
-    )
+    acqs_by_session = {sa.session_key: ingest.acquisitions_for_session(sa) for sa in sessions}
+    communication = handoff.analyze_loaded(raw, acqs_by_session, repo_texts, repo_avail)
+
+    # --- Stage 0.5 (PREREGISTRATION section 15): prospective metrics. On a run
+    # listed in run_manifests/ they are post-hoc and exploratory, and are
+    # labelled so; they never replace a preregistered Pair-1/Pair-2 result.
+    overlap_v2_result = overlap_v2.analyze_loaded(raw, acqs_by_session, repo_texts, repo_avail)
+    unique = decomposition.unique_downstream(raw, acqs_by_session)
+    content_check = leakage.check_run(raw, meta.get("task_id"), repo_texts)
 
     isolation_check = isolation.check_run(raw)
     per_agent = per_agent_acquisition(raw)
@@ -251,6 +256,9 @@ def run_report(run_dir: str | Path) -> dict:
             "reacquisition_classifier": metrics.REACQUISITION_CLASSIFIER_VERSION,
             "handoff_metrics": handoff.HANDOFF_SCHEMA_VERSION,
             "isolation_check": isolation.ISOLATION_CHECK_VERSION,
+            "handoff_overlap_v2": overlap_v2.OVERLAP_V2_VERSION,
+            "overhead_decomposition": decomposition.DECOMPOSITION_VERSION,
+            "held_out_content_check": leakage.LEAKAGE_CONTENT_VERSION,
         },
         "per_agent_acquisition": per_agent,
         # Pair-2 hypotheses H1 (supporting files) and H2 (the file being fixed)
@@ -258,6 +266,16 @@ def run_report(run_dir: str | Path) -> dict:
         "focal_file_reacquisition": file_breakdown(dup.findings, focal_paths),
         "isolation_check": isolation_check,
         "findings": dup.findings,
+        # --- Stage 0.5 (prospective; post-hoc/exploratory on historical runs)
+        "stage05_metrics_status": (
+            "post_hoc_exploratory" if meta["run_id"] in historical_run_ids() else "prospective"),
+        "task_shape": _task_shape(meta),
+        "handoff_repository_overlap_v1": "communication (frozen 3-line windows; unchanged)",
+        "handoff_repository_overlap_v2": overlap_v2_result,
+        "unique_downstream_acquisition": unique,
+        "overhead_decomposition": decomposition.decompose(raw, dup.findings, unique),
+        "held_out_content_check": content_check,
+        "session_terminations": [sa.exit.get("termination_reason") for sa in sessions],
         # --- handoffs
         "handoff_count": len(summary.get("handoffs") or []),
         "handoff_total_chars": summary.get("handoff_total_chars", 0),
@@ -334,7 +352,297 @@ def run_report(run_dir: str | Path) -> dict:
         "final_tree_hash": summary.get("final_tree_hash"),
         "diff_bytes": summary.get("diff_bytes"),
     }
+    report["validity"] = run_validity(report)
     return report
+
+
+# --------------------------------------------------------------------------
+# Stage 0.5: historical runs, validity, task shape
+# --------------------------------------------------------------------------
+
+MANIFESTS_DIR = Path(__file__).resolve().parent.parent / "run_manifests"
+
+
+def historical_run_ids(manifests_dir: Optional[Path] = None) -> frozenset:
+    """Run ids listed in any committed raw-run manifest: immutable historical
+    data, on which Stage-0.5 metrics are post-hoc and exploratory."""
+    ids = set()
+    for f in sorted(Path(manifests_dir or MANIFESTS_DIR).glob("*.sha256")):
+        for line in f.read_text(encoding="utf-8").splitlines():
+            parts = line.split(None, 1)
+            if len(parts) == 2:
+                segs = parts[1].strip().lstrip("*").split("/")
+                if len(segs) > 1 and segs[0] == "runs":
+                    ids.add(segs[1])
+    return frozenset(ids)
+
+
+def _task_shape(meta: dict) -> Optional[str]:
+    shape = (meta.get("task") or {}).get("shape")
+    if shape:
+        return shape
+    try:
+        from tasks import registry
+        return registry.get_task(meta.get("task_id")).shape or meta.get("task_category")
+    except Exception:
+        return meta.get("task_category")
+
+
+def run_validity(r: dict) -> dict:
+    """Preregistered exclusions (sections 4, 5, 10 and 15), applied mechanically.
+    Editing a file outside the documented expected set is NOT an exclusion:
+    SOLVED is the held-out verifier's exit code only."""
+    reasons = []
+    if r.get("solved") is None:
+        reasons.append("no held-out verifier result")
+    if r.get("low_observability"):
+        reasons.append("low_observability (acquisition_coverage below minimum)")
+    if r.get("unknown_tool_calls"):
+        reasons.append("unknown tool calls")
+    if r.get("arm_label_valid") is False:
+        reasons.append("arm label invalid (internal subagent fan-out)")
+    if r.get("all_sessions_subscription_ok") is not True:
+        reasons.append("subscription billing not confirmed for every session")
+    bad = [t for t in r.get("session_terminations") or [] if t != "completed"]
+    if bad:
+        reasons.append(f"session termination(s): {sorted(set(map(str, bad)))}")
+    iso = r.get("isolation_check") or {}
+    if iso.get("breach_suspected"):
+        reasons.append("held-out isolation breach suspected (paths/markers)")
+    elif not iso.get("available"):
+        reasons.append("isolation check unavailable")
+    content = r.get("held_out_content_check") or {}
+    if content.get("breach_suspected"):
+        reasons.append("held-out content exposure suspected")
+    return {"valid": not reasons, "reasons": reasons}
+
+
+def pair_parity(a: dict, b: dict) -> list[str]:
+    """Names of failed parity checks (same checks as the frozen pair summary)."""
+    def integ(r, k):
+        return (r.get("workspace_integrity") or {}).get(k)
+    checks = (
+        ("same task", a.get("task_id") == b.get("task_id")),
+        ("same config_hash", bool(a.get("config_hash")) and a.get("config_hash") == b.get("config_hash")),
+        ("same base commit", bool(a.get("base_commit")) and a.get("base_commit") == b.get("base_commit")),
+        ("same Claude Code version", len(a.get("session_cli_versions") or []) == 1
+         and a.get("session_cli_versions") == b.get("session_cli_versions")),
+        ("same resolved main model", bool(a.get("resolved_models"))
+         and a.get("resolved_models") == b.get("resolved_models")),
+        ("same protected files", integ(a, "read_only_files") == integ(b, "read_only_files")),
+    )
+    return [name for name, ok in checks if not ok]
+
+
+# --------------------------------------------------------------------------
+# Stage 0.5: overhead decomposition section for an A/B pair
+# --------------------------------------------------------------------------
+
+
+def render_decomposition(a: dict, b: dict) -> str:
+    da, db = a.get("overhead_decomposition"), b.get("overhead_decomposition")
+    L: list[str] = []
+    A = L.append
+    hist = any(r.get("stage05_metrics_status") == "post_hoc_exploratory" for r in (a, b))
+    A("-- multi-agent overhead decomposition (Stage 0.5, v1) --"
+      + ("   [POST-HOC / EXPLORATORY: historical run(s)]" if hist else ""))
+    if not da or not db:
+        A("  not available")
+        return "\n".join(L)
+    p = decomposition.pair_decomposition(da, db)
+    A("")
+    A(f"Arm A total input:              {p['arm_a_total_input']:>10,}   exact (main model)")
+    A(f"Arm B total input:              {p['arm_b_total_input']:>10,}   exact (main model)")
+    A(f"B - A observable input delta:   {p['observable_delta']:>10,}   exact")
+    A("")
+    A(f"  {'':<38}{'Arm A':>10}{'Arm B':>10}{'B - A':>10}")
+    for row in p["rows"]:
+        A(f"  {row['category'] + ':':<38}{row['arm_a']:>10,}{row['arm_b']:>10,}{row['delta']:>10,}")
+    A(f"  {'unattributed / hidden remainder:':<38}{'':>10}{'':>10}{p['unattributed_remainder_delta']:>10,}")
+    A("")
+    fe = p["first_call_input_exact"]
+    A("  basis:")
+    A(f"    fanout      first-call input, exact: A {fe['arm_a']:,} / B {fe['arm_b']:,} "
+      f"({da['observable']['sessions']} vs {db['observable']['sessions']} sessions); the row is "
+      "reconstructed: calls x (first-call input - handoff text)")
+    hid = db["session_fanout_context"]["estimated"]
+    A(f"    fanout      hidden system prompt + tool schemas, by subtraction (estimated): "
+      f"B {hid['hidden_initialization_tokens_by_subtraction']:,} over "
+      f"{hid['hidden_initialization_sessions']} fresh sessions; split not observable")
+    hc = db["handoff_context"]["exact_observable"]
+    A(f"    handoff     exact {hc['chars']:,} chars / {hc['utf8_bytes']:,} bytes in "
+      f"{hc['handoffs']} inter-agent messages; row = estimated tokens x calls carrying them")
+    A("    reacq./unique rows: counts and chars exact; tokens estimated (chars/4) x later calls")
+    A("    rows are disjoint by context position and are NOT forced to sum to the delta")
+    v1 = ((b.get("communication") or {}).get("handoff_reacquisition_overlap") or {})
+    v2 = ((b.get("handoff_repository_overlap_v2") or {}).get("handoff_reacquisition_overlap_v2") or {})
+    if v1.get("applicable") or v2.get("applicable"):
+        A(f"  overlap (content, reported separately, not subtracted): acquire -> handoff -> "
+          f"reacquire v1 {v1.get('chunks_in_all_three')} chunks (~{v1.get('implementer_reacquired_chars_in_all_three_estimate')} chars), "
+          f"v2 {v2.get('lines_in_all_three')} lines ({v2.get('chars_in_all_three')} chars)")
+    cs = (b.get("communication") or {}).get("communication_summary") or {}
+    s2 = (b.get("handoff_repository_overlap_v2") or {}).get("summary") or {}
+    A(f"  handoff repository overlap: v1 quote fraction {cs.get('all_handoffs_repository_quote_fraction')}, "
+      f"v2 quote fraction {s2.get('all_handoffs_quote_fraction_v2')}")
+    u = b.get("unique_downstream_acquisition") or {}
+    if u.get("applicable"):
+        A(f"  unique downstream: informational ~{u['informational_unique_chars_estimate']:,} chars, "
+          f"self-generated after own edit ~{u['self_generated_unique_chars_estimate']:,} chars")
+        A("  materiality (mechanical indicators, no LLM judge): "
+          + ", ".join(f"{k}={v['determination']}" for k, v in u["material"].items()))
+    return "\n".join(L)
+
+
+# --------------------------------------------------------------------------
+# Stage 0.5: cross-task summary
+# --------------------------------------------------------------------------
+
+
+def _ratio(x, y):
+    return round(x / y, 3) if isinstance(x, (int, float)) and isinstance(y, (int, float)) and y else None
+
+
+def cross_task_rows(reports: Sequence[dict]) -> dict:
+    """One row per (task, repeat_id): the latest Arm A and Arm B run. Invalid
+    pairs are listed but never enter an aggregate."""
+    groups: dict = {}
+    for r in reports:
+        groups.setdefault((r.get("task_id"), r.get("repeat_id")), {}).setdefault(r.get("arm"), []).append(r)
+    rows, superseded = [], []
+    for (task, rep), arms in sorted(groups.items(), key=lambda kv: (str(kv[0][0]), kv[0][1] or 0)):
+        pick = {}
+        for arm in ("A", "B"):
+            runs = sorted(arms.get(arm, []), key=lambda x: x.get("run_id") or "")
+            if runs:
+                pick[arm] = runs[-1]
+                superseded += [x.get("run_id") for x in runs[:-1]]
+        if set(pick) != {"A", "B"}:
+            rows.append({"task": task, "repeat": rep, "complete": False, "valid": False,
+                         "reasons": [f"missing arm(s): {sorted({'A', 'B'} - set(pick))}"]})
+            continue
+        a, b = pick["A"], pick["B"]
+        reasons = []
+        for label, r in (("A", a), ("B", b)):
+            reasons += [f"{label}: {x}" for x in (r.get("validity") or run_validity(r))["reasons"]]
+        reasons += [f"parity: {x}" for x in pair_parity(a, b)]
+
+        def tok(r, k):
+            return (r.get("token_telemetry") or {}).get(k)
+
+        rc = b.get("reacquisition_classification") or {}
+        phys = rc.get("subcategory_physical") or {}
+        u = b.get("unique_downstream_acquisition") or {}
+        da, db = a.get("overhead_decomposition"), b.get("overhead_decomposition")
+        fanout_share = None
+        if da and db:
+            pd = decomposition.pair_decomposition(da, db)
+            fan = next(x["delta"] for x in pd["rows"] if x["key"] == "fanout")
+            fanout_share = _ratio(fan, pd["observable_delta"]) if pd["observable_delta"] > 0 else None
+        a_in, b_in = tok(a, "reported_total_input_tokens"), tok(b, "reported_total_input_tokens")
+        rows.append({
+            "task": task, "shape": b.get("task_shape") or a.get("task_shape"), "repeat": rep,
+            "complete": True,
+            "arm_a_run": a.get("run_id"), "arm_b_run": b.get("run_id"),
+            "a_solved": a.get("solved"), "b_solved": b.get("solved"),
+            "a_input": a_in, "b_input": b_in, "input_ratio": _ratio(b_in, a_in),
+            "a_output": tok(a, "reported_output_tokens"), "b_output": tok(b, "reported_output_tokens"),
+            "output_ratio": _ratio(tok(b, "reported_output_tokens"), tok(a, "reported_output_tokens")),
+            "wall_ratio": _ratio(b.get("wall_seconds"), a.get("wall_seconds")),
+            # inter-agent messages only (the final message to the user is not a handoff)
+            "handoff_chars": (db["handoff_context"]["exact_observable"]["chars"] if db
+                              else b.get("handoff_total_chars")),
+            "discretionary": rc.get("discretionary_information_reacquisition"),
+            "discretionary_chars": (phys.get("discretionary_information_reacquisition") or {}).get("chars"),
+            "edit_required": rc.get("edit_precondition_associated"),
+            "unique_downstream_chars": u.get("informational_unique_chars_estimate") if u.get("applicable") else None,
+            "overlap_v1": ((b.get("communication") or {}).get("communication_summary") or {}).get(
+                "all_handoffs_repository_quote_fraction"),
+            "overlap_v2": ((b.get("handoff_repository_overlap_v2") or {}).get("summary") or {}).get(
+                "all_handoffs_quote_fraction_v2"),
+            "fanout_share_of_delta": fanout_share,
+            "post_hoc": any(r.get("stage05_metrics_status") == "post_hoc_exploratory" for r in (a, b)),
+            "valid": not reasons,
+            "reasons": reasons,
+        })
+
+    valid = [r for r in rows if r.get("valid")]
+
+    def agg(key):
+        vals = [r[key] for r in valid if isinstance(r.get(key), (int, float))]
+        if not vals:
+            return {"n": 0}
+        out = {"n": len(vals), "mean": round(statistics.fmean(vals), 3)}
+        if len(vals) >= 2:
+            out["median"] = round(statistics.median(vals), 3)
+            out["min"], out["max"] = min(vals), max(vals)
+        return out
+
+    per_task_spread = {}
+    for task in sorted({r["task"] for r in valid}):
+        vals = [r["input_ratio"] for r in valid if r["task"] == task and r.get("input_ratio") is not None]
+        if len(vals) >= 2:
+            per_task_spread[task] = {"repeats": len(vals), "min": min(vals), "max": max(vals),
+                                     "range": round(max(vals) - min(vals), 3)}
+    return {
+        "rows": rows,
+        "superseded_runs": superseded,
+        "valid_pairs": len(valid),
+        "invalid_pairs": len(rows) - len(valid),
+        "aggregates_over_valid_pairs": {k: agg(k) for k in (
+            "input_ratio", "output_ratio", "wall_ratio", "fanout_share_of_delta")},
+        "per_task_repeat_spread": per_task_spread,
+    }
+
+
+def render_cross_task_summary(reports: Sequence[dict]) -> str:
+    s = cross_task_rows(reports)
+    L: list[str] = []
+    A = L.append
+    A("=== Stage 0.5 cross-task A/B summary ===")
+    A("one row per (task, repeat): latest Arm A and Arm B run; * = post-hoc/exploratory "
+      "Stage-0.5 metrics on a historical run")
+    head = ("task", "shape", "rep", "A ok", "B ok", "A input", "B input", "B/A in", "A out",
+            "B out", "wall B/A", "handoff ch", "disc (ch)", "edit-req", "uniq dn ch",
+            "ovl v1", "ovl v2", "fanout/Δ", "valid")
+    widths = (26, 22, 3, 5, 5, 9, 9, 7, 7, 7, 8, 10, 11, 8, 10, 7, 7, 8, 6)
+    A("  ".join(h.ljust(w) for h, w in zip(head, widths)))
+
+    def f(v):
+        return "-" if v is None else (f"{v:,}" if isinstance(v, int) and not isinstance(v, bool) else str(v))
+
+    for r in s["rows"]:
+        if not r.get("complete"):
+            A(f"{str(r['task']):<26}  (incomplete pair: {'; '.join(r['reasons'])})")
+            continue
+        cells = (r["task"] + ("*" if r["post_hoc"] else ""), r["shape"], r["repeat"], r["a_solved"],
+                 r["b_solved"], r["a_input"], r["b_input"], r["input_ratio"], r["a_output"],
+                 r["b_output"], r["wall_ratio"], r["handoff_chars"],
+                 f"{f(r['discretionary'])} ({f(r['discretionary_chars'])})", r["edit_required"],
+                 r["unique_downstream_chars"], r["overlap_v1"], r["overlap_v2"],
+                 r["fanout_share_of_delta"], "yes" if r["valid"] else "NO")
+        A("  ".join(f(c).ljust(w) for c, w in zip(cells, widths)))
+    for r in s["rows"]:
+        if r.get("complete") and not r["valid"]:
+            A(f"  invalid {r['task']} r{r['repeat']}: {'; '.join(r['reasons'])}")
+    A("")
+    A(f"valid pairs: {s['valid_pairs']}   invalid pairs (excluded from aggregates): {s['invalid_pairs']}")
+    for k, v in s["aggregates_over_valid_pairs"].items():
+        if not v.get("n"):
+            A(f"  {k:<24} n=0")
+        elif v["n"] == 1:
+            A(f"  {k:<24} n=1  value {v['mean']}  (no spread with one pair)")
+        else:
+            A(f"  {k:<24} n={v['n']}  mean {v['mean']}  median {v['median']}  range {v['min']}-{v['max']}")
+    if s["per_task_repeat_spread"]:
+        A("per-task run-to-run spread of B/A input ratio:")
+        for t, v in s["per_task_repeat_spread"].items():
+            A(f"  {t:<26} repeats {v['repeats']}  {v['min']}-{v['max']} (range {v['range']})")
+    else:
+        A("per-task run-to-run spread: not available (one repeat per task so far)")
+    if s["superseded_runs"]:
+        A(f"superseded runs (an earlier run of the same task/arm/repeat): {', '.join(s['superseded_runs'])}")
+    A("Descriptive only: no significance testing. Ratios are Arm B / Arm A.")
+    return "\n".join(L)
 
 
 def _merge_counters(dicts: Sequence[dict]) -> dict:

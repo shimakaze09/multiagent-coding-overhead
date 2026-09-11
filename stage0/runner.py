@@ -311,6 +311,8 @@ def cmd_smoke(args) -> int:
         print(report_mod.render_comparison(reports[0], reports[1]))
         print()
         print(report_mod.render_pair_summary(reports[0], reports[1]))
+        print()
+        print(report_mod.render_decomposition(reports[0], reports[1]))
     return 0
 
 
@@ -450,6 +452,19 @@ def cmd_report(args) -> int:
         print()
         # The pre-registered primary output for the most recent A/B pair.
         print(report_mod.render_pair_summary(by_arm["A"][-1], by_arm["B"][-1]))
+        print()
+        # Stage 0.5 (prospective; labelled post-hoc on historical runs).
+        print(report_mod.render_decomposition(by_arm["A"][-1], by_arm["B"][-1]))
+    return 0
+
+
+def cmd_summary(args) -> int:
+    """Stage-0.5 cross-task A/B summary over every run found (no Claude)."""
+    runs = ingest_mod.discover_runs(args.runs_dir)
+    if not runs:
+        print("no runs found")
+        return 1
+    print(report_mod.render_cross_task_summary([report_mod.run_report(rd) for rd in runs]))
     return 0
 
 
@@ -518,6 +533,10 @@ def main(argv=None) -> int:
     r.add_argument("--task")
     r.add_argument("--runs-dir", dest="runs_dir")
     r.set_defaults(func=cmd_report)
+
+    x = sub.add_parser("summary", help="Stage-0.5 cross-task A/B summary (no Claude)")
+    x.add_argument("--runs-dir", dest="runs_dir")
+    x.set_defaults(func=cmd_summary)
 
     t = sub.add_parser("trace", help="human-readable trace of one run")
     t.add_argument("run")

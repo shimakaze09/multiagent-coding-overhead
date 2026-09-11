@@ -619,3 +619,189 @@ quoted 12 source lines, 11 of them verbatim, but omitted the adjacent docstring
 and validation lines. The 3-line windows therefore matched only 2 chunks. This
 record does not change, and must never be changed to account for it. Section 15
 adds a separate, prospective metric.
+
+## 15. Stage 0.5: multi-task decomposition pilot (preregistered 2026-09-11, before any Stage-0.5 run)
+
+### 15.1 Status of earlier data
+
+Pair 1 and Pair 2 are immutable historical data. Their raw telemetry is
+checksummed in `run_manifests/`, and their preregistered primary results
+(sections 11–14) stand as recorded. Every metric below is PROSPECTIVE: it
+applies to the Stage-0.5 pilot. On a run listed in a manifest, reports label it
+`post_hoc_exploratory` (`stage05_metrics_status`), and it never replaces or
+reinterprets a Pair-1 or Pair-2 result. H3 of Pair 2 stays evaluated with v1.
+
+### 15.2 Question
+
+When conventional natural-language multi-agent coding costs more than a
+single-agent baseline, what fraction of the additional resource usage is
+associated with:
+
+1. per-agent/session context fanout,
+2. natural-language handoff,
+3. discretionary information reacquisition,
+4. tool-required reacquisition,
+5. genuinely unique useful work?
+
+The purpose is decomposition, not proving that multi-agent coding is bad.
+
+### 15.3 Definitions (`analysis/decomposition.py` v1, `overlap_v2.py` v1, `leakage.py` v1)
+
+The unit is main-model input tokens (uncached + cache read + cache write), per
+API call. Each figure is labelled as one of:
+- **exact**: observable telemetry;
+- **reconstructed**: derived from exact figures with a stated rule;
+- **estimated**: chars/4 with a word floor, the `tools.handoff_size` heuristic, never a provider count;
+- **unavailable**.
+
+Summed per distinct `message.id`, per-call usage reproduces `result.usage`
+exactly on all five historical runs. That check is reported as
+`reconciles_with_result_usage`.
+
+* `session_fanout_context`:
+  - *Exact*: each session's first-call input with its cache read/write split
+    (the first call precedes any tool use), plus session and resumed-session
+    counts.
+  - *Reconstructed*: API calls × (first-call input − estimated handoff text in
+    that context).
+  - *Estimated*: task-statement repeats (a subset of the fanout figure), and the
+    hidden system prompt plus tool schemas by subtraction, for fresh sessions
+    only.
+  - *Unavailable*: the split between the hidden system prompt and the tool
+    schemas.
+  - A resumed session's history counts as its context.
+* `handoff_context`:
+  - *Exact*: chars and UTF-8 bytes of every inter-agent message (instructions,
+    Investigator report, forwarded report, Implementer report).
+  - *Estimated*: tokens.
+  - *Reconstructed*: context-weighted tokens (estimated size × the API calls
+    whose input contains the text).
+  - Provider usage is not separately attributable, and no figure claims it is.
+* `discretionary_information_reacquisition` and `edit_precondition_associated`:
+  the frozen classifier (section 11), unchanged and never merged. Counts and
+  chars are exact; context weight = estimated tokens × later calls in the same
+  session. `verification_associated` and `unknown` stay separate rows.
+* `unique_downstream_acquisition`: shingles of the downstream agent's tool
+  results found in neither the upstream agent's tool results nor any handoff
+  delivered to it. Each acquisition is typed `file_upstream_never_read`,
+  `search_upstream_never_ran`, `other_new_content` or
+  `self_generated_after_own_edit` (diffs and rereads of its own changes).
+  Materiality is mechanical only, with no LLM judge:
+  - `added_new_constraint = candidate` if, before its first edit, the agent
+    read a file the upstream agent never read;
+  - `changed_implementation = yes` if a production file changed at the end of
+    the run is named in no handoff to it. A scratch file created and deleted
+    does not count;
+  - `merely_verified = yes` if all its unique content is self-generated;
+  - `changed_diagnosis` and `corrected_earlier_finding` are
+    `undetermined_without_judgement`, with the mechanical evidence shown.
+* The unattributed/hidden remainder is the observable delta minus the rows.
+  The rows are disjoint by context position, are not forced to sum to the
+  total, and the remainder may be negative. Content-level overlap
+  (acquire → handoff → reacquire, v1 and v2) is reported separately and never
+  subtracted.
+* `handoff_repository_overlap_v1` is the frozen 3-line-window metric
+  (`analysis/handoff.py`), unchanged.
+* `handoff_repository_overlap_v2` is a new, separate metric. It exists because
+  Pair 2 showed that v1 undercounts excerpts where an agent quotes selected
+  source lines but omits the lines around them. Definition:
+  - lines are normalized (read prefix, whitespace, one leading `-`/`+`/`>`
+    marker);
+  - a line is *substantive* if it has at least 12 alphanumeric characters and
+    occurs in exactly one repository file at the base commit (lines in two or
+    more files are common and excluded);
+  - a text quotes a file only with at least 2 distinct substantive lines of it;
+  - tool results count every substantive line.
+  - No embeddings, no LLM. Characters are exact sums of matched lines.
+  - Also reported as v2 acquire → handoff → reacquire.
+  - Post-hoc on Pair 2 (exploratory): report 11 lines / 500 chars, against 2 v1
+    chunks.
+* `held_out_content_check`, a new exclusion added to sections 5 and 10:
+  - a tool result containing at least 3 distinct substantive lines of the
+    task's held-out verifier that appear neither in the repository nor in the
+    statement means held-out content exposure is suspected, and the run is
+    excluded;
+  - it complements the frozen path/marker isolation check (v1, unchanged),
+    which cannot see held-out content that arrives without a path or marker;
+  - it is 0 on all five historical runs.
+* Run validity, applied mechanically by `report.run_validity`. A run is
+  invalid if any of the following holds:
+  - no verifier result;
+  - `low_observability`;
+  - unknown tools;
+  - an invalid arm label;
+  - subscription billing not confirmed;
+  - any session termination other than `completed`;
+  - an isolation breach or unavailable isolation check;
+  - held-out content exposure.
+
+  A pair is invalid if either run is invalid or any of the six parity checks
+  fails. Editing files other than the documented expected set is not an
+  exclusion: SOLVED is the held-out verifier's exit code only.
+
+### 15.4 Four new tasks (fixtures frozen here; analysis-only file roles are never shown to agents)
+
+| # | task_id | shape | expected edits | base commit |
+| --- | --- | --- | --- | --- |
+| 3 | `shipping_inch_dimensions` | cross_file_bug | `shipkit/units.py` | `4bdd314c02a47a7d31c20c0ea04a5b3d13a1b61a` |
+| 4 | `settings_list_fields` | cross_file_feature | `confkit/schema.py`, `confkit/coerce.py` | `4b5d6496d774d604f43fcbf1b50052ee7ef92bcc` |
+| 5 | `rename_max_connections` | repo_wide_refactor | 5 `dbclient/*.py` files | `58be8a085a3f289ab4292401935474c39f7de747` |
+| 6 | `sla_weekend_hours` | misleading_symptom_bug | `helpdesk/workcal.py` | `934585d4a7b1eeb652f499e147fc6a07ab795dc9` |
+
+`symptom_paths`, `supporting_paths` and `expected_edit_paths` are used for
+analysis only. Prompts are built from the statement alone, and a test asserts
+this. `tests/test_fixture_stage05.py` verifies each of the following for every
+task:
+- the unfixed state fails the held-out verifier, and the reference fix passes;
+- a different correct fix passes where one exists (tasks 3 and 6);
+- two plausible naive fixes fail;
+- the visible tests pass unfixed and do not expose held-out values;
+- the statement names no file role;
+- both leakage detectors fire on this task's material;
+- the base commit is deterministic, and Arm A and Arm B start from identical
+  trees;
+- SOLVED comes from the held-out verifier only.
+
+Disclosed fixture correction made before any run: task 5's held-out tests at
+first required deprecation messages to contain `max_connections` with an
+underscore. The statement asks only that they *mention* `max_connections`, and
+a natural CLI message says `--max-connections`, so the check now accepts
+`max[_-]connections`. No other held-out requirement was changed.
+
+### 15.5 Pilot size and repetitions
+
+Execute later: **4 tasks × (Arm A + Arm B) × 1 repeat**, 8 runs. Together with
+Pair 1 and Pair 2 that gives six task shapes. `repeat_id` is preserved, and the
+cross-task summary reports per-task run-to-run spread whenever a task has more
+than one valid repeat. No task gets more repetitions until between-task and
+run-to-run variation have been inspected. The 72-run pilot is not scheduled.
+
+### 15.6 Decision questions (no expected answers are preregistered)
+
+1. Is Arm B overhead consistent across different task shapes?
+2. Is discretionary reacquisition common or task-specific?
+3. Does Investigator work produce unique useful information?
+4. Is natural-language handoff duplication consistently material?
+5. Is session/context fanout larger than handoff + reacquisition?
+6. Which category appears to offer the largest realistic optimization opportunity?
+7. Are there tasks where Arm B improves success despite higher cost?
+
+### 15.7 Stage-1 selection rule (no single percentage threshold)
+
+After the mini-pilot, the next experiment is chosen by which mechanism is
+CONSISTENTLY substantial across the valid pairs, judged from the decomposition
+rows, their spread across task shapes, and the success outcomes together:
+
+* **Branch A**, artifact/shared-state experiment: if discretionary
+  reacquisition is repeatedly substantial and could be addressed with
+  file/symbol/artifact references.
+* **Branch B**, compact structured handoff experiment: if handoff duplication
+  is repeatedly substantial while discretionary rereads are low.
+* **Branch C**, shared-prefix/context reuse experiment: if session/context
+  fanout dominates the observable overhead.
+* **Branch D**, stop multi-agent optimization: if Arm B gives little or no
+  success benefit and the overhead is mostly intrinsic to running additional
+  agents rather than removable coordination waste.
+
+These are experiment branches, not implementation tasks. Cross-task means and
+medians are descriptive, and invalid pairs never enter them.
