@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 import config
-from arms import multi_nl, single
+from arms import c1_shared_worker, multi_nl, single
 from harness import claude_cli, events as ev
 from tasks import registry
 
@@ -58,6 +58,10 @@ def rebuild_prompt(run_dir: Path, arm: str, role: str, step: str, task) -> str:
 
     if arm == "A":
         return single.build_solo_prompt(task)
+    # C1: Coordinator and Investigator steps use Arm B's prompt functions; only
+    # the Worker's Implementer-phase resume differs (instruction only).
+    if arm == "C1" and step == "implement_resume":
+        return c1_shared_worker.implementer_resume_prompt(h["implementation_instruction"])
     if step == "coordinator_kickoff":
         return multi_nl.coordinator_kickoff_prompt(task)
     if step == "investigate":
@@ -128,18 +132,18 @@ def reconstruct_run(run_dir: Path) -> list[tuple[str, list[str]]]:
 # --------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("arm", ["A", "B"])
-def test_every_harness_input_is_reconstructible_from_the_logs(mock_runs, arm):
-    run_dir, _summary = mock_runs[arm]
+@pytest.mark.parametrize("arm", ["A", "B", "C1"])
+def test_every_harness_input_is_reconstructible_from_the_logs(all_mock_runs, arm):
+    run_dir, _summary = all_mock_runs[arm]
     results = reconstruct_run(run_dir)
     assert results, "no sessions to reconstruct"
     failures = {k: d for k, d in results if d}
     assert not failures, f"reconstruction mismatches: {failures}"
 
 
-@pytest.mark.parametrize("arm", ["A", "B"])
-def test_reconstruction_covers_the_prompt_bytes_exactly(mock_runs, arm):
-    run_dir, _ = mock_runs[arm]
+@pytest.mark.parametrize("arm", ["A", "B", "C1"])
+def test_reconstruction_covers_the_prompt_bytes_exactly(all_mock_runs, arm):
+    run_dir, _ = all_mock_runs[arm]
     meta = json.loads((run_dir / "metadata.json").read_text(encoding="utf-8"))
     task = registry.get_task(meta["task_id"])
     for start in _session_start_events(run_dir):
@@ -235,9 +239,9 @@ def test_spawn_failure_still_writes_stdout_stderr_and_exit_records(tmp_path):
 # --------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("arm", ["A", "B"])
-def test_child_environment_manifest_is_recorded_per_session(mock_runs, arm):
-    run_dir, _ = mock_runs[arm]
+@pytest.mark.parametrize("arm", ["A", "B", "C1"])
+def test_child_environment_manifest_is_recorded_per_session(all_mock_runs, arm):
+    run_dir, _ = all_mock_runs[arm]
     for sd in sorted((run_dir / "sessions").iterdir()):
         stored = json.loads((sd / "invocation.json").read_text(encoding="utf-8"))
         manifest = stored["env_manifest"]
@@ -245,9 +249,9 @@ def test_child_environment_manifest_is_recorded_per_session(mock_runs, arm):
         assert manifest["billing_guard_vars_present"] == []
 
 
-@pytest.mark.parametrize("arm", ["A", "B"])
-def test_turn_and_time_limits_are_recorded(mock_runs, arm):
-    run_dir, _ = mock_runs[arm]
+@pytest.mark.parametrize("arm", ["A", "B", "C1"])
+def test_turn_and_time_limits_are_recorded(all_mock_runs, arm):
+    run_dir, _ = all_mock_runs[arm]
     for sd in sorted((run_dir / "sessions").iterdir()):
         stored = json.loads((sd / "invocation.json").read_text(encoding="utf-8"))
         assert stored["max_turns"] == config.SMOKE_LIMITS.max_turns_per_session

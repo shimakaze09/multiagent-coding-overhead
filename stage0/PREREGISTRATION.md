@@ -879,6 +879,224 @@ The coverage formula (v2), the gate (≥ 0.90, no unknown tools) and every other
 category are unchanged. The classifier is part of the derived analysis, not of
 `config_hash`, and nothing about execution changed.
 
+## 16. Stage 1: C1_shared_worker_context (preregistered 2026-09-11, before any C1 run)
+
+Stage 0.5 was accepted with six valid A/B pairs. Branch C (shared prefix/context
+reuse) is selected. This section freezes its first experiment. No custom
+KV-cache sharing, no custom inference server, no Agent IR, no artifact
+protocol, no compact language, no LoRA/MoE.
+
+### 16.1 Question
+
+How much of conventional multi-agent coding overhead can be removed by
+preserving repository/context state across the Investigator → Implementer role
+transition, without changing the model, task, Coordinator or logical workflow?
+The experiment tests whether the large `session_fanout_context` observed in
+Stage 0.5 is actually addressable. It does NOT ask whether shared sessions are
+universally better.
+
+### 16.2 Arms
+
+* **A** and **B**: unchanged and not rerun. `arms/single.py` and
+  `arms/multi_nl.py` are byte-identical to their frozen versions (hash-pinned
+  in tests), and the A/B `config_hash` stays `9edbfb5d0d082d49a61969068fafd4ac`.
+  B keeps five invocations and three fresh sessions (Coordinator, Investigator,
+  a NEW Implementer session).
+* **C1 = `C1_shared_worker_context`** (`arms/c1_shared_worker.py`, topology
+  version 1). It is not the old speculative "structured-state Arm C".
+
+| # | Invocation | Logical role | Physical session | Fresh/resumed |
+| --- | --- | --- | --- | --- |
+| 1 | Coordinator kickoff | coordinator | Coordinator | fresh |
+| 2 | Worker, Investigator phase | investigator | Worker | fresh |
+| 3 | Coordinator plan | coordinator | Coordinator | resumed |
+| 4 | Worker, Implementer phase | implementer | Worker (resume of #2) | resumed |
+| 5 | Coordinator wrap-up | coordinator | Coordinator | resumed |
+
+So C1 has 5 CLI invocations (as B), **2 fresh physical sessions** (B: 3), 3
+resumed invocations (B: 2) and 3 logical roles. Every report shows
+`cli_invocations`, `fresh_sessions`, `resumed_invocations`, `physical_sessions`,
+`logical_roles`, and each invocation's `logical_role` and `physical_session_id`.
+
+**The Coordinator is unchanged.** It uses Arm B's prompt functions verbatim:
+original task → Investigator instruction → Investigator report → implementation
+instruction → Implementer report → final result. It is not merged into the
+Worker.
+
+**Worker Implementer phase input.** It receives the Coordinator's
+implementation instruction plus a fixed working agreement, nothing else. It
+already holds, in Claude Code session history, the task statement, its own
+investigation and its own report. The report is **not** forwarded back
+(`investigator_report_forwarded_to_worker = false`), and the task statement is
+**not** resent (`task_statement_resent_on_worker_resume = false`). No
+instruction discourages rereading.
+
+**Tool-policy transition.** The Investigator phase uses B's Investigator policy:
+`--tools Read,Grep,Glob,Bash`, `--disallowedTools Edit,Write,NotebookEdit`. The
+Implementer phase uses B's Implementer policy: `--tools
+Read,Grep,Glob,Edit,Write,Bash` and the same `narrow_pytest_v1` allowlist. Each
+phase also carries its role's `--append-system-prompt`.
+
+Evidence that this works without inference:
+
+* `--tools`, `--disallowedTools` and `--append-system-prompt` are per-process
+  flags. Each `-p` invocation is a new process whose `init` event reports its
+  own tool set: in the stored runs, Investigator `init.tools = Bash,Glob,Grep,Read`
+  and Implementer `init.tools` adds `Edit,Write`.
+* The CLI help ties no tool set to `--resume`.
+* Stored Arm-B Coordinator resumes keep the original session id (`--fork-session`
+  would create a new one; it is not used).
+
+A *changed* tool set on resume has not yet been exercised against real Claude
+Code. Therefore **each C1 run is valid only if `worker_transition.verified`**:
+from the invocations' own `init` events, the Investigator phase has no
+Edit/Write/NotebookEdit, the Implementer phase has Edit and Write, both phases
+share one physical session id, the Implementer phase resumes it, and the
+Coordinator is separate. If not verified, the run is invalid and reported as a
+limitation. Investigator permissions are never broadened.
+
+### 16.3 Reconstruction
+
+The harness-input reconstruction gate covers all five C1 invocations
+(`tests/test_reconstruction.py`, parametrized over A, B and C1). The Worker
+transition is recorded as a `WORKER_ROLE_TRANSITION` event and in
+`topology.json`:
+
+* physical session id;
+* previous and new logical role;
+* resume target;
+* the exact new prompt;
+* the previous and new tool policy;
+* whether the session id was preserved.
+
+The event type is additive, and event `SCHEMA_VERSION` stays 1.
+
+### 16.4 Measurement (frozen definitions reused; nothing redefined for C1)
+
+* **Topology/fanout, exact:**
+  - fresh session count and resumed invocation count;
+  - first-call input for the Coordinator and the Worker (fresh);
+  - the Worker's Implementer-resume first-call context;
+  - uncached input, cache read and cache write per invocation and in total.
+
+  Provider usage is reported exactly, and cache reads are billed input, never
+  described as eliminated cost.
+* **Reacquisition:** the frozen classifier (section 11) is unchanged, reporting
+  `edit_precondition_associated`, `verification_associated`,
+  `discretionary_information_reacquisition` and `unknown`. Whether Claude Code's
+  Edit accepts an Investigator-phase Read, in the same physical session, as
+  satisfying read-before-edit after resume is **not assumed**; the runs measure
+  it.
+  - *Disclosed comparability confound:* the frozen priming rule counts delivered
+    messages only. In C1 the Investigator report lives in the Worker's own history
+    and is not re-delivered, so a reread primed only by that report is
+    classified *unprimed*.
+  - E6 therefore reports gross primed reacquisition and unprimed overlapping
+    discoveries side by side, plus all inter-agent overlapping acquisitions.
+* **Handoffs:**
+  - *B:* Investigator → Coordinator report, Coordinator → Implementer instruction,
+    forwarded report.
+  - *C1:* Investigator → Coordinator report, Coordinator → resumed Worker
+    instruction, and no forwarded report.
+  - *Measures:* inter-agent chars, bytes, estimated tokens, and handoff overlap
+    v1 and v2.
+  - *Worker history:* it is not an inter-agent handoff. In the decomposition's
+    context-weighted handoff row, the frozen v1 rule counts a resumed session's
+    own delivered reply as handoff text in its context. That happens for B's
+    Coordinator, and for C1's Worker carrying its own report. This applies
+    unchanged and is stated here.
+* **Decomposition implementation (not a definition change):** resume chains are
+  keyed by physical session (the `--resume` target) instead of agent id, so the
+  Worker's Implementer phase carries its Investigator-phase history. For every
+  A/B run the two keyings coincide. All six Stage-0.5 pair decompositions
+  reproduce exactly (asserted against `results/stage05_pilot/pilot_tables.jsonl`),
+  and `DECOMPOSITION_VERSION` stays 1.
+* **Unique downstream acquisition:** the Stage-0.5 definition is unchanged. It
+  reports new files, new constraints (mechanical), final changed files not named
+  in handoffs, and merely-verified work. Changed diagnosis and corrected finding
+  stay undetermined. No LLM judge.
+* **Outcome:** the held-out verifier only, with the same fixtures and verifiers
+  as A/B. Analysis-only file roles never reach C1 prompts (tested).
+
+### 16.5 Endpoints (no thresholds)
+
+* **E1 correctness:** does C1 preserve B's task success?
+* **E2 input reduction:** does C1 use less total main-model input than B?
+* **E3 fresh-context reduction:** how much observable first-session/context
+  fanout is removed (fresh sessions; summed fresh first-call input, exact)?
+* **E4 cache-write reduction:** does sharing Worker context reduce cache
+  creation/write input? This matters more economically than already-cheap cache
+  reads.
+* **E5 handoff reduction:** how much context is removed by not forwarding the
+  Investigator report back to its own Worker?
+* **E6 reread reduction:** does Worker continuity reduce repository
+  reacquisition (gross primed, edit-precondition, discretionary, unprimed
+  overlapping)?
+* **E7 wall time/cost:** does C1 reduce wall time and API-equivalent cost while
+  preserving correctness?
+
+### 16.6 Task set, comparison, execution plan
+
+Tasks: the four prospective Stage-0.5 tasks, `shipping_inch_dimensions`,
+`settings_list_fields`, `rename_max_connections` and `sla_weekend_hours`.
+Existing A and B runs are reused. Future execution is **4 C1 runs**, with no new
+A/B runs and no repeats.
+
+The primary comparison is **B vs C1** (`runner.py report --task <t>
+--compare-stage1`; `runner.py stage1-summary`); A is shown for reference.
+
+Pair parity is on the base configuration:
+
+* same task, base commit, Claude Code version, resolved model and protected
+  files;
+* C1 `base_config_hash` equal to B's `config_hash`, with one preregistered
+  exception: Task 3's B run was recorded under wrapper v2 (`22ce9b7e…`). The
+  only difference is amendment 7's turn counting, and that B run never reached
+  the limit, so it counts as parity-compatible with an explicit note.
+
+Exclusions are those of sections 5, 10 and 15.3, plus C1's
+`worker_transition.verified`. Invalid pairs never enter aggregates. n = 1 per
+task: descriptive only.
+
+### 16.7 Confounds (accepted, stated in advance)
+
+* **Role contamination:** the Implementer retains the Investigator's reasoning
+  and history. This is intended: C1 tests persistent role context, not isolated
+  expert independence.
+* **Reduced independence:** C1 is less independent than B, so any independent
+  verification value may fall. Recorded as a trade-off.
+* **Same underlying model:** same-model role specialization, not
+  specialist-model routing.
+* **Claude Code specifics:** results depend partly on Claude Code 2.1.260
+  `--resume` semantics and its prompt caching. Changing the tool set and system
+  appendix at the transition may change the cached prompt prefix, and E4
+  measures the net effect. No generalization to arbitrary agent systems.
+
+### 16.8 Failure interpretation
+
+C1 failure is not a harness failure unless telemetry shows an actual defect.
+All of the following are legitimate results:
+
+* cheaper and solves;
+* cheaper and fails;
+* same cost;
+* more expensive;
+* rereads anyway;
+* Edit refuses the previous-phase Read.
+
+### 16.9 Identity
+
+| Item | Value |
+| --- | --- |
+| `arm` | `C1` |
+| `arm_topology` | `C1_shared_worker_context` |
+| `topology_version` | 1 |
+| `experiment_schema_version` | 2, C1 metadata only; A/B metadata is left as written |
+| C1 `config_hash` (sonnet, smoke limits) | `5ca22e4846c07ca973ee4e891df059c1` = `topology_config_hash(base effective config, C1_TOPOLOGY)` |
+| `base_config_hash` | `9edbfb5d0d082d49a61969068fafd4ac` |
+
+No historical metadata or B `config_hash` is rewritten.
+
 **Re-analysis (post-hoc, disclosed; no rerun).** Under v2 the same raw data
 gives coverage **1.000** (14 classified, 0 unknown), so the run is valid and the
 Task-4 rerun pair is valid. The v1 result (0.700, invalid) is recorded here and

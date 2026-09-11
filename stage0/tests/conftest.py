@@ -98,3 +98,36 @@ def mock_runs(tmp_path_factory):
         return out
     finally:
         os.environ.pop("STAGE0_CLAUDE_CLI", None)
+
+
+@pytest.fixture(scope="session")
+def mock_c1_run(tmp_path_factory):
+    """Stage-1 C1_shared_worker_context once through the mock CLI, in its OWN runs
+    directory, so the A/B mock fixture above is unchanged. Instrumentation only."""
+    import config
+    from arms import c1_shared_worker
+    from harness import claude_cli
+    from tasks import registry
+
+    os.environ["STAGE0_CLAUDE_CLI"] = str(MOCK_CLI)
+    try:
+        cli = config.find_claude_cli()
+        caps = claude_cli.detect_capabilities(cli)
+        assert caps.ok, caps.missing_required
+        runs_dir = tmp_path_factory.mktemp("runs_c1")
+        summary = c1_shared_worker.run(
+            task=registry.get_task("palindrome_punctuation"),
+            repeat_id=1,
+            cfg=config.RunConfig(model="mock-sonnet", limits=config.SMOKE_LIMITS),
+            cli=cli,
+            capability_report=caps.as_dict(),
+            runs_dir=runs_dir,
+        )
+        return runs_dir / summary["run_id"], summary
+    finally:
+        os.environ.pop("STAGE0_CLAUDE_CLI", None)
+
+
+@pytest.fixture(scope="session")
+def all_mock_runs(mock_runs, mock_c1_run):
+    return {"A": mock_runs["A"], "B": mock_runs["B"], "C1": mock_c1_run}

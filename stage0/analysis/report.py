@@ -11,8 +11,10 @@ from collections import Counter
 from pathlib import Path
 from typing import Optional, Sequence
 
+import dataclasses
 import statistics
 
+import config
 from analysis import decomposition, handoff, ingest, isolation, leakage, metrics, overlap_v2
 from harness import events as ev, telemetry, tools
 
@@ -277,6 +279,11 @@ def run_report(run_dir: str | Path) -> dict:
         "overhead_decomposition": decomposition.decompose(raw, dup.findings, unique),
         "held_out_content_check": content_check,
         "session_terminations": [sa.exit.get("termination_reason") for sa in sessions],
+        # --- Stage 1 (C1): physical-session topology, identity, thinking tokens
+        "arm_topology": meta.get("arm_topology"),
+        "base_config_hash": meta.get("base_config_hash", meta.get("config_hash")),
+        "topology": topology_summary(raw),
+        "thinking_tokens_by_model": _thinking_tokens(sessions),
         # --- handoffs
         "handoff_count": len(summary.get("handoffs") or []),
         "handoff_total_chars": summary.get("handoff_total_chars", 0),
@@ -415,6 +422,11 @@ def run_validity(r: dict) -> dict:
     content = r.get("held_out_content_check") or {}
     if content.get("breach_suspected"):
         reasons.append("held-out content exposure suspected")
+    if r.get("arm") == config.C1_ARM:
+        wt = (r.get("topology") or {}).get("worker_transition") or {}
+        if not wt.get("verified"):
+            failed = [k for k, v in (wt.get("checks") or {}).items() if not v] or ["no transition record"]
+            reasons.append(f"C1 worker transition not verified: {failed}")
     return {"valid": not reasons, "reasons": reasons}
 
 
@@ -643,6 +655,389 @@ def render_cross_task_summary(reports: Sequence[dict]) -> str:
     if s["superseded_runs"]:
         A(f"superseded runs (an earlier run of the same task/arm/repeat): {', '.join(s['superseded_runs'])}")
     A("Descriptive only: no significance testing. Ratios are Arm B / Arm A.")
+    return "\n".join(L)
+
+
+# --------------------------------------------------------------------------
+# Stage 1 (C1_shared_worker_context): topology, transition, B-vs-C1 comparison
+# --------------------------------------------------------------------------
+
+STAGE1_TASKS = ("shipping_inch_dimensions", "settings_list_fields",
+                "rename_max_connections", "sla_weekend_hours")
+_EDIT_TOOLS = {"Edit", "Write", "NotebookEdit"}
+
+
+def _thinking_tokens(sessions) -> dict:
+    out: dict = {}
+    for sa in sessions:
+        res = sa.parsed.result if isinstance(sa.parsed.result, dict) else {}
+        for model, u in (res.get("modelUsage") or {}).items():
+            if isinstance(u, dict) and isinstance(u.get("thinkingTokens"), (int, float)):
+                out[model] = out.get(model, 0) + int(u["thinkingTokens"])
+    return out
+
+
+def topology_summary(raw: dict) -> dict:
+    """CLI invocations vs fresh physical sessions vs resumed invocations, with the
+    exact per-invocation provider usage of each invocation's first API call."""
+    rows = []
+    for sa in sorted(raw["sessions"], key=lambda s: s.session_index):
+        inv = sa.invocation or {}
+        resumed = bool(inv.get("resume_session_id"))
+        pid = getattr(sa.parsed, "session_id", None) or (
+            inv.get("resume_session_id") if resumed else inv.get("session_id"))
+        init = getattr(sa.parsed, "init", None) or {}
+        calls = decomposition.api_calls(sa.dir) if getattr(sa, "dir", None) else []
+        first = calls[0] if calls else {}
+
+        def tot(k):
+            vals = [c.get(k) for c in calls if isinstance(c.get(k), (int, float))]
+            return int(sum(vals)) if vals else None
+
+        rows.append({
+            "session_key": sa.session_key,
+            "logical_role": inv.get("role"),
+            "agent_id": inv.get("agent_id"),
+            "physical_session_id": pid,
+            "is_resume": resumed,
+            "resume_target": inv.get("resume_session_id"),
+            "requested_tools": inv.get("tools"),
+            "requested_disallowed_tools": inv.get("disallowed_tools"),
+            "init_tools": init.get("tools") if isinstance(init, dict) and "tools" in init else None,
+            "stdin_chars": len(inv.get("stdin_text") or ""),
+            "prompt_input_keys": sorted((inv.get("prompt_inputs") or {}).keys()),
+            "api_calls": len(calls),
+            "first_call_input_tokens": first.get("total_input_tokens"),
+            "first_call_uncached_input_tokens": first.get("input_tokens"),
+            "first_call_cache_read_tokens": first.get("cache_read_tokens"),
+            "first_call_cache_write_tokens": first.get("cache_write_tokens"),
+            "total_input_tokens": tot("total_input_tokens"),
+            "uncached_input_tokens": tot("input_tokens"),
+            "cache_read_tokens": tot("cache_read_tokens"),
+            "cache_write_tokens": tot("cache_write_tokens"),
+        })
+    physical: dict = {}
+    for r in rows:
+        physical.setdefault(r["physical_session_id"], []).append(r["session_key"])
+    out = {
+        "cli_invocations": len(rows),
+        "fresh_sessions": sum(1 for r in rows if not r["is_resume"]),
+        "resumed_invocations": sum(1 for r in rows if r["is_resume"]),
+        "physical_sessions": len(physical),
+        "logical_roles": sorted({r["logical_role"] for r in rows if r["logical_role"]}),
+        "physical_session_map": physical,
+        "invocations": rows,
+        "basis": "exact_observable (per-call provider usage; init events)",
+    }
+    if (raw.get("metadata") or {}).get("arm_topology") == config.C1_ARM_TOPOLOGY:
+        out["worker_transition"] = worker_transition_check(rows)
+    return out
+
+
+def worker_transition_check(rows: Sequence[dict]) -> dict:
+    """Preregistered C1 validity check, from each invocation's own init event."""
+    inv = [r for r in rows if r["logical_role"] == "investigator"]
+    imp = [r for r in rows if r["logical_role"] == "implementer"]
+    coord = [r for r in rows if r["logical_role"] == "coordinator"]
+    if len(inv) != 1 or len(imp) != 1:
+        return {"verified": False,
+                "checks": {"one_investigator_and_one_implementer_invocation": False}}
+    i, m = inv[0], imp[0]
+    it = set(i["init_tools"]) if i["init_tools"] is not None else None
+    mt = set(m["init_tools"]) if m["init_tools"] is not None else None
+    checks = {
+        "one_investigator_and_one_implementer_invocation": True,
+        "investigator_phase_fresh": not i["is_resume"],
+        "same_physical_session": bool(i["physical_session_id"])
+        and i["physical_session_id"] == m["physical_session_id"],
+        "implementer_phase_resumes_investigator_session": m["is_resume"]
+        and m["resume_target"] == i["physical_session_id"],
+        "investigator_phase_read_only": it is not None and not (it & _EDIT_TOOLS)
+        and {"Edit", "Write"} <= set(i["requested_disallowed_tools"] or []),
+        "implementer_phase_can_edit": mt is not None and {"Edit", "Write"} <= mt,
+        "coordinator_separate": bool(coord)
+        and all(c["physical_session_id"] != i["physical_session_id"] for c in coord),
+    }
+    return {
+        "verified": all(checks.values()),
+        "checks": checks,
+        "physical_session_id": i["physical_session_id"],
+        "previous_logical_role": "investigator",
+        "new_logical_role": "implementer",
+        "resume_target": m["resume_target"],
+        "investigator_init_tools": i["init_tools"],
+        "implementer_init_tools": m["init_tools"],
+    }
+
+
+def _base_config_equivalent_except_turn_counting(b_hash: Optional[str], c1_base: Optional[str]) -> bool:
+    """True when the only difference is amendment 7 (turn counting): B recorded
+    under wrapper v2, C1 under v3, with every other setting identical."""
+    cur = config.RunConfig()
+    if not c1_base or c1_base != cur.config_hash():
+        return False
+    return b_hash == dataclasses.replace(cur, turn_limit_enforcement="harness_side").config_hash()
+
+
+def stage1_parity(b: dict, c1: dict) -> tuple[list[str], list[str]]:
+    """(failures, notes) for a B-vs-C1 comparison. The arms differ in topology
+    by design, so parity is on the BASE configuration."""
+    failures, notes = [], []
+    if b.get("task_id") != c1.get("task_id"):
+        failures.append("same task")
+    base = c1.get("base_config_hash")
+    if not base or base != b.get("config_hash"):
+        if (_base_config_equivalent_except_turn_counting(b.get("config_hash"), base)
+                and "turn_limit_exceeded" not in (b.get("session_terminations") or [])):
+            notes.append("base config differs only by amendment 7 (turn counting); "
+                         "the B run never reached the turn limit")
+        else:
+            failures.append("same base config")
+    for name in ("same base commit", "same Claude Code version", "same resolved main model",
+                 "same protected files"):
+        if name in pair_parity(b, c1):
+            failures.append(name)
+    return failures, notes
+
+
+def stage1_metrics(r: dict) -> dict:
+    t = r.get("token_telemetry") or {}
+    topo = r.get("topology") or {}
+    d = r.get("overhead_decomposition") or {}
+    rc = r.get("reacquisition_classification") or {}
+    phys = rc.get("subcategory_physical") or {}
+    u = r.get("unique_downstream_acquisition") or {}
+    hc = d.get("handoff_context") or {}
+    rows = topo.get("invocations") or []
+    cs = (r.get("communication") or {}).get("communication_summary") or {}
+    s2 = (r.get("handoff_repository_overlap_v2") or {}).get("summary") or {}
+
+    def first(role, resumed=None):
+        x = next((x for x in rows if x["logical_role"] == role
+                  and (resumed is None or x["is_resume"] == resumed)), None)
+        return x["first_call_input_tokens"] if x else None
+
+    def first_split(role):
+        x = next((x for x in rows if x["logical_role"] == role), None)
+        if not x:
+            return None
+        return (x["first_call_uncached_input_tokens"], x["first_call_cache_read_tokens"],
+                x["first_call_cache_write_tokens"])
+
+    fwd = next((h["sizes"]["chars"] for h in r.get("handoffs") or []
+                if h.get("label") == "forwarded_investigation_report"), 0)
+    return {
+        "run_id": r.get("run_id"),
+        "arm": r.get("arm"),
+        "solved": r.get("solved"),
+        "cli_invocations": topo.get("cli_invocations"),
+        "fresh_sessions": topo.get("fresh_sessions"),
+        "resumed_invocations": topo.get("resumed_invocations"),
+        "physical_sessions": topo.get("physical_sessions"),
+        "total_input": t.get("reported_total_input_tokens"),
+        "uncached_input": t.get("reported_input_tokens"),
+        "cache_read": t.get("reported_cache_read_tokens"),
+        "cache_write": t.get("reported_cache_write_tokens"),
+        "output": t.get("reported_output_tokens"),
+        "thinking": sum((r.get("thinking_tokens_by_model") or {}).values()),
+        "wall": r.get("wall_seconds"),
+        "cost": r.get("api_equivalent_cost_usd"),
+        "repo_chars": r.get("total_acquired_chars"),
+        "handoff_chars": (hc.get("exact_observable") or {}).get("chars"),
+        "handoff_bytes": (hc.get("exact_observable") or {}).get("utf8_bytes"),
+        "handoff_est_tokens": (hc.get("estimated") or {}).get("tokens_once"),
+        "forwarded_report_chars": fwd,
+        "overlap_v1": cs.get("all_handoffs_repository_quote_fraction"),
+        "overlap_v2": s2.get("all_handoffs_quote_fraction_v2"),
+        "gross": rc.get("gross_primed_reacquisitions"),
+        "edit": rc.get("edit_precondition_associated"),
+        "verif": rc.get("verification_associated"),
+        "disc": rc.get("discretionary_information_reacquisition"),
+        "unknown": rc.get("unknown"),
+        "disc_chars": (phys.get("discretionary_information_reacquisition") or {}).get("chars"),
+        "unprimed_overlapping": r.get("unprimed_overlapping_discoveries"),
+        "inter_agent_overlapping": r.get("inter_agent_overlapping_acquisitions"),
+        "unique_info": u.get("informational_unique_chars_estimate") if u.get("applicable") else None,
+        "unique_self": u.get("self_generated_unique_chars_estimate") if u.get("applicable") else None,
+        "material": {k: v["determination"] for k, v in (u.get("material") or {}).items()},
+        "fresh_first_call_input": sum(x["first_call_input_tokens"] or 0 for x in rows if not x["is_resume"]),
+        "coordinator_first_call": first("coordinator", False),
+        "investigator_first_call": first("investigator", False),
+        "implementer_first_call": first("implementer"),
+        "implementer_first_call_split": first_split("implementer"),
+        "implementer_is_resume": any(x["logical_role"] == "implementer" and x["is_resume"] for x in rows),
+        "worker_transition": topo.get("worker_transition"),
+        "validity": r.get("validity") or run_validity(r),
+    }
+
+
+def _rel(new, old):
+    if isinstance(new, (int, float)) and isinstance(old, (int, float)) and old:
+        return f"{new / old:.3f}"
+    return "-"
+
+
+def render_stage1_comparison(b: dict, c1: dict, a: Optional[dict] = None) -> str:
+    mb, mc = stage1_metrics(b), stage1_metrics(c1)
+    ma = stage1_metrics(a) if a else None
+    failures, notes = stage1_parity(b, c1)
+    L: list[str] = []
+    P = L.append
+    P(f"=== Stage 1 comparison: {c1.get('task_id')}  (primary: B vs C1_shared_worker_context) ===")
+    if a:
+        P(f"Arm A run : {a.get('run_id')}  (reference only)")
+    P(f"Arm B run : {b.get('run_id')}")
+    P(f"C1 run    : {c1.get('run_id')}")
+    P("")
+    P("-- parity (base configuration; topology differs by design) -----------")
+    for name in ("same task", "same base config", "same base commit", "same Claude Code version",
+                 "same resolved main model", "same protected files"):
+        P(f"  [{'FAIL' if name in failures else 'PASS'}] {name}")
+    for n in notes:
+        P(f"  note: {n}")
+    P(f"  validity: B {'valid' if mb['validity']['valid'] else 'INVALID ' + str(mb['validity']['reasons'])}; "
+      f"C1 {'valid' if mc['validity']['valid'] else 'INVALID ' + str(mc['validity']['reasons'])}")
+    wt = mc.get("worker_transition") or {}
+    P(f"  C1 worker transition verified: {wt.get('verified')}  "
+      f"(investigator init tools {wt.get('investigator_init_tools')}, implementer init tools "
+      f"{wt.get('implementer_init_tools')})")
+    P("")
+    head = f"  {'':<42}{'Arm B':>12}{'C1':>12}{'C1/B':>8}" + (f"{'Arm A':>12}" if ma else "")
+    P(head)
+    rows = (
+        ("SOLVED (held-out verifier)", "solved"), ("CLI invocations", "cli_invocations"),
+        ("fresh physical sessions", "fresh_sessions"), ("resumed invocations", "resumed_invocations"),
+        ("physical sessions", "physical_sessions"), ("total input (main model)", "total_input"),
+        ("  uncached input", "uncached_input"), ("  cache read", "cache_read"),
+        ("  cache write", "cache_write"), ("output (main model)", "output"),
+        ("thinking tokens (all models)", "thinking"), ("wall seconds", "wall"),
+        ("API-equivalent cost USD (not paid)", "cost"), ("repository acquisition chars", "repo_chars"),
+        ("inter-agent handoff chars", "handoff_chars"), ("  bytes", "handoff_bytes"),
+        ("  estimated tokens (chars/4)", "handoff_est_tokens"),
+        ("  forwarded Investigator report chars", "forwarded_report_chars"),
+        ("handoff overlap v1 (all handoffs)", "overlap_v1"), ("handoff overlap v2 (all handoffs)", "overlap_v2"),
+        ("gross primed reacquisition", "gross"), ("  edit-precondition-associated", "edit"),
+        ("  verification-associated", "verif"), ("  discretionary", "disc"), ("  unknown", "unknown"),
+        ("unprimed overlapping discoveries", "unprimed_overlapping"),
+        ("inter-agent overlapping acquisitions (all)", "inter_agent_overlapping"),
+        ("unique downstream: informational chars", "unique_info"),
+        ("unique downstream: self-generated chars", "unique_self"),
+        ("first-call input, fresh sessions (sum)", "fresh_first_call_input"),
+        ("first-call input: Coordinator", "coordinator_first_call"),
+        ("first-call input: Investigator / Worker", "investigator_first_call"),
+        ("first-call input: Implementer (B fresh / C1 resume)", "implementer_first_call"),
+    )
+    for label, k in rows:
+        vb, vc = mb[k], mc[k]
+        line = f"  {label:<42}{str(vb):>12}{str(vc):>12}{_rel(vc, vb) if not isinstance(vb, bool) else '':>8}"
+        if ma:
+            line += f"{str(ma[k]):>12}"
+        P(line)
+    P(f"  Implementer first call (uncached, cache read, cache write): B {mb['implementer_first_call_split']}  "
+      f"C1 {mc['implementer_first_call_split']}")
+    P("")
+    P("-- preregistered endpoints (PREREGISTRATION 16.5) -----------------------")
+    P(f"  E1 correctness       : B {mb['solved']}  C1 {mc['solved']}")
+    P(f"  E2 input             : total input C1 {mc['total_input']} vs B {mb['total_input']} "
+      f"(C1/B {_rel(mc['total_input'], mb['total_input'])})")
+    P(f"  E3 fresh context     : fresh sessions {mb['fresh_sessions']} -> {mc['fresh_sessions']}; "
+      f"fresh first-call input {mb['fresh_first_call_input']} -> {mc['fresh_first_call_input']} (exact)")
+    P(f"  E4 cache write       : {mb['cache_write']} -> {mc['cache_write']} "
+      f"(C1/B {_rel(mc['cache_write'], mb['cache_write'])})")
+    P(f"  E5 handoff           : inter-agent chars {mb['handoff_chars']} -> {mc['handoff_chars']}; "
+      f"forwarded report {mb['forwarded_report_chars']} -> {mc['forwarded_report_chars']}")
+    P(f"  E6 rereads           : gross primed {mb['gross']} -> {mc['gross']} (edit {mb['edit']} -> "
+      f"{mc['edit']}, disc {mb['disc']} -> {mc['disc']}); unprimed overlapping "
+      f"{mb['unprimed_overlapping']} -> {mc['unprimed_overlapping']}")
+    P(f"  E7 wall / cost       : wall {mb['wall']} -> {mc['wall']} (C1/B {_rel(mc['wall'], mb['wall'])}); "
+      f"cost {mb['cost']} -> {mc['cost']} (C1/B {_rel(mc['cost'], mb['cost'])})")
+    P("")
+    P("Notes: provider usage is reported exactly; cache reads are billed input, not eliminated cost.")
+    P("The Worker's own history (incl. its report) is session context, not an inter-agent handoff.")
+    P("Frozen priming counts delivered messages only: in C1 the report is not re-delivered, so rereads")
+    P("primed only by the Worker's own report appear as unprimed overlapping discoveries (both shown).")
+    P("n=1 per arm and task: descriptive only.")
+    return "\n".join(L)
+
+
+def latest_by_arm(reports: Sequence[dict], task_id: str) -> dict:
+    out: dict = {}
+    for r in sorted((r for r in reports if r.get("task_id") == task_id), key=lambda x: x.get("run_id") or ""):
+        out[r.get("arm")] = r
+    return out
+
+
+def stage1_rows(reports: Sequence[dict], tasks: Sequence[str] = STAGE1_TASKS) -> dict:
+    rows = []
+    for t in tasks:
+        by = latest_by_arm(reports, t)
+        b, c1 = by.get("B"), by.get(config.C1_ARM)
+        if not b or not c1:
+            rows.append({"task": t, "complete": False,
+                         "missing": [x for x, v in (("B", b), ("C1", c1)) if not v]})
+            continue
+        mb, mc = stage1_metrics(b), stage1_metrics(c1)
+        failures, notes = stage1_parity(b, c1)
+        reasons = ([f"B: {x}" for x in mb["validity"]["reasons"]]
+                   + [f"C1: {x}" for x in mc["validity"]["reasons"]]
+                   + [f"parity: {x}" for x in failures])
+        rows.append({"task": t, "complete": True, "b": mb, "c1": mc, "notes": notes,
+                     "valid": not reasons, "reasons": reasons,
+                     "ratios": {k: (mc[k] / mb[k] if isinstance(mb[k], (int, float)) and mb[k]
+                                    and isinstance(mc[k], (int, float)) else None)
+                                for k in ("total_input", "cache_write", "cache_read", "output",
+                                          "wall", "cost", "handoff_chars", "fresh_first_call_input")}})
+    valid = [r for r in rows if r.get("valid")]
+    agg = {}
+    for k in ("total_input", "cache_write", "cache_read", "output", "wall", "cost",
+              "handoff_chars", "fresh_first_call_input"):
+        vals = [r["ratios"][k] for r in valid if r["ratios"][k] is not None]
+        if vals:
+            agg[k] = {"n": len(vals), "mean": round(statistics.fmean(vals), 3),
+                      **({"median": round(statistics.median(vals), 3), "min": round(min(vals), 3),
+                          "max": round(max(vals), 3)} if len(vals) >= 2 else {})}
+        else:
+            agg[k] = {"n": 0}
+    return {"rows": rows, "valid_pairs": len(valid), "aggregates_c1_over_b": agg}
+
+
+def render_stage1_summary(reports: Sequence[dict]) -> str:
+    s = stage1_rows(reports)
+    L: list[str] = []
+    P = L.append
+    P("=== Stage 1 summary: B vs C1_shared_worker_context (4 prospective Stage-0.5 tasks) ===")
+    head = ("task", "B ok", "C1 ok", "B inv/fresh", "C1 inv/fresh", "B input", "C1 input", "C1/B in",
+            "B cw", "C1 cw", "C1/B cw", "wall C1/B", "cost C1/B", "B hand", "C1 hand", "B gross/edit/disc",
+            "C1 gross/edit/disc", "valid")
+    widths = (26, 5, 6, 12, 13, 9, 9, 8, 7, 7, 8, 10, 10, 7, 8, 18, 19, 6)
+    P("  ".join(h.ljust(w) for h, w in zip(head, widths)))
+    for r in s["rows"]:
+        if not r["complete"]:
+            P(f"{r['task']:<26}  pending: no {', '.join(r['missing'])} run yet")
+            continue
+        b, c = r["b"], r["c1"]
+        cells = (r["task"], b["solved"], c["solved"], f"{b['cli_invocations']}/{b['fresh_sessions']}",
+                 f"{c['cli_invocations']}/{c['fresh_sessions']}", b["total_input"], c["total_input"],
+                 _rel(c["total_input"], b["total_input"]), b["cache_write"], c["cache_write"],
+                 _rel(c["cache_write"], b["cache_write"]), _rel(c["wall"], b["wall"]),
+                 _rel(c["cost"], b["cost"]), b["handoff_chars"], c["handoff_chars"],
+                 f"{b['gross']}/{b['edit']}/{b['disc']}", f"{c['gross']}/{c['edit']}/{c['disc']}",
+                 "yes" if r["valid"] else "NO")
+        P("  ".join(str(x).ljust(w) for x, w in zip(cells, widths)))
+        for n in r["notes"]:
+            P(f"    note: {n}")
+        if not r["valid"]:
+            P(f"    invalid: {'; '.join(r['reasons'])}")
+    P("")
+    P(f"valid B/C1 pairs: {s['valid_pairs']} (invalid pairs never enter aggregates)")
+    for k, v in s["aggregates_c1_over_b"].items():
+        if not v.get("n"):
+            P(f"  C1/B {k:<24} n=0")
+        elif v["n"] == 1:
+            P(f"  C1/B {k:<24} n=1  value {v['mean']}")
+        else:
+            P(f"  C1/B {k:<24} n={v['n']}  mean {v['mean']}  median {v['median']}  range {v['min']}-{v['max']}")
+    P("Descriptive only; ratios are C1 / B. Existing Stage-0.5 summary: python runner.py summary")
     return "\n".join(L)
 
 

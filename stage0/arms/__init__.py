@@ -92,8 +92,12 @@ def start_run(
     cli: config.ClaudeCli,
     capability_report: dict,
     runs_dir: Optional[Path] = None,
+    topology: Optional[dict] = None,
 ) -> RunSession:
-    """Create the run directory, prepare an isolated workspace, open the log."""
+    """Create the run directory, prepare an isolated workspace, open the log.
+
+    `topology` is given only by Stage-1 arms (C1). Arm A and Arm B never pass
+    it, so their metadata and config_hash are exactly as before."""
     billing = config.preflight_billing_guard()
 
     run_id = make_run_id(task, arm, repeat_id)
@@ -175,6 +179,18 @@ def start_run(
             "request are not observable."
         ),
     }
+    if topology is not None:
+        # Stage-1 arm: its own config identity. base_config_hash is the unchanged
+        # A/B harness configuration it runs on.
+        metadata.update({
+            "stage": 1,
+            "experiment_schema_version": config.EXPERIMENT_SCHEMA_VERSION_C1,
+            "arm_topology": topology["arm_topology"],
+            "topology_version": topology["topology_version"],
+            "topology": topology,
+            "base_config_hash": cfg.config_hash(),
+            "config_hash": config.topology_config_hash(cfg, topology),
+        })
     (run_dir / "metadata.json").write_text(
         json.dumps(metadata, indent=2, sort_keys=True), encoding="utf-8"
     )

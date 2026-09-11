@@ -272,6 +272,10 @@ def detect_role(prompt: str, allowed_tools: list[str]) -> str:
         return "coordinator_wrapup"
     if "Do not modify any file" in prompt:
         return "investigator"
+    # C1 (Stage 1): the Worker session resumed for its Implementer phase. It is
+    # given the Coordinator's instruction only, not a forwarded report.
+    if "You are now the Implementer" in prompt:
+        return "implementer"
     if "Investigation report from the Investigator" in prompt:
         return "implementer"
     if not allowed_tools:

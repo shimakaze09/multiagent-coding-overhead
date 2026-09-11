@@ -165,6 +165,11 @@ def session_contexts(sessions, handoff_texts: set[str]) -> dict[str, dict]:
     `--resume`) also carries its earlier prompts and replies. A reply that was
     delivered as a handoff counts as handoff text.
     """
+    # Resume chains are keyed by PHYSICAL session: a resumed invocation continues
+    # the Claude Code session it names in --resume. For Arm B this is the same
+    # chain as keying by agent (only the Coordinator resumes, always its own
+    # session), so every existing result is unchanged. For Stage-1 C1 it is what
+    # makes the Worker's Implementer phase carry its Investigator-phase history.
     prior: dict[str, list[tuple[str, str]]] = {}
     out: dict[str, dict] = {}
     for sa in sorted(sessions, key=lambda s: s.session_index):
@@ -178,7 +183,9 @@ def session_contexts(sessions, handoff_texts: set[str]) -> dict[str, dict]:
             if isinstance(pin.get(key), str) and pin[key]:
                 own.append(("handoff", pin[key]))
         resumed = bool(inv.get("resume_session_id"))
-        carried = list(prior.get(agent, [])) if resumed else []
+        physical = (inv.get("resume_session_id") if resumed else
+                    (getattr(sa.parsed, "session_id", None) or inv.get("session_id") or sa.session_key))
+        carried = list(prior.get(physical, [])) if resumed else []
         out[sa.session_key] = {
             "agent": agent,
             "role": inv.get("role"),
@@ -192,7 +199,7 @@ def session_contexts(sessions, handoff_texts: set[str]) -> dict[str, dict]:
         if isinstance(final, str) and final.strip():
             kind = "handoff" if final.strip() in handoff_texts else "agent_output"
             history.append((kind, final))
-        prior[agent] = history
+        prior[physical] = history
     return out
 
 

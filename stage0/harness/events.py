@@ -54,6 +54,9 @@ USAGE_LIMIT_REPORTED = "USAGE_LIMIT_REPORTED"
 PERMISSION_DENIED = "PERMISSION_DENIED"      # the CLI refused a tool call
 RATE_LIMIT_REPORTED = "RATE_LIMIT_REPORTED"  # subscription-quota telemetry
 VISIBLE_TESTS = "VISIBLE_TESTS"  # harness-run visible tests; never decides SOLVED
+# Stage 1 (C1): one physical Worker session changing logical role on resume.
+# Additive type: every existing event keeps its shape, so SCHEMA_VERSION stays 1.
+WORKER_ROLE_TRANSITION = "WORKER_ROLE_TRANSITION"
 
 ORDER_HARNESS_OBSERVED = "harness_observed"
 ORDER_CLI_REPORTED = "cli_reported"

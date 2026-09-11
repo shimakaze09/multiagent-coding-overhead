@@ -27,9 +27,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import config
 from analysis import ingest as ingest_mod, report as report_mod
-from arms import multi_nl, single
+from arms import c1_shared_worker, multi_nl, single
 from harness import claude_cli
 from tasks import registry
+
+# Which arms each `smoke --arm` value runs, and which module runs each arm.
+# `both` is Arm A + Arm B exactly as before; C1 (Stage 1) is never implied.
+SMOKE_ARMS = {"A": ("A",), "B": ("B",), "both": ("A", "B"), "C1": ("C1",)}
+ARM_MODULES = {"A": single, "B": multi_nl, "C1": c1_shared_worker}
 
 DEFAULT_SMOKE_TASK = "palindrome_punctuation"
 MIN_PYTHON = (3, 11)
@@ -277,13 +282,13 @@ def cmd_smoke(args) -> int:
     task = registry.get_task(args.task)
     cfg = config.RunConfig(model=args.model, limits=config.SMOKE_LIMITS)
 
-    arms = ["A", "B"] if args.arm == "both" else [args.arm]
+    arms = list(SMOKE_ARMS[args.arm])
     if len(arms) > cfg.limits.max_tasks_per_invocation * 2:
         raise SystemExit("smoke would exceed the configured smoke limits")
 
     summaries = []
     for arm in arms:
-        mod = single if arm == "A" else multi_nl
+        mod = ARM_MODULES[arm]
         print(f"\n--- running Arm {arm} on task {task.task_id} ---")
         summary = mod.run(
             task=task,
@@ -313,6 +318,9 @@ def cmd_smoke(args) -> int:
         print(report_mod.render_pair_summary(reports[0], reports[1]))
         print()
         print(report_mod.render_decomposition(reports[0], reports[1]))
+    if arms == ["C1"]:
+        print()
+        print(f"Stage-1 comparison: python runner.py report --task {task.task_id} --compare-stage1")
     return 0
 
 
@@ -441,6 +449,16 @@ def cmd_report(args) -> int:
     reports = [report_mod.run_report(rd) for rd in runs]
     if args.task:
         reports = [r for r in reports if r["task_id"] == args.task]
+    if getattr(args, "compare_stage1", False):
+        # Stage 1: B vs C1_shared_worker_context (A shown for reference only).
+        if not args.task:
+            raise SystemExit("--compare-stage1 needs --task")
+        by = report_mod.latest_by_arm(reports, args.task)
+        if "B" not in by or config.C1_ARM not in by:
+            print(f"no {'B' if 'B' not in by else 'C1'} run for {args.task} yet")
+            return 1
+        print(report_mod.render_stage1_comparison(by["B"], by[config.C1_ARM], by.get("A")))
+        return 0
     for r in reports:
         print(report_mod.render_run_report(r))
         print()
@@ -455,6 +473,16 @@ def cmd_report(args) -> int:
         print()
         # Stage 0.5 (prospective; labelled post-hoc on historical runs).
         print(report_mod.render_decomposition(by_arm["A"][-1], by_arm["B"][-1]))
+    return 0
+
+
+def cmd_stage1_summary(args) -> int:
+    """Stage-1 B vs C1 summary over the four prospective Stage-0.5 tasks (no Claude)."""
+    runs = ingest_mod.discover_runs(args.runs_dir)
+    if not runs:
+        print("no runs found")
+        return 1
+    print(report_mod.render_stage1_summary([report_mod.run_report(rd) for rd in runs]))
     return 0
 
 
@@ -502,7 +530,8 @@ def main(argv=None) -> int:
 
     s = sub.add_parser("smoke", help="one task, Arm A and/or Arm B")
     s.add_argument("--task", default=DEFAULT_SMOKE_TASK)
-    s.add_argument("--arm", choices=("A", "B", "both"), default="both")
+    s.add_argument("--arm", choices=tuple(SMOKE_ARMS), default="both",
+                   help="A, B, both (= A and B), or C1 (Stage 1, C1_shared_worker_context)")
     s.add_argument("--model", default="sonnet")
     s.add_argument("--repeat-id", type=int, default=1, dest="repeat_id")
     s.set_defaults(func=cmd_smoke)
@@ -532,7 +561,13 @@ def main(argv=None) -> int:
     r.add_argument("--run")
     r.add_argument("--task")
     r.add_argument("--runs-dir", dest="runs_dir")
+    r.add_argument("--compare-stage1", action="store_true", dest="compare_stage1",
+                   help="Stage 1: compare the latest B and C1 runs of --task")
     r.set_defaults(func=cmd_report)
+
+    s1 = sub.add_parser("stage1-summary", help="Stage-1 B vs C1 summary (no Claude)")
+    s1.add_argument("--runs-dir", dest="runs_dir")
+    s1.set_defaults(func=cmd_stage1_summary)
 
     x = sub.add_parser("summary", help="Stage-0.5 cross-task A/B summary (no Claude)")
     x.add_argument("--runs-dir", dest="runs_dir")

@@ -993,3 +993,27 @@ reports mark results on historical runs as `post_hoc_exploratory`.
   `expected_edit_paths` is a synonym for `expected_modified_paths`. None of
   them reaches a prompt.
 * New fixtures: `shipkit`, `confkit`, `dbclient`, `helpdesk` (tasks 3–6).
+
+## 22. Stage 1: C1_shared_worker_context (2026-09-11)
+
+Preregistered in PREREGISTRATION section 16.
+
+* `arms/c1_shared_worker.py`: five invocations (Coordinator; Worker
+  Investigator phase; Coordinator resume; Worker Implementer phase as `--resume`
+  of the Investigator session; Coordinator resume), giving 2 fresh physical
+  sessions. The Coordinator and Investigator prompts are Arm B's functions. The
+  Implementer phase gets `implementer_resume_prompt(instruction)` only: no
+  forwarded report and no task statement. It writes `topology.json` and a
+  `WORKER_ROLE_TRANSITION` event.
+* `config.C1_TOPOLOGY`, `topology_config_hash`: the C1 identity. `ARMS`,
+  `effective_config()` and the A/B `config_hash` are untouched. `start_run(...,
+  topology=)` is used only by C1.
+* `report.topology_summary` (invocations, fresh/resumed, physical sessions,
+  exact first-call usage, requested vs `init` tools) and
+  `report.worker_transition_check` (a C1 validity condition),
+  `render_stage1_comparison`, `stage1_rows`, `render_stage1_summary`.
+* `runner.py smoke --task <t> --arm C1`, `report --task <t> --compare-stage1`,
+  `stage1-summary`. `--arm both` is still exactly A and B.
+* `decomposition.session_contexts` keys resume chains by physical session
+  (identical results on every A/B run).
+* The mock CLI recognizes the C1 Implementer-resume prompt, for local tests only.

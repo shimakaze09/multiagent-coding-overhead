@@ -396,3 +396,62 @@ class RunConfig:
 
 # Stage 0 explicitly does not implement Arm C or any structured-state transfer.
 ARMS = ("A", "B")
+
+
+# --------------------------------------------------------------------------
+# Stage 1: C1_shared_worker_context (PREREGISTRATION section 16)
+# --------------------------------------------------------------------------
+#
+# A separate experimental arm, NOT the old speculative "structured-state Arm C".
+# It reuses the Investigator's Claude Code session as the Implementer's session
+# (resumed), keeping the Coordinator and the logical three-role workflow. It is
+# deliberately NOT part of ARMS or effective_config(), so the A/B config_hash is
+# unchanged. C1 gets its own identity from topology_config_hash().
+
+C1_ARM = "C1"
+C1_ARM_TOPOLOGY = "C1_shared_worker_context"
+C1_TOPOLOGY_VERSION = 1
+EXPERIMENT_SCHEMA_VERSION_C1 = 2  # A/B metadata (schema 1) is left as written
+
+C1_TOPOLOGY = {
+    "arm": C1_ARM,
+    "arm_topology": C1_ARM_TOPOLOGY,
+    "topology_version": C1_TOPOLOGY_VERSION,
+    "logical_roles": ["coordinator", "investigator", "implementer"],
+    "physical_sessions": {"coordinator": ["coordinator"], "worker": ["investigator", "implementer"]},
+    "invocations": [
+        {"step": "coordinator_kickoff", "logical_role": "coordinator", "physical_session": "coordinator", "resume": False},
+        {"step": "investigate", "logical_role": "investigator", "physical_session": "worker", "resume": False},
+        {"step": "coordinator_plan", "logical_role": "coordinator", "physical_session": "coordinator", "resume": True},
+        {"step": "implement_resume", "logical_role": "implementer", "physical_session": "worker", "resume": True},
+        {"step": "coordinator_wrapup", "logical_role": "coordinator", "physical_session": "coordinator", "resume": True},
+    ],
+    # What the resumed Worker is given in its Implementer phase: the Coordinator's
+    # instruction only. It already holds the task, its own investigation and its
+    # own report in session history, so the report is NOT forwarded back and the
+    # task statement is NOT resent.
+    "implementer_phase_prompt_inputs": ["coordinator_instruction"],
+    "investigator_report_forwarded_to_worker": False,
+    "task_statement_resent_on_worker_resume": False,
+    # Per-phase tool policy of the one physical Worker session: exactly the Arm-B
+    # role policies, applied per invocation (--tools / --disallowedTools are
+    # per-process flags; a resumed invocation receives its own).
+    "worker_phase_tool_policy": {
+        role: {
+            "tools": list(ROLE_TOOLS[role]),
+            "disallowed_tools": list(ROLE_DISALLOWED_TOOLS.get(role, ())),
+            "allowed_tools": list(allowed_tools_for_role(role)),
+        }
+        for role in ("investigator", "implementer")
+    },
+}
+
+
+def topology_config_hash(cfg: "RunConfig", topology: dict) -> str:
+    """Config identity for a Stage-1 arm: the unchanged base effective config
+    plus the topology. Never equal to any A/B config_hash."""
+    blob = json.dumps(
+        {"base_effective_config": cfg.effective_config(), "topology": topology},
+        sort_keys=True, separators=(",", ":"),
+    )
+    return hashlib.blake2b(blob.encode("utf-8"), digest_size=16).hexdigest()
