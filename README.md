@@ -7,9 +7,9 @@ that team, on deterministic coding tasks. It runs on real Claude Code sessions
 with exact provider usage telemetry.
 
 **Read the results:**
-- [**`stage0/RESULT.md`**](stage0/RESULT.md): 1–2 page executive summary
-- [**`stage0/FINAL_RESEARCH_REPORT.md`**](stage0/FINAL_RESEARCH_REPORT.md): the full, standalone research report
-- [`stage0/PREREGISTRATION.md`](stage0/PREREGISTRATION.md): frozen definitions, hypotheses and every disclosed amendment
+- [**`RESULT.md`**](RESULT.md): 1–2 page executive summary
+- [**`FINAL_RESEARCH_REPORT.md`**](FINAL_RESEARCH_REPORT.md): the full, standalone research report
+- [`PREREGISTRATION.md`](PREREGISTRATION.md): frozen definitions, hypotheses and every disclosed amendment
 
 ## Research question
 
@@ -102,8 +102,8 @@ Other workloads and setups may produce different results:
 - **Rebuildable SQLite index:** derived data, always regenerated from the raw
   logs.
 - **Checksum manifests:** SHA-256 for every raw artifact of all 18 real runs, in
-  [`stage0/run_manifests/`](stage0/run_manifests/). The raw run telemetry itself
-  is intentionally git-ignored (see [`stage0/.gitignore`](stage0/.gitignore)).
+  [`run_manifests/`](run_manifests/). The raw run telemetry itself
+  is intentionally git-ignored (see [`.gitignore`](.gitignore)).
   The manifests let a copy of it be verified byte for byte.
 - **Disclosed instrumentation amendments:** each one records the defect, its
   effect, and whether raw data changed or a rerun occurred. This includes one
@@ -111,10 +111,10 @@ Other workloads and setups may produce different results:
 - **Negative and null findings preserved:** hypotheses the data did not support
   are reported as such.
 
-The local test suite runs without launching Claude, from `stage0/`:
+The local test suite runs without launching Claude, from the repository root:
 
 ```bash
 python -m pytest tests -q
 ```
 
-The harness, arms, analysis code and task fixtures are in [`stage0/`](stage0/).
+The harness, arms, analysis code and task fixtures are at the repository root; [`HARNESS.md`](HARNESS.md) documents how to run them.

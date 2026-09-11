@@ -342,8 +342,8 @@ current data:
 
 ---
 
-*Reproducibility:* `git log` holds every freeze and amendment commit. From
-`stage0/`, `python runner.py ingest && python runner.py summary && python
+*Reproducibility:* `git log` holds every freeze and amendment commit. From the
+repository root, `python runner.py ingest && python runner.py summary && python
 runner.py stage1-summary` rebuilds the index and summaries from raw telemetry.
 `sha256sum -c` on the four `run_manifests/` files verifies the raw data. The
 local test suite (645 tests) runs without launching Claude.

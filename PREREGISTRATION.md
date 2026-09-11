@@ -2409,3 +2409,27 @@ preregistration; it is not changed here.
 
 **Next authorized action: NONE.** No difficulty labels, no evaluation plan, no
 Multi-Agent run, pending the author's review.
+
+### 19.22 Repository layout flattened (2026-09-12): bookkeeping only, no data or rule change
+
+At the author's request the contents of `stage0/` were moved to the repository
+root, so `analysis/`, `arms/`, `harness/`, `tasks/`, `tests/`, `tools/`,
+`results/`, `run_manifests/`, `runs/`, `runner.py` and `config.py` now sit at
+the top level. The harness README, which would have collided with the project
+landing page, is now `HARNESS.md`. Commands that earlier sections give "from
+`stage0/`" (section 19.18 among them) are unchanged apart from that directory:
+run them from the repository root.
+
+Nothing about the experiment changed. Verified after the move:
+
+* the local suite: 948 passed, 2 skipped, no real Claude launch;
+* every historical derived report byte-identical to its archive, and all five
+  checksum manifests verify (their paths were always relative, so they verify
+  unchanged from the new root);
+* `runner.py ingest` rebuilds the index; `difficulty-summary` is unchanged.
+
+One detail for anyone reading raw telemetry: each run's `metadata.json` records
+the absolute workspace path it had when it ran, which still contains
+`...\stage0uns\...`. That is raw recorded data and was deliberately not
+rewritten. The analysis reads the repository from `<run_dir>/workspace`, which
+is where it now is, so every derived output is identical either way.
