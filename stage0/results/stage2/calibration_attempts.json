@@ -1,0 +1,2435 @@
+[
+  {
+    "run_id": "20260911T062942Z_s2t01_ledgerly_S2_SS_r1",
+    "task": "s2t01_ledgerly",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      8,
+      8
+    ],
+    "constraints": [
+      5,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 6,
+      "loc_removed": 5,
+      "unexpected_files": []
+    },
+    "model_calls": 21,
+    "tool_calls": 22,
+    "input_uncached": 1369,
+    "cache_read": 530219,
+    "cache_write": 22911,
+    "input_total": 554499,
+    "output": 8212,
+    "thinking": 4719,
+    "wall_s": 95.5,
+    "cost_usd": 0.281129,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.93,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T070245Z_s2t01_ledgerly_S2_SS_r2",
+    "task": "s2t01_ledgerly",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      8,
+      8
+    ],
+    "constraints": [
+      5,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 1,
+      "unexpected_files": []
+    },
+    "model_calls": 11,
+    "tool_calls": 12,
+    "input_uncached": 1349,
+    "cache_read": 241836,
+    "cache_write": 15468,
+    "input_total": 258653,
+    "output": 4523,
+    "thinking": 1788,
+    "wall_s": 49.67,
+    "cost_usd": 0.15674,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T073423Z_s2t01_ledgerly_S2_SS_r3",
+    "task": "s2t01_ledgerly",
+    "logical_repeat": 3,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      8,
+      8
+    ],
+    "constraints": [
+      5,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 1,
+      "unexpected_files": []
+    },
+    "model_calls": 24,
+    "tool_calls": 26,
+    "input_uncached": 1375,
+    "cache_read": 657520,
+    "cache_write": 31362,
+    "input_total": 690257,
+    "output": 13006,
+    "thinking": 8616,
+    "wall_s": 151.39,
+    "cost_usd": 0.388335,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T063152Z_s2t02_ledgerly_S2_SS_r1",
+    "task": "s2t02_ledgerly",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 5,
+      "loc_added": 33,
+      "loc_removed": 20,
+      "unexpected_files": []
+    },
+    "model_calls": 26,
+    "tool_calls": 35,
+    "input_uncached": 1233,
+    "cache_read": 894514,
+    "cache_write": 35057,
+    "input_total": 930804,
+    "output": 11537,
+    "thinking": 2434,
+    "wall_s": 136.8,
+    "cost_usd": 0.435701,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.93,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T070339Z_s2t02_ledgerly_S2_SS_r2",
+    "task": "s2t02_ledgerly",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 4,
+      "loc_added": 22,
+      "loc_removed": 12,
+      "unexpected_files": []
+    },
+    "model_calls": 26,
+    "tool_calls": 39,
+    "input_uncached": 1233,
+    "cache_read": 952980,
+    "cache_write": 36971,
+    "input_total": 991184,
+    "output": 12751,
+    "thinking": 2953,
+    "wall_s": 130.41,
+    "cost_usd": 0.46719,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T073658Z_s2t02_ledgerly_S2_SS_r3",
+    "task": "s2t02_ledgerly",
+    "logical_repeat": 3,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 5,
+      "loc_added": 29,
+      "loc_removed": 18,
+      "unexpected_files": []
+    },
+    "model_calls": 36,
+    "tool_calls": 42,
+    "input_uncached": 1253,
+    "cache_read": 1232956,
+    "cache_write": 37953,
+    "input_total": 1272162,
+    "output": 12631,
+    "thinking": 1123,
+    "wall_s": 127.88,
+    "cost_usd": 0.525953,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T063412Z_s2t03_ledgerly_S2_SS_r1",
+    "task": "s2t03_ledgerly",
+    "logical_repeat": 1,
+    "status": "INVALID",
+    "invalid_reason": "out_of_workspace_auto_memory_write",
+    "validity_reasons": [
+      "held-out isolation breach suspected (paths/markers)"
+    ],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t063412z-s2t03-ledgerly-s2-ss-r1-workspace/memory/memory.md",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t063412z-s2t03-ledgerly-s2-ss-r1-workspace/memory/feedback_bash_permissions.md",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t063412z-s2t03-ledgerly-s2-ss-r1-workspace/memory/memory.md"
+    ],
+    "solved": false,
+    "heldout": [
+      6,
+      7
+    ],
+    "constraints": [
+      4,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 6,
+      "loc_added": 73,
+      "loc_removed": 48,
+      "unexpected_files": []
+    },
+    "model_calls": 26,
+    "tool_calls": 39,
+    "input_uncached": 1336,
+    "cache_read": 1148236,
+    "cache_write": 47580,
+    "input_total": 1197152,
+    "output": 20782,
+    "thinking": 7472,
+    "wall_s": 213.67,
+    "cost_usd": 0.62911,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.93,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": false,
+    "included_in_success_rate_denominator": false,
+    "observed_quality_for_diagnostics_only": true
+  },
+  {
+    "run_id": "20260911T070553Z_s2t03_ledgerly_S2_SS_r2",
+    "task": "s2t03_ledgerly",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      6,
+      7
+    ],
+    "constraints": [
+      4,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 6,
+      "loc_added": 73,
+      "loc_removed": 39,
+      "unexpected_files": []
+    },
+    "model_calls": 29,
+    "tool_calls": 40,
+    "input_uncached": 1342,
+    "cache_read": 1114677,
+    "cache_write": 38655,
+    "input_total": 1154674,
+    "output": 13587,
+    "thinking": 2394,
+    "wall_s": 159.05,
+    "cost_usd": 0.51476,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T073910Z_s2t03_ledgerly_S2_SS_r3",
+    "task": "s2t03_ledgerly",
+    "logical_repeat": 3,
+    "status": "INVALID",
+    "invalid_reason": "out_of_workspace_auto_memory_write",
+    "validity_reasons": [
+      "held-out isolation breach suspected (paths/markers)"
+    ],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t073910z-s2t03-ledgerly-s2-ss-r3-workspace/memory",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t073910z-s2t03-ledgerly-s2-ss-r3-workspace/memory/project_ledgerly_signed_amounts.md",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t073910z-s2t03-ledgerly-s2-ss-r3-workspace/memory/memory.md"
+    ],
+    "solved": false,
+    "heldout": [
+      6,
+      7
+    ],
+    "constraints": [
+      4,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 6,
+      "loc_added": 66,
+      "loc_removed": 43,
+      "unexpected_files": []
+    },
+    "model_calls": 32,
+    "tool_calls": 39,
+    "input_uncached": 1348,
+    "cache_read": 1227210,
+    "cache_write": 42388,
+    "input_total": 1270946,
+    "output": 17140,
+    "thinking": 3786,
+    "wall_s": 170.8,
+    "cost_usd": 0.587741,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": false,
+    "included_in_success_rate_denominator": false,
+    "observed_quality_for_diagnostics_only": true
+  },
+  {
+    "run_id": "20260911T063910Z_s2t04_ledgerly_S2_SS_r1",
+    "task": "s2t04_ledgerly",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 13,
+      "loc_removed": 2,
+      "unexpected_files": []
+    },
+    "model_calls": 18,
+    "tool_calls": 17,
+    "input_uncached": 1254,
+    "cache_read": 388151,
+    "cache_write": 16199,
+    "input_total": 405604,
+    "output": 6109,
+    "thinking": 1801,
+    "wall_s": 68.05,
+    "cost_usd": 0.204736,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.93,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T070836Z_s2t04_ledgerly_S2_SS_r2",
+    "task": "s2t04_ledgerly",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 14,
+      "loc_removed": 3,
+      "unexpected_files": []
+    },
+    "model_calls": 17,
+    "tool_calls": 16,
+    "input_uncached": 1252,
+    "cache_read": 381081,
+    "cache_write": 17098,
+    "input_total": 399431,
+    "output": 6876,
+    "thinking": 2866,
+    "wall_s": 88.86,
+    "cost_usd": 0.214579,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T074205Z_s2t04_ledgerly_S2_SS_r3",
+    "task": "s2t04_ledgerly",
+    "logical_repeat": 3,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 14,
+      "loc_removed": 4,
+      "unexpected_files": []
+    },
+    "model_calls": 27,
+    "tool_calls": 26,
+    "input_uncached": 1272,
+    "cache_read": 688280,
+    "cache_write": 24548,
+    "input_total": 714100,
+    "output": 8147,
+    "thinking": 3034,
+    "wall_s": 150.25,
+    "cost_usd": 0.318574,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T064020Z_s2t05_flowq_S2_SS_r1",
+    "task": "s2t05_flowq",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      6
+    ],
+    "constraints": [
+      4,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 2,
+      "loc_removed": 2,
+      "unexpected_files": []
+    },
+    "model_calls": 15,
+    "tool_calls": 20,
+    "input_uncached": 1189,
+    "cache_read": 420789,
+    "cache_write": 24466,
+    "input_total": 446444,
+    "output": 6561,
+    "thinking": 2814,
+    "wall_s": 77.8,
+    "cost_usd": 0.248781,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.93,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T071009Z_s2t05_flowq_S2_SS_r2",
+    "task": "s2t05_flowq",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      3,
+      6
+    ],
+    "constraints": [
+      2,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 2,
+      "loc_removed": 2,
+      "unexpected_files": []
+    },
+    "model_calls": 14,
+    "tool_calls": 16,
+    "input_uncached": 1187,
+    "cache_read": 375434,
+    "cache_write": 22279,
+    "input_total": 398900,
+    "output": 6563,
+    "thinking": 3261,
+    "wall_s": 84.83,
+    "cost_usd": 0.230973,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T074439Z_s2t05_flowq_S2_SS_r3",
+    "task": "s2t05_flowq",
+    "logical_repeat": 3,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      3,
+      6
+    ],
+    "constraints": [
+      2,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 2,
+      "loc_removed": 2,
+      "unexpected_files": []
+    },
+    "model_calls": 15,
+    "tool_calls": 20,
+    "input_uncached": 1189,
+    "cache_read": 401466,
+    "cache_write": 22150,
+    "input_total": 424805,
+    "output": 6743,
+    "thinking": 3131,
+    "wall_s": 75.12,
+    "cost_usd": 0.237472,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T064141Z_s2t06_flowq_S2_SS_r1",
+    "task": "s2t06_flowq",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 6,
+      "loc_added": 119,
+      "loc_removed": 29,
+      "unexpected_files": []
+    },
+    "model_calls": 37,
+    "tool_calls": 51,
+    "input_uncached": 1412,
+    "cache_read": 1923614,
+    "cache_write": 58490,
+    "input_total": 1983516,
+    "output": 30529,
+    "thinking": 12163,
+    "wall_s": 301.16,
+    "cost_usd": 0.925399,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.93,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T071137Z_s2t06_flowq_S2_SS_r2",
+    "task": "s2t06_flowq",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 7,
+      "loc_added": 156,
+      "loc_removed": 33,
+      "unexpected_files": []
+    },
+    "model_calls": 42,
+    "tool_calls": 54,
+    "input_uncached": 1422,
+    "cache_read": 2313745,
+    "cache_write": 65430,
+    "input_total": 2380597,
+    "output": 38278,
+    "thinking": 18509,
+    "wall_s": 370.84,
+    "cost_usd": 1.108695,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T074558Z_s2t06_flowq_S2_SS_r3",
+    "task": "s2t06_flowq",
+    "logical_repeat": 3,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 7,
+      "loc_added": 127,
+      "loc_removed": 32,
+      "unexpected_files": []
+    },
+    "model_calls": 36,
+    "tool_calls": 48,
+    "input_uncached": 1410,
+    "cache_read": 1684255,
+    "cache_write": 53729,
+    "input_total": 1739394,
+    "output": 27881,
+    "thinking": 11573,
+    "wall_s": 281.2,
+    "cost_usd": 0.831999,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T064645Z_s2t07_flowq_S2_SS_r1",
+    "task": "s2t07_flowq",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      8,
+      8
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 4,
+      "loc_added": 155,
+      "loc_removed": 48,
+      "unexpected_files": []
+    },
+    "model_calls": 25,
+    "tool_calls": 32,
+    "input_uncached": 1506,
+    "cache_read": 926533,
+    "cache_write": 39861,
+    "input_total": 967900,
+    "output": 19661,
+    "thinking": 8036,
+    "wall_s": 177.67,
+    "cost_usd": 0.542837,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.93,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T071752Z_s2t07_flowq_S2_SS_r2",
+    "task": "s2t07_flowq",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      8,
+      8
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 4,
+      "loc_added": 126,
+      "loc_removed": 35,
+      "unexpected_files": []
+    },
+    "model_calls": 24,
+    "tool_calls": 34,
+    "input_uncached": 1504,
+    "cache_read": 823479,
+    "cache_write": 34887,
+    "input_total": 859870,
+    "output": 13818,
+    "thinking": 2451,
+    "wall_s": 126.56,
+    "cost_usd": 0.443896,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T075043Z_s2t07_flowq_S2_SS_r3",
+    "task": "s2t07_flowq",
+    "logical_repeat": 3,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      8,
+      8
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 4,
+      "loc_added": 137,
+      "loc_removed": 37,
+      "unexpected_files": []
+    },
+    "model_calls": 27,
+    "tool_calls": 38,
+    "input_uncached": 1510,
+    "cache_read": 1131624,
+    "cache_write": 44224,
+    "input_total": 1177358,
+    "output": 20183,
+    "thinking": 7473,
+    "wall_s": 199.17,
+    "cost_usd": 0.606535,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T064945Z_s2t08_flowq_S2_SS_r1",
+    "task": "s2t08_flowq",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      4,
+      6
+    ],
+    "constraints": [
+      3,
+      4
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 1,
+      "unexpected_files": []
+    },
+    "model_calls": 11,
+    "tool_calls": 10,
+    "input_uncached": 1252,
+    "cache_read": 219774,
+    "cache_write": 12506,
+    "input_total": 233532,
+    "output": 2619,
+    "thinking": 273,
+    "wall_s": 32.34,
+    "cost_usd": 0.121373,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.93,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T072003Z_s2t08_flowq_S2_SS_r2",
+    "task": "s2t08_flowq",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      4,
+      6
+    ],
+    "constraints": [
+      3,
+      4
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 1,
+      "unexpected_files": []
+    },
+    "model_calls": 20,
+    "tool_calls": 20,
+    "input_uncached": 1270,
+    "cache_read": 419091,
+    "cache_write": 13670,
+    "input_total": 434031,
+    "output": 4173,
+    "thinking": 877,
+    "wall_s": 73.73,
+    "cost_usd": 0.181463,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T075406Z_s2t08_flowq_S2_SS_r3",
+    "task": "s2t08_flowq",
+    "logical_repeat": 3,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      4,
+      6
+    ],
+    "constraints": [
+      3,
+      4
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 1,
+      "unexpected_files": []
+    },
+    "model_calls": 16,
+    "tool_calls": 15,
+    "input_uncached": 1262,
+    "cache_read": 344529,
+    "cache_write": 14992,
+    "input_total": 360783,
+    "output": 3720,
+    "thinking": 529,
+    "wall_s": 45.8,
+    "cost_usd": 0.167298,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T065020Z_s2t09_docpipe_S2_SS_r1",
+    "task": "s2t09_docpipe",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      5,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 4,
+      "unexpected_files": []
+    },
+    "model_calls": 19,
+    "tool_calls": 21,
+    "input_uncached": 1142,
+    "cache_read": 516267,
+    "cache_write": 21845,
+    "input_total": 539254,
+    "output": 5101,
+    "thinking": 1278,
+    "wall_s": 62.3,
+    "cost_usd": 0.242743,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T072120Z_s2t09_docpipe_S2_SS_r2",
+    "task": "s2t09_docpipe",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      5,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 4,
+      "unexpected_files": []
+    },
+    "model_calls": 23,
+    "tool_calls": 26,
+    "input_uncached": 1150,
+    "cache_read": 685968,
+    "cache_write": 26508,
+    "input_total": 713626,
+    "output": 7768,
+    "thinking": 3362,
+    "wall_s": 94.81,
+    "cost_usd": 0.322022,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T075456Z_s2t09_docpipe_S2_SS_r3",
+    "task": "s2t09_docpipe",
+    "logical_repeat": 3,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      5,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 4,
+      "unexpected_files": []
+    },
+    "model_calls": 15,
+    "tool_calls": 18,
+    "input_uncached": 1134,
+    "cache_read": 389887,
+    "cache_write": 20798,
+    "input_total": 411819,
+    "output": 5517,
+    "thinking": 1843,
+    "wall_s": 61.86,
+    "cost_usd": 0.217423,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.96,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T065126Z_s2t10_docpipe_S2_SS_r1",
+    "task": "s2t10_docpipe",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 9,
+      "loc_added": 110,
+      "loc_removed": 4,
+      "unexpected_files": []
+    },
+    "model_calls": 32,
+    "tool_calls": 44,
+    "input_uncached": 1398,
+    "cache_read": 1522622,
+    "cache_write": 50386,
+    "input_total": 1574406,
+    "output": 27253,
+    "thinking": 15925,
+    "wall_s": 311.41,
+    "cost_usd": 0.78,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T072259Z_s2t10_docpipe_S2_SS_r2",
+    "task": "s2t10_docpipe",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 9,
+      "loc_added": 149,
+      "loc_removed": 5,
+      "unexpected_files": []
+    },
+    "model_calls": 32,
+    "tool_calls": 43,
+    "input_uncached": 1398,
+    "cache_read": 1590989,
+    "cache_write": 53333,
+    "input_total": 1645720,
+    "output": 30091,
+    "thinking": 18765,
+    "wall_s": 332.45,
+    "cost_usd": 0.833842,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T075602Z_s2t10_docpipe_S2_SS_r3",
+    "task": "s2t10_docpipe",
+    "logical_repeat": 3,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 9,
+      "loc_added": 141,
+      "loc_removed": 4,
+      "unexpected_files": []
+    },
+    "model_calls": 31,
+    "tool_calls": 43,
+    "input_uncached": 1396,
+    "cache_read": 1509683,
+    "cache_write": 52179,
+    "input_total": 1563258,
+    "output": 28297,
+    "thinking": 16252,
+    "wall_s": 292.62,
+    "cost_usd": 0.795021,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.96,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T065706Z_s2t11_docpipe_S2_SS_r1",
+    "task": "s2t11_docpipe",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 6,
+      "loc_added": 239,
+      "loc_removed": 63,
+      "unexpected_files": []
+    },
+    "model_calls": 22,
+    "tool_calls": 28,
+    "input_uncached": 1349,
+    "cache_read": 946420,
+    "cache_write": 45262,
+    "input_total": 993031,
+    "output": 28045,
+    "thinking": 14333,
+    "wall_s": 270.25,
+    "cost_usd": 0.6521,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T072835Z_s2t11_docpipe_S2_SS_r2",
+    "task": "s2t11_docpipe",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 7,
+      "loc_added": 281,
+      "loc_removed": 193,
+      "unexpected_files": [
+        "docpipe/_renderer.py"
+      ]
+    },
+    "model_calls": 32,
+    "tool_calls": 38,
+    "input_uncached": 1369,
+    "cache_read": 1439469,
+    "cache_write": 46260,
+    "input_total": 1487098,
+    "output": 27313,
+    "thinking": 11787,
+    "wall_s": 268.67,
+    "cost_usd": 0.747427,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T080058Z_s2t11_docpipe_S2_SS_r3",
+    "task": "s2t11_docpipe",
+    "logical_repeat": 3,
+    "status": "INVALID",
+    "invalid_reason": "held-out content exposure suspected",
+    "validity_reasons": [
+      "held-out content exposure suspected"
+    ],
+    "hard_stop": [
+      "held_out_or_reference_exposure"
+    ],
+    "held_out_exposure": true,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 6,
+      "loc_added": 284,
+      "loc_removed": 59,
+      "unexpected_files": []
+    },
+    "model_calls": 30,
+    "tool_calls": 38,
+    "input_uncached": 1365,
+    "cache_read": 1439151,
+    "cache_write": 53018,
+    "input_total": 1493534,
+    "output": 33530,
+    "thinking": 13767,
+    "wall_s": 315.0,
+    "cost_usd": 0.836552,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.96,
+      "overage": false
+    },
+    "attempt": "3a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": false,
+    "included_in_success_rate_denominator": false,
+    "observed_quality_for_diagnostics_only": true
+  },
+  {
+    "run_id": "20260911T070140Z_s2t12_docpipe_S2_SS_r1",
+    "task": "s2t12_docpipe",
+    "logical_repeat": 1,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 26,
+      "loc_removed": 0,
+      "unexpected_files": []
+    },
+    "model_calls": 16,
+    "tool_calls": 17,
+    "input_uncached": 1115,
+    "cache_read": 356574,
+    "cache_write": 15774,
+    "input_total": 373463,
+    "output": 5447,
+    "thinking": 1459,
+    "wall_s": 62.0,
+    "cost_usd": 0.189958,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.94,
+      "overage": false
+    },
+    "attempt": "1a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T073308Z_s2t12_docpipe_S2_SS_r2",
+    "task": "s2t12_docpipe",
+    "logical_repeat": 2,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 18,
+      "loc_removed": 1,
+      "unexpected_files": []
+    },
+    "model_calls": 18,
+    "tool_calls": 20,
+    "input_uncached": 1119,
+    "cache_read": 447734,
+    "cache_write": 19295,
+    "input_total": 468148,
+    "output": 5936,
+    "thinking": 2301,
+    "wall_s": 71.44,
+    "cost_usd": 0.227167,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed_warning",
+      "type": "seven_day",
+      "utilization": 0.95,
+      "overage": false
+    },
+    "attempt": "2a",
+    "attempt_index": 1,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  }
+]
