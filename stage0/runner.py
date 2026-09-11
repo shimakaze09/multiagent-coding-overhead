@@ -532,7 +532,7 @@ def _stage2_run(task, arm, repeat_id, phase, difficulty=None):
     cli, caps = _require_ready()
     cfg = config.RunConfig(model=config.STRONG_MODEL, limits=config.stage2_limits_for(task.task_id))
     summary = s2_routing.run(arm=arm, task=task, repeat_id=repeat_id, cfg=cfg, cli=cli,
-                             capability_report=caps.as_dict(), phase=phase, difficulty=difficulty)
+                             capability_report=caps, phase=phase, difficulty=difficulty)
     print(f"run {summary['run_id']}: solved={summary['solved']} sessions={summary['session_count']} "
           f"phase={phase}")
     return 0

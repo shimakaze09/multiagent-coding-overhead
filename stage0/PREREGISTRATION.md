@@ -2022,3 +2022,33 @@ These are not amounts paid: execution is on the subscription.
     python runner.py difficulty-summary
     python runner.py difficulty-freeze
     python runner.py evaluation-plan
+
+### Amendment 9 - 2026-09-11 - Stage-2 runner passed the capability report twice (at first use, BEFORE any Stage-2 inference)
+
+**Defect.** `runner._stage2_run`, which `calibrate` and `evaluate` share, called
+`.as_dict()` on the capability report. `_require_ready()` already returns that
+report as a dict (the existing `smoke` command passes it through unchanged).
+The first calibration command (`calibrate --task s2t01_ledgerly --repeat-id 1`,
+at freeze `601cb61`) therefore stopped with an `AttributeError` before
+`start_run`. Only the refusal paths had been tested, and they exit before this
+line.
+
+**Effect.** None on data:
+
+* no run directory was created;
+* no Claude session was started;
+* no Stage-2 inference had occurred;
+* the working tree was clean.
+
+**Fix.** Pass the dict through (`capability_report=caps`), one line. Nothing
+else changes:
+
+* no prompt, task, fixture, limit, configuration or identity hash;
+* no analysis or calibration rule.
+
+A new regression test drives `runner.py calibrate` and `runner.py evaluate`
+end to end through the mock CLI (`tests/test_stage2_runner_e2e.py`).
+
+**Decision.** Chosen by the author before any inference: fix as a disclosed
+amendment, commit, re-verify the freeze preconditions (clean tree, `diagnose`
+READY), then start Phase C with repeat 1 of `s2t01_ledgerly`, as planned.
