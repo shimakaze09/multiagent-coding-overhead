@@ -156,11 +156,16 @@ def run_agent(
     session_index: int,
     prompt_inputs: Optional[dict] = None,
     resume_session_id: Optional[str] = None,
+    model: Optional[str] = None,
 ) -> AgentResult:
+    """`model` overrides the run's model for this one invocation (Stage 2A
+    heterogeneous routing). Arms A, B and C1 never pass it, so every one of
+    their invocations still gets `ctx.model`, exactly as before."""
     ctx.budget_check()
 
     session_key = f"{session_index:02d}_{spec.agent_id}"
     session_dir = ctx.run_dir / "sessions" / session_key
+    invocation_model = model or ctx.model
 
     inv = claude_cli.build_invocation(
         cli_path=ctx.cli_path,
@@ -169,7 +174,7 @@ def run_agent(
         role=spec.role,
         prompt=prompt,
         cwd=workspace.path,
-        model=ctx.model,
+        model=invocation_model,
         tools=spec.tools,
         allowed_tools=spec.allowed_tools,
         disallowed_tools=spec.disallowed_tools,
@@ -194,7 +199,7 @@ def run_agent(
             "disallowed_tools": list(spec.disallowed_tools),
             "permission_mode": inv.permission_mode,
             "permission_prompts": inv.permission_prompts,
-            "model": ctx.model,
+            "model": invocation_model,
             "assigned_session_id": inv.session_id,
             "resumed_session_id": inv.resume_session_id,
             "is_resume": bool(inv.resume_session_id),

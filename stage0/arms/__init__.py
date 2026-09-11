@@ -96,8 +96,10 @@ def start_run(
 ) -> RunSession:
     """Create the run directory, prepare an isolated workspace, open the log.
 
-    `topology` is given only by Stage-1 arms (C1). Arm A and Arm B never pass
-    it, so their metadata and config_hash are exactly as before."""
+    `topology` is given only by the Stage-1 arm (C1) and the Stage-2 arms. Arm A
+    and Arm B never pass it, so their metadata and config_hash are exactly as
+    before. A topology may name its own `stage` and `experiment_schema_version`
+    (Stage 2 does); C1_TOPOLOGY names neither and keeps stage 1 / schema 2."""
     billing = config.preflight_billing_guard()
 
     run_id = make_run_id(task, arm, repeat_id)
@@ -183,8 +185,9 @@ def start_run(
         # Stage-1 arm: its own config identity. base_config_hash is the unchanged
         # A/B harness configuration it runs on.
         metadata.update({
-            "stage": 1,
-            "experiment_schema_version": config.EXPERIMENT_SCHEMA_VERSION_C1,
+            "stage": topology.get("stage", 1),
+            "experiment_schema_version": topology.get(
+                "experiment_schema_version", config.EXPERIMENT_SCHEMA_VERSION_C1),
             "arm_topology": topology["arm_topology"],
             "topology_version": topology["topology_version"],
             "topology": topology,

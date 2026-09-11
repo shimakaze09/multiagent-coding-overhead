@@ -129,5 +129,38 @@ def mock_c1_run(tmp_path_factory):
 
 
 @pytest.fixture(scope="session")
+def mock_s2_runs(tmp_path_factory):
+    """Stage 2A: every Stage-2 configuration once through the mock CLI, in its OWN
+    runs directory (the A/B and C1 fixtures are unchanged). The mock resolves
+    `sonnet` / the Haiku id like Claude Code 2.1.260. Instrumentation only."""
+    import config
+    from arms import s2_routing
+    from harness import claude_cli
+    from tasks import registry
+
+    os.environ["STAGE0_CLAUDE_CLI"] = str(MOCK_CLI)
+    try:
+        cli = config.find_claude_cli()
+        caps = claude_cli.detect_capabilities(cli)
+        assert caps.ok, caps.missing_required
+        runs_dir = tmp_path_factory.mktemp("runs_s2")
+        out = {}
+        for arm in config.STAGE2_ARMS:
+            summary = s2_routing.ARMS[arm].run(
+                task=registry.get_task("palindrome_punctuation"),
+                repeat_id=1,
+                cfg=config.RunConfig(),
+                cli=cli,
+                capability_report=caps.as_dict(),
+                runs_dir=runs_dir,
+            )
+            out[arm] = (runs_dir / summary["run_id"], summary)
+        out["runs_dir"] = runs_dir
+        return out
+    finally:
+        os.environ.pop("STAGE0_CLAUDE_CLI", None)
+
+
+@pytest.fixture(scope="session")
 def all_mock_runs(mock_runs, mock_c1_run):
     return {"A": mock_runs["A"], "B": mock_runs["B"], "C1": mock_c1_run}

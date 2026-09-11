@@ -455,3 +455,192 @@ def topology_config_hash(cfg: "RunConfig", topology: dict) -> str:
         sort_keys=True, separators=(",", ":"),
     )
     return hashlib.blake2b(blob.encode("utf-8"), digest_size=16).hexdigest()
+
+
+# --------------------------------------------------------------------------
+# Stage 2A: heterogeneous model routing (PREREGISTRATION section 18)
+# --------------------------------------------------------------------------
+#
+# A new experiment, not a continuation of C1. The variable is WHICH MODEL serves
+# each logical role. Topology, prompts, tools, permissions, limits and tasks are
+# Arm A's / Arm B's, unchanged. Like C1, nothing here touches ARMS,
+# effective_config() or the A/B config_hash.
+#
+# Model identifiers, resolved from local evidence only (no inference):
+#   * `claude --help` (2.1.260): "--model <model>  Model for the current session.
+#     Provide an alias for the latest model (e.g. 'fable', 'opus', or 'sonnet')
+#     or a model's full name".
+#   * The 2.1.260 binary's model registry lists `claude-haiku-4-5` with
+#     first-party id `claude-haiku-4-5-20251001`, and `claude-sonnet-5`.
+#   * The alias `haiku` resolves indirectly (ANTHROPIC_DEFAULT_HAIKU_MODEL, then
+#     a remotely configurable lookup, then a built-in). The full id does not
+#     depend on that chain, so CHEAP requests the full id.
+#   * This subscription already served `claude-haiku-4-5-20251001` (Claude
+#     Code's own auxiliary calls, 33 stored sessions) and resolved `sonnet` to
+#     `claude-sonnet-5` in all 58 stored init events.
+# STRONG keeps the historical request `sonnet` byte for byte, so the Single-
+# Strong baseline and every strong-role invocation get the historical argv.
+STRONG_MODEL = "sonnet"
+STRONG_MODEL_RESOLVED = "claude-sonnet-5"
+CHEAP_MODEL = "claude-haiku-4-5-20251001"
+CHEAP_MODEL_RESOLVED = "claude-haiku-4-5-20251001"
+
+MODEL_CLASSES = {
+    "CHEAP": {"requested": CHEAP_MODEL, "expected_resolved": CHEAP_MODEL_RESOLVED,
+              "canonical": "claude-haiku-4-5"},
+    "STRONG": {"requested": STRONG_MODEL, "expected_resolved": STRONG_MODEL_RESOLVED,
+               "canonical": "claude-sonnet-5"},
+}
+
+# Claude Code's own internal calls (not role-assigned). Stored telemetry shows
+# only this model in that role. Any other extra model in an invocation's
+# modelUsage invalidates the run (it would be unassigned capability).
+AUXILIARY_MODELS_CANONICAL = ("claude-haiku-4-5",)
+
+# API-equivalent list prices, USD per million tokens, as bundled in the Claude
+# Code 2.1.260 model registry (pricing keys `tier_2_10` and `haiku_45`).
+# Verified against stored telemetry: recomputing modelUsage.costUSD from these
+# tables and the reported tokens reproduces all 90 stored per-model entries
+# exactly. Not the amount paid: execution is on the subscription.
+MODEL_PRICING_USD_PER_MTOK = {
+    "claude-sonnet-5": {"input": 2.0, "output": 10.0, "cache_write_5m": 2.5,
+                        "cache_write_1h": 4.0, "cache_read": 0.2},
+    "claude-haiku-4-5": {"input": 1.0, "output": 5.0, "cache_write_5m": 1.25,
+                         "cache_write_1h": 2.0, "cache_read": 0.1},
+}
+
+# Reasoning effort. The CLI has `--effort <level>` (low, medium, high, xhigh,
+# max), the env var CLAUDE_CODE_EFFORT_LEVEL and the setting `effortLevel`. But
+# the registry gives `claude-sonnet-5` the capabilities effort/max_effort/
+# xhigh_effort (default_effort "high") and `claude-haiku-4-5` none of them, and
+# no init/result field reports the effort used. The control is therefore not
+# comparable across the two models and not verifiable: Stage 2A passes no
+# effort control to any role (every historical run did the same).
+STAGE2_EFFORT_POLICY = {
+    "policy": "cli_default_not_passed",
+    "effort_flag_passed": False,
+    "cheap": "not passed; the claude-haiku-4-5 registry entry lists no effort capability",
+    "strong": "not passed; CLI default for claude-sonnet-5 (registry default_effort 'high'), "
+              "identical to every historical Arm A/B/C1 run",
+    "observable_in_telemetry": False,
+}
+
+STAGE2_TOPOLOGY_VERSION = 1
+EXPERIMENT_SCHEMA_VERSION_S2 = 3  # A/B (1) and C1 (2) metadata are left as written
+
+# Prompts are Arm A's / Arm B's, unchanged. Their sources are pinned here and
+# checked before every Stage-2 run; no model-specific prompt exists.
+STAGE2_PROMPT_SOURCES = {
+    "arms/single.py": "128cb314d1c2098d607281810efe47cc37f559b7024b95a36e3c357be5f74c52",
+    "arms/multi_nl.py": "537bc435463f19e65f269a71510fcf916ecd54a65f1efb7769e63e6b6130864a",
+}
+# sha256 of json.dumps(harness.agent.ROLE_SYSTEM_APPENDIX, sort_keys=True)
+STAGE2_ROLE_APPENDIX_SHA256 = "e2e6b8418e1a9b828294bfb639b15334a1f6949ab5bdcdda86b00b57b147b1a8"
+
+STAGE2_TASKS = ("shipping_inch_dimensions", "settings_list_fields",
+                "rename_max_connections", "sla_weekend_hours")
+
+_SEPARATED = "separated_roles_arm_b"
+_SINGLE = "single_agent_arm_a"
+STAGE2_CONFIGS = {
+    "S2_R1": {"label": "Strong-Investigator Hybrid", "topology": _SEPARATED,
+              "role_classes": {"coordinator": "CHEAP", "investigator": "STRONG", "implementer": "CHEAP"}},
+    "S2_R2": {"label": "Strong-Implementer Hybrid", "topology": _SEPARATED,
+              "role_classes": {"coordinator": "CHEAP", "investigator": "CHEAP", "implementer": "STRONG"}},
+    "S2_R3": {"label": "All-Cheap Multi", "topology": _SEPARATED,
+              "role_classes": {"coordinator": "CHEAP", "investigator": "CHEAP", "implementer": "CHEAP"}},
+    "S2_S": {"label": "Single Cheap", "topology": _SINGLE,
+             "role_classes": {"solo": "CHEAP"}},
+    # Only where no historical Arm A run has exact parity (section 18.6).
+    "S2_SS": {"label": "Single Strong (fresh baseline)", "topology": _SINGLE,
+              "role_classes": {"solo": "STRONG"}},
+}
+STAGE2_ARMS = tuple(STAGE2_CONFIGS)
+STAGE2_PILOT_ARMS = ("S2_R1", "S2_R2", "S2_R3", "S2_S")
+
+_ARM_B_STEPS = (
+    ("coordinator_kickoff", "coordinator", False),
+    ("investigate", "investigator", False),
+    ("coordinator_plan", "coordinator", True),
+    ("implement", "implementer", False),
+    ("coordinator_wrapup", "coordinator", True),
+)
+
+
+def stage2_topology(arm: str) -> dict:
+    """The Stage-2 identity of one configuration (hashed with the base config)."""
+    c = STAGE2_CONFIGS[arm]
+    classes = dict(c["role_classes"])
+    separated = c["topology"] == _SEPARATED
+    steps = _ARM_B_STEPS if separated else (("solo", "solo", False),)
+    return {
+        "arm": arm,
+        "arm_topology": f"stage2_{c['topology']}",
+        "label": c["label"],
+        "stage": 2,
+        "experiment_schema_version": EXPERIMENT_SCHEMA_VERSION_S2,
+        "topology_version": STAGE2_TOPOLOGY_VERSION,
+        "base_arm_topology": "B" if separated else "A",
+        "logical_roles": list(classes),
+        "invocations": [
+            {"step": s, "logical_role": r, "physical_session": r, "resume": res,
+             "model_class": classes[r]}
+            for s, r, res in steps
+        ],
+        "role_model_classes": classes,
+        "role_models_requested": {r: MODEL_CLASSES[k]["requested"] for r, k in classes.items()},
+        "role_models_expected_resolved": {r: MODEL_CLASSES[k]["expected_resolved"] for r, k in classes.items()},
+        "role_reasoning_effort": {r: STAGE2_EFFORT_POLICY["policy"] for r in classes},
+        "model_classes": MODEL_CLASSES,
+        "auxiliary_models_allowed": list(AUXILIARY_MODELS_CANONICAL),
+        "effort_policy": STAGE2_EFFORT_POLICY,
+        "prompt_version": {
+            "prompts": "arm_b_v1_verbatim" if separated else "arm_a_v1_verbatim",
+            "sources_sha256": dict(STAGE2_PROMPT_SOURCES),
+            "role_system_appendix_sha256": STAGE2_ROLE_APPENDIX_SHA256,
+            "model_specific_prompt_changes": False,
+        },
+        "permission_policy_id": ALLOWED_TOOLS_POLICY_ID,
+        "pricing_usd_per_mtok": MODEL_PRICING_USD_PER_MTOK,
+    }
+
+
+# Variables that would change which model or effort a spawned `claude` uses.
+# Presence only is tested; values are never read. CLAUDE_CODE_* is already
+# stripped from every child, so only variables that would REACH a child count.
+MODEL_ROUTING_ENV_VARS = (
+    "ANTHROPIC_MODEL",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL",
+    "ANTHROPIC_DEFAULT_FABLE_MODEL",
+    "ANTHROPIC_SMALL_FAST_MODEL",
+    "CLAUDE_CODE_SUBAGENT_MODEL",
+    "CLAUDE_CODE_EFFORT_LEVEL",
+    "MAX_THINKING_TOKENS",
+)
+
+
+class ModelRoutingEnvError(RuntimeError):
+    """Raised when the environment could silently change a Stage-2 model/effort."""
+
+
+def _reaches_child(name: str) -> bool:
+    return name not in CHILD_ENV_STRIP_EXACT and not any(
+        name.startswith(p) for p in CHILD_ENV_STRIP_PREFIXES)
+
+
+def model_routing_env_present(env: Optional[dict] = None) -> tuple[str, ...]:
+    env = os.environ if env is None else env
+    return tuple(v for v in MODEL_ROUTING_ENV_VARS if env.get(v) and _reaches_child(v))
+
+
+def preflight_model_routing_env(env: Optional[dict] = None) -> dict:
+    present = model_routing_env_present(env)
+    if present:
+        raise ModelRoutingEnvError(
+            "Stage-2 guard: these variables would change the model or effort of a "
+            f"spawned `claude`: {', '.join(present)} (presence only was tested). "
+            "The harness will not unset them; remove them from this shell and re-run.")
+    return {"vars_tested": list(MODEL_ROUTING_ENV_VARS), "present_reaching_child": [],
+            "note": "presence-only; no value was read or logged"}

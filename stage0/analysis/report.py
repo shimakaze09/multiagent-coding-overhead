@@ -15,7 +15,7 @@ import dataclasses
 import statistics
 
 import config
-from analysis import decomposition, handoff, ingest, isolation, leakage, metrics, overlap_v2
+from analysis import decomposition, handoff, ingest, isolation, leakage, metrics, overlap_v2, routing
 from harness import events as ev, telemetry, tools
 
 NA = "N/A - not exposed by subscription CLI telemetry"
@@ -360,6 +360,11 @@ def run_report(run_dir: str | Path) -> dict:
         "final_tree_hash": summary.get("final_tree_hash"),
         "diff_bytes": summary.get("diff_bytes"),
     }
+    if routing.is_stage2_arm(meta.get("arm")):
+        # Stage 2A (section 18): per-invocation requested vs resolved model and
+        # role-assigned vs auxiliary usage, recomputed from the raw logs.
+        report["model_routing"] = routing.check_run(raw)
+        report["stage2_identity"] = meta.get("stage2_identity")
     report["validity"] = run_validity(report)
     return report
 
@@ -411,8 +416,11 @@ def run_validity(r: dict) -> dict:
         reasons.append("arm label invalid (internal subagent fan-out)")
     if r.get("all_sessions_subscription_ok") is not True:
         reasons.append("subscription billing not confirmed for every session")
+    stage2 = routing.is_stage2_arm(r.get("arm"))
     bad = [t for t in r.get("session_terminations") or [] if t != "completed"]
-    if bad:
+    if bad and not stage2:
+        # Stage 2 (section 18.9): a limit termination of an assigned model is an
+        # outcome, not an exclusion; its infrastructure stops are checked below.
         reasons.append(f"session termination(s): {sorted(set(map(str, bad)))}")
     iso = r.get("isolation_check") or {}
     if iso.get("breach_suspected"):
@@ -427,6 +435,8 @@ def run_validity(r: dict) -> dict:
         if not wt.get("verified"):
             failed = [k for k, v in (wt.get("checks") or {}).items() if not v] or ["no transition record"]
             reasons.append(f"C1 worker transition not verified: {failed}")
+    if stage2:
+        reasons += routing.validity_reasons(r)
     return {"valid": not reasons, "reasons": reasons}
 
 

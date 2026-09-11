@@ -26,6 +26,35 @@ from pathlib import Path
 VERSION = "2.1.260-mock"
 MOCK_MODEL = "mock-sonnet"
 
+# Stage 2 (model routing) only: requests for these model names behave like the
+# real 2.1.260 CLI - `sonnet` resolves to `claude-sonnet-5`, a full id is echoed,
+# every assistant message carries the resolved model, and modelUsage has one
+# entry per model including Claude Code's own auxiliary Haiku call (which lands
+# in the SAME entry when the session model is itself Haiku). Any other name
+# (e.g. `mock-sonnet`, used by every A/B/C1 mock run) keeps the old behaviour.
+MOCK_RESOLUTION = {
+    "sonnet": "claude-sonnet-5",
+    "claude-sonnet-5": "claude-sonnet-5",
+    "claude-haiku-4-5-20251001": "claude-haiku-4-5-20251001",
+}
+MOCK_AUX_MODEL = "claude-haiku-4-5-20251001"
+MOCK_AUX_USAGE = {"inputTokens": 900, "outputTokens": 15, "cacheReadInputTokens": 0,
+                  "cacheCreationInputTokens": 0}
+# per MTok: input, output, cache write (5m), cache read - Claude Code 2.1.260 registry
+MOCK_PRICES = {"claude-sonnet-5": (2.0, 10.0, 2.5, 0.2), "claude-haiku-4-5": (1.0, 5.0, 1.25, 0.1)}
+# Test hook: pretend the CLI served a different model than requested.
+FORCE_RESOLVED_ENV = "STAGE0_MOCK_FORCE_RESOLVED_MODEL"
+
+
+def _canonical(model: str) -> str:
+    return re.sub(r"-\d{8}$", "", model)
+
+
+def _mock_cost(model: str, e: dict) -> float:
+    p = MOCK_PRICES.get(_canonical(model), (0.0, 0.0, 0.0, 0.0))
+    return (e["inputTokens"] * p[0] + e["outputTokens"] * p[1]
+            + e["cacheCreationInputTokens"] * p[2] + e["cacheReadInputTokens"] * p[3]) / 1e6
+
 TARGET_FILES = ("tinylib/palindrome.py", "tinylib/text.py", "tinylib/report.py")
 
 
@@ -39,8 +68,10 @@ def _ts() -> str:
 
 
 class Emitter:
-    def __init__(self, session_id: str):
+    def __init__(self, session_id: str, message_model: str = MOCK_MODEL, routing: bool = False):
         self.session_id = session_id
+        self.message_model = message_model
+        self.routing = routing
         self.turns = 0
         self.input_tokens = 0
         self.output_tokens = 0
@@ -100,7 +131,7 @@ class Emitter:
                 "type": "assistant",
                 "message": {
                     "id": f"msg_{uuid.uuid4().hex[:16]}",
-                    "model": MOCK_MODEL,
+                    "model": self.message_model,
                     "role": "assistant",
                     "type": "message",
                     "stop_reason": None,
@@ -137,7 +168,27 @@ class Emitter:
             }
         )
 
+    def _routing_model_usage(self) -> dict:
+        main = {"inputTokens": self.input_tokens, "outputTokens": self.output_tokens,
+                "cacheReadInputTokens": self.cache_read, "cacheCreationInputTokens": self.cache_write}
+        entries = {self.message_model: main}
+        if self.message_model == MOCK_AUX_MODEL:
+            for k, v in MOCK_AUX_USAGE.items():
+                main[k] += v
+        else:
+            entries[MOCK_AUX_MODEL] = dict(MOCK_AUX_USAGE)
+        for name, e in entries.items():
+            e.update({"thinkingTokens": 0, "costUSD": _mock_cost(name, e),
+                      "canonicalModel": _canonical(name), "provider": "firstParty"})
+        return entries
+
     def result(self, text: str, duration_ms: int) -> None:
+        if self.routing:
+            model_usage = self._routing_model_usage()
+            total_cost = sum(e["costUSD"] for e in model_usage.values())
+        else:
+            model_usage = {MOCK_MODEL: {"inputTokens": self.input_tokens}}
+            total_cost = 0.0123
         self._write(
             {
                 "type": "result",
@@ -148,7 +199,7 @@ class Emitter:
                 "num_turns": self.turns,
                 "result": text,
                 "session_id": self.session_id,
-                "total_cost_usd": 0.0123,
+                "total_cost_usd": total_cost,
                 "usage": {
                     "input_tokens": self.input_tokens,
                     "output_tokens": self.output_tokens,
@@ -162,7 +213,7 @@ class Emitter:
                     "server_tool_use": {"web_search_requests": 0, "web_fetch_requests": 0},
                     "service_tier": "standard",
                 },
-                "modelUsage": {MOCK_MODEL: {"inputTokens": self.input_tokens}},
+                "modelUsage": model_usage,
                 "permission_denials": [],
                 "subagent_stats": {"spawned": 0, "completed": 0, "failed": 0},
                 "stop_reason": "end_turn",
@@ -506,8 +557,13 @@ def main(argv: list[str]) -> int:
     prompt = sys.stdin.read() if not sys.stdin.isatty() else ""
 
     t0 = time.monotonic()
-    em = Emitter(session_id)
-    em.init(allowed, model, permission_mode, os.getcwd())
+    if model in MOCK_RESOLUTION:
+        resolved = os.environ.get(FORCE_RESOLVED_ENV) or MOCK_RESOLUTION[model]
+        em = Emitter(session_id, message_model=resolved, routing=True)
+        em.init(allowed, resolved, permission_mode, os.getcwd())
+    else:
+        em = Emitter(session_id)
+        em.init(allowed, model, permission_mode, os.getcwd())
     role = detect_role(prompt, allowed)
     final = run_role(em, role)
     em.result(final, int((time.monotonic() - t0) * 1000))

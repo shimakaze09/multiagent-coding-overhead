@@ -1143,3 +1143,437 @@ the frozen classifier, which is an upper bound for C1.
 Best-supported conclusion: **C1-C**, shared Worker context does not meaningfully
 reduce overhead. Decision: **D, stop multi-agent optimization for this
 experiment** (see `FINAL_RESEARCH_REPORT.md`).
+
+## 18. Stage 2A: heterogeneous model routing (preregistered 2026-09-11, before any Stage-2 run)
+
+A **new research branch**, not a continuation of C1. The Stage 0–1 conclusion
+stands unchanged: same-model multi-agent decomposition did not justify its
+additional cost on the tested workloads. That does not answer a different
+question: can role decomposition become economically useful if expensive model
+capability is concentrated only in the role that needs it? No Stage 0, 0.5 or 1
+result, raw telemetry, metric, manifest or conclusion is altered.
+
+### 18.1 Question and objective
+
+> Can a heterogeneous multi-agent coding workflow match the success of a single
+> strong model while reducing total API-equivalent cost by assigning cheaper
+> models and/or lower reasoning effort to mechanically simpler roles?
+
+The objective is **task success at API-equivalent cost**, not minimum tokens. A
+configuration may use more tokens and still be preferable if most of them are
+processed by a substantially cheaper model.
+
+### 18.2 Local capability evidence (collected without any model call)
+
+Sources: the pinned 2.1.260 executable's `--help` output (a local parse, no
+model call); strings in the installed binary's bundled source (the model
+registry, the alias resolver, the effort parser); stored `init`/`result`
+telemetry from all 18 real runs; the local settings files; and the environment,
+checked by presence only.
+
+| # | Question | Finding | Evidence |
+| --- | --- | --- | --- |
+| 1 | Selectable model identifiers | an alias or a full model name via `--model` | `--help`: "Provide an alias for the latest model (e.g. 'fable', 'opus', or 'sonnet') or a model's full name". The binary's alias list is `sonnet, opus, haiku, fable, best, sonnet[1m], opus[1m], fable[1m], opusplan`. Its known-model list includes `claude-haiku-4-5` and `claude-sonnet-5`, among others. |
+| 2 | Explicit Haiku | **yes**, by full id | The registry entry for `claude-haiku-4-5` has first-party id `claude-haiku-4-5-20251001`. This subscription already served that exact id: it is Claude Code's auxiliary model in 33 stored sessions. It has never yet served as a *main* model in this harness, so the first Stage-2 run verifies it (18.10). |
+| 3 | Explicit Sonnet | **yes** | `--model sonnet` resolved to `claude-sonnet-5` in 58 of 58 stored `init` events. |
+| 4 | Model per fresh/resumed invocation | per invocation | `--model` is a per-process flag passed on every invocation, and each invocation's `init` reports its own model. Stage 2A never changes a model on `--resume`: the Coordinator's resumes keep CHEAP, and the Investigator and Implementer are fresh sessions. |
+| 5–7 | Effort control | flag, env var and setting exist | Flag: `--effort <level>`, "Effort level for the current session (low, medium, high, xhigh, max)"; an unknown value is ignored with a warning. Env var: `CLAUDE_CODE_EFFORT_LEVEL`. Setting: `effortLevel`. No model alias encodes effort. |
+| — | Effort comparability | **not comparable across the two models, and not observable** | Registry capabilities: `claude-sonnet-5` has `effort, max_effort, xhigh_effort`, with `default_effort: "high"`; `claude-haiku-4-5` has only `context_management`. No `init`/`result` field reports the effort used. |
+| 8 | Model/effort change on `--resume` | accepted as per-process flags; **not exercised, not claimed, not used** | Stage 2A needs no model or effort change on resume. |
+| — | Settings / environment | nothing selects a model or effort | Sessions use `--setting-sources project`, and the task fixtures contain no `.claude` settings. The user settings contain no model or effort key and are not loaded. None of the model/effort variables is present. |
+| — | Role vs auxiliary usage | separable exactly | `result.usage` equals `modelUsage[<main model>]` in 57 of 57 stored sessions, so auxiliary = `modelUsage − result.usage`. |
+| — | Cost | reproducible | Recomputing every stored per-model `costUSD` from the binary's own pricing tables (`claude-sonnet-5` → `tier_2_10`: 2 / 10 / 2.5 (5m) / 4 (1h) / 0.2 USD per MTok for input / output / cache write / cache read; `claude-haiku-4-5` → `haiku_45`: 1 / 5 / 1.25 / 2 / 0.1) matches 90 of 90 entries exactly. |
+
+Explicit Haiku selection is supported, so Stage 2 proceeds. Routing is done by
+`--model` only, never by prompt wording.
+
+### 18.3 Resolved identifiers
+
+| Class | Requested (`--model`) | Expected resolved (`init.model`) | Canonical |
+| --- | --- | --- | --- |
+| CHEAP_MODEL | `claude-haiku-4-5-20251001` | `claude-haiku-4-5-20251001` | `claude-haiku-4-5` |
+| STRONG_MODEL | `sonnet` | `claude-sonnet-5` | `claude-sonnet-5` |
+
+**CHEAP uses the full id.** The `haiku` alias resolves indirectly: first
+`ANTHROPIC_DEFAULT_HAIKU_MODEL`, then a remotely configurable lookup, then a
+built-in. The full id depends on none of that.
+
+**STRONG keeps the historical request `sonnet` byte for byte.** That keeps every
+strong invocation and the Single-Strong baseline on the historical argv.
+
+A resolved model is compared on its canonical form, which strips the date suffix.
+
+### 18.4 Effort policy for Stage 2A
+
+**`cli_default_not_passed`: no effort control is passed to any role.** The
+flag, the env var and the setting all exist. But they are not comparable across
+the two models (Haiku 4.5 has no effort capability in the registry) and the
+effort used is not observable in telemetry. So the suggested "cheap: low,
+strong: historical" policy cannot be applied cleanly, and no effort value is
+invented.
+
+The strong model's effort is therefore identical to every historical run: the
+CLI default, registry `default_effort` `high`. The cheap model runs at its own
+default.
+
+Each invocation records its effort as:
+
+* requested `not_passed`;
+* resolved `not_reported_by_cli_telemetry`.
+
+A harness guard refuses to start a Stage-2 run if any of these variables would
+reach a child process, testing presence only:
+
+* `ANTHROPIC_MODEL`;
+* `ANTHROPIC_DEFAULT_{HAIKU,SONNET,OPUS,FABLE}_MODEL`;
+* `ANTHROPIC_SMALL_FAST_MODEL`;
+* `CLAUDE_CODE_SUBAGENT_MODEL`;
+* `CLAUDE_CODE_EFFORT_LEVEL`;
+* `MAX_THINKING_TOKENS`.
+
+There is no model × effort × role factorial. Effort becomes Stage 2B only if
+Stage 2A supports heterogeneous routing, and it needs its own preregistration.
+
+### 18.5 Motivation (from Stage 0.5)
+
+Across the prospective multi-agent tasks, the Implementer:
+
+* acquired no informational repository content the Investigator lacked (unique
+  downstream informational content was nil or marginal);
+* discovered no new constraint;
+* generally implemented the diagnosis it was given;
+* mostly edited and verified. Its rereads were Edit preconditions, not new
+  information.
+
+So the roles may have different intelligence requirements. The hypothesis to
+test, not an assumption:
+
+* Coordinator: the cheap model may be sufficient.
+* Investigator: the strong model likely provides most of the diagnostic value.
+* Implementer: the cheap model may be sufficient once the diagnosis and
+  constraints are explicit.
+
+### 18.6 Configurations and topology
+
+| Id | Name | Coordinator | Investigator | Implementer | Sessions |
+| --- | --- | --- | --- | --- | --- |
+| `S2_R1` | Strong-Investigator Hybrid (**primary**) | CHEAP | STRONG | CHEAP | Arm-B topology |
+| `S2_R2` | Strong-Implementer Hybrid (contrast) | CHEAP | CHEAP | STRONG | Arm-B topology |
+| `S2_R3` | All-Cheap Multi | CHEAP | CHEAP | CHEAP | Arm-B topology |
+| `S2_S` | Single Cheap | one CHEAP agent | | | Arm-A topology |
+| `S2_SS` | Single Strong, fresh baseline | one STRONG agent | | | Arm-A topology; only where 18.7 requires it |
+
+**Multi-agent configurations use Arm B's separated topology.** The sequence is
+Coordinator → Investigator → Coordinator → Implementer → Coordinator. The
+Coordinator is one session, resumed twice. The Investigator and Implementer
+each get a separate fresh session. No C1 shared Worker: that would add a second
+independent variable. Also identical to Arm B:
+
+* Arm B's prompt functions, verbatim;
+* Arm B's handoffs, including the forwarded Investigator report;
+* Arm B's per-role `--tools`, `--disallowedTools` and `--append-system-prompt`;
+* the `narrow_pytest_v1` allowlist, limits and tasks.
+
+Single-agent configurations are Arm A exactly (prompt, tools, prompt inputs).
+
+**No model-specific prompt tuning is permitted, before or after results.** The
+prompt sources (`arms/single.py`, `arms/multi_nl.py`) and the role appendix are
+hash-checked before every Stage-2 run, and a run refuses to start on drift. If a
+model-specific prompt change ever becomes necessary, Stage 2A stops, and the
+change is a separate future experiment.
+
+The cheap model gets no broader tools, and no test is relaxed. Held-out
+verifiers stay withheld, with isolation and content checks unchanged.
+
+The report labels are:
+
+| Label | Source |
+| --- | --- |
+| Single Strong | historical Arm A, or `S2_SS` |
+| Single Cheap | `S2_S` |
+| All-Cheap Multi | `S2_R3` |
+| Strong-Investigator Hybrid | `S2_R1` |
+| Strong-Implementer Hybrid | `S2_R2` |
+
+Arm B, the all-strong multi-agent workflow, is shown for reference only and
+enters no comparison.
+
+### 18.7 Baseline reuse decision (made now, before any Stage-2 result)
+
+A historical Arm A run is reused as Single Strong only with **exact parity**,
+checked mechanically by `analysis/stage2.baseline_parity`:
+
+* single agent, one session;
+* base `config_hash` equal to the current `9edbfb5d0d082d49a61969068fafd4ac`.
+  That hash covers the model request, tools, permission policy, limits and turn
+  counting.
+* same task base commit;
+* Claude Code 2.1.260;
+* requested `sonnet`, resolved `claude-sonnet-5`, routing verified;
+* prompt byte-identical to Arm A's;
+* same statement, held-out verifier and protected paths;
+* a valid run.
+
+The task fixtures and verifiers are unchanged since the Stage-0.5 freeze
+(`git diff 5a756bf HEAD -- stage0/tasks` is empty), and the workspace base
+commit is deterministic.
+
+| Task | Historical Arm A | Reusable | Reason |
+| --- | --- | --- | --- |
+| shipping_inch_dimensions | `20260911T014034Z_…_A_r1` | **no** | `config_hash 22ce9b7e…`: recorded under wrapper v2, before amendment 7's turn counting. It never reached the limit, but exact parity is required here: the Stage-1 "amendment 7 note" exception is **not** used. |
+| settings_list_fields | `20260911T015555Z_…_A_r2` | yes | all checks pass. The earlier `…_A_r1` is invalid (amendment 7) and is not used. |
+| rename_max_connections | `20260911T020645Z_…_A_r1` | yes | all checks pass |
+| sla_weekend_hours | `20260911T021224Z_…_A_r1` | yes | all checks pass |
+
+**Decision:**
+
+* reuse the three exact-parity Arm A runs;
+* run **one fresh Single-Strong baseline (`S2_SS`) for
+  `shipping_inch_dimensions`**, before seeing any Stage-2 result.
+
+Selection is mechanical: an exact-parity historical Arm A run first, else the
+first valid `S2_SS` run.
+
+The same analysis for Arm B: `settings_list_fields`, `rename_max_connections`
+and `sla_weekend_hours` have exact base-config parity; `shipping_inch_dimensions`
+does not. Arm B is reference only: no comparison depends on it, and no Arm B run
+is added.
+
+### 18.8 Endpoints (no thresholds unless stated)
+
+* **E1, success:** the held-out verifier result for every configuration. This is
+  the primary quality criterion.
+* **E2, API-equivalent cost (primary efficiency endpoint):** reported two ways.
+  - **By role:** Coordinator, Investigator, Implementer and total. Each is split
+    into role-assigned plus auxiliary, which gives all-model cost.
+  - **By model:** CHEAP, STRONG, other and total, each split into role-assigned
+    and auxiliary.
+
+  Cost is computed from exact provider usage using the CLI's own pricing tables.
+  The all-model total equals the CLI's `total_cost_usd`, including Claude Code's
+  auxiliary usage. It is not the amount paid: execution is on the subscription.
+  Token count is never substituted for cost.
+* **E3, strong-model usage:** STRONG invocations, input, output, cache read,
+  cache write, and the share of total cost attributable to STRONG.
+* **E4, total tokens (explanatory only):** uncached input, cache read, cache
+  write, output, and thinking where exposed; auxiliary tokens are shown
+  separately.
+* **E5, latency:** wall time and API time, per role and total.
+* **E6, failure location (mechanical, v1, no LLM judge):** for a valid unsolved
+  run, the first matching rule applies. The analysis-only `expected_edit_paths`
+  are used here and never reach a prompt.
+  - **R1:** an invocation did not complete (limit or error). The location is
+    that role's: Coordinator routing, Investigator diagnosis, or Implementer
+    coding.
+  - **R2:** the investigation report names no file the fix must change →
+    Investigator diagnosis.
+  - **R3:** the implementation instruction names none, and no such file changed
+    → Coordinator routing.
+  - **R4:** no file the fix must change was changed → Implementer coding.
+  - **R5:** the visible tests fail on the final workspace → Implementer coding.
+  - **R6:** the visible tests pass but the held-out verifier fails →
+    verification.
+  - **R7:** otherwise → unknown.
+
+  For a single agent, R2 and R3 do not apply and the role is `solo`.
+* **E7, escalation opportunity (evidence only, nothing implemented):** for a
+  failure located in a CHEAP role, look at the configuration that assigns STRONG
+  to that role:
+  - Investigator → `S2_R1`;
+  - Implementer → `S2_R2`;
+  - single agent → Single Strong;
+  - Coordinator → Arm B reference.
+
+  The verdict is:
+  - `potentially_recoverable` if that configuration solved the same task;
+  - `not_indicated` if it failed;
+  - `undetermined` if there is no valid counterpart.
+
+  Runtime-observable signals are also recorded (a non-completed invocation; the
+  outcome of the agents' last `pytest` call).
+
+Per task and configuration the report shows:
+
+* SOLVED;
+* API-equivalent cost;
+* wall time;
+* strong-model invocations and cost;
+* total input and output.
+
+There is no scalar quality-cost score. **Cost is compared only between two runs
+that are both valid, both solved, and both with exact cost.** Failed cheap runs
+remain reported data.
+
+### 18.9 Comparisons and interpretation cases
+
+The comparisons (ratio = second / first):
+
+* **A:** Single Strong vs Strong-Investigator Hybrid.
+* **B:** Single Cheap vs Strong-Investigator Hybrid.
+* **C:** Strong-Investigator vs Strong-Implementer Hybrid.
+* **D:** Single Cheap vs All-Cheap Multi.
+
+Each reports, over tasks with both runs valid:
+
+* success counts;
+* jointly solved tasks;
+* the pooled cost ratio (sum over jointly solved tasks);
+* the median per-task ratio.
+
+The cases are evaluated only when every configuration has a valid run on all
+four tasks, and they are not mutually exclusive. `S(x)` is the set of tasks
+solved by `x`, and cost ratios are pooled over jointly solved tasks.
+
+* **Case A** holds if the Strong-Investigator Hybrid has the same success as
+  Single Strong and is substantially cheaper: `S(R1) = S(SS)`, and the pooled
+  cost ratio R1/SS ≤ **0.75**. The 0.75 is a preregistered descriptive cut; the
+  exact ratio is always shown. This supports heterogeneous routing.
+* **Case B** holds if Single Cheap has the same success and is cheaper than the
+  hybrid: `S(S) ⊇ S(R1)`, and the pooled cost ratio S/R1 < 1. Multi-agent
+  decomposition is then unnecessary: use the cheap single model. Whether
+  `S(S) ⊇ S(SS)` is also reported.
+* **Case C** holds if the hybrid fails a task Single Strong solves:
+  `S(SS) \ S(R1)` is non-empty. The removed strong capability mattered. This is
+  reported per task and never hidden behind aggregate cost.
+* **Case D** holds if Strong-Implementer beats Strong-Investigator:
+  `|S(R2)| > |S(R1)|`. A cost-only variant (equal success, and R2 cheaper) is
+  flagged separately. Either way the Stage-0.5 intelligence-concentration
+  reading would be incomplete.
+* **Case E** holds if All-Cheap Multi beats Single Cheap: `|S(R3)| > |S(S)|`.
+  That would be evidence that decomposition compensates for a weaker model.
+
+### 18.10 Validity and invalidation
+
+The shared exclusions still apply (sections 5, 10 and 15.3):
+
+* no verifier result;
+* low observability;
+* unknown tools;
+* internal subagent fan-out;
+* subscription billing not confirmed;
+* a suspected isolation or content breach.
+
+Stage 2 adds the following **invalidation rules**:
+
+* **Model routing.** Every invocation must pass all of these checks, from its
+  own telemetry, not from argv:
+  - the requested model equals the assignment;
+  - the canonical `init.model` equals the assigned model;
+  - every assistant `message.model` equals the assigned model;
+  - the assigned model is present in `modelUsage`;
+  - `result.usage` is within `modelUsage[<assigned model>]`;
+  - `modelUsage` contains no model other than the assigned one and the
+    auxiliary `claude-haiku-4-5`. For example, a strong model inside a
+    cheap-assigned invocation is not allowed.
+
+  When a check fails, the orchestrator stops before the next session and the
+  run is **invalid**.
+* **Accounting.** Negative auxiliary usage or cost (role usage exceeding the
+  model's reported usage) makes the run invalid.
+* **Infrastructure.** Each of these makes the run invalid:
+  - a spawn failure;
+  - a provider API error status;
+  - a chain stopped by quota protection or by a routing stop.
+* **Model outcomes, not exclusions.** A limit termination (turn or wall) or a
+  model-caused error of an assigned model is an outcome: SOLVED is still the
+  held-out verifier's exit code. The frozen A/B rule that excludes non-completed
+  sessions is deliberately not applied to Stage-2 configurations. The chain
+  stops at such an invocation, as in Arm B. If the terminated invocation has no
+  result event, its output tokens are a lower bound: the run's cost is labelled
+  a lower bound and does not enter cost comparisons.
+
+Invalid runs are listed with their reasons and never enter success counts or
+cost comparisons. The first valid run of a (task, configuration) is the one
+used.
+
+**Stop rules:**
+
+* If the first Stage-2 run shows that the CLI does not serve the assigned model
+  (a routing mismatch), **Stage 2A execution stops** and the limitation is
+  reported.
+* Paid overage stops execution; high utilization alone does not.
+* An infrastructure-invalid run may be rerun once with the next `--repeat-id`,
+  disclosed. A valid run is never rerun.
+
+### 18.11 Pilot size and execution plan
+
+The pilot is **4 tasks × 4 new configurations × 1 run = 16 runs**, plus **1**
+fresh Single-Strong baseline (18.7): **17 runs** in total. There are no repeats,
+no effort variants and no new tasks. The fixed order:
+
+1. `shipping_inch_dimensions`: `S2_R1`, `S2_R2`, `S2_R3`, `S2_S`, `S2_SS`. The
+   first run, `S2_R1`, doubles as the routing validation: it has both models and
+   a CHEAP Coordinator resume.
+2. `settings_list_fields`: `S2_R1`, `S2_R2`, `S2_R3`, `S2_S`.
+3. `rename_max_connections`: the same four.
+4. `sla_weekend_hours`: the same four.
+
+Claude Code 2.1.260 stays pinned (`STAGE0_CLAUDE_CLI`) and limits are the smoke
+limits. Raw checksums go to a subdirectory, `run_manifests/stage2a/`, so
+`historical_run_ids()` is unchanged.
+
+Outputs:
+
+* `runner.py stage2-report --task <t>` for each task;
+* `runner.py stage2-summary`.
+
+**Stage 2B**, cheap-first with a confidence or failure trigger and strong-model
+escalation, is **not implemented**. It needs its own preregistration: defining
+the trigger after seeing failures would bias it. Stage 2A's E7 only collects
+evidence for whether it would be justified.
+
+### 18.12 Identity
+
+| Item | Value |
+| --- | --- |
+| `stage` / `experiment_schema_version` / `topology_version` | 2 / 3 / 1; A/B and C1 metadata are left as written |
+| `base_config_hash` (all Stage-2 runs) | `9edbfb5d0d082d49a61969068fafd4ac`: the unchanged base configuration |
+| `S2_R1` `config_hash` | `f1a4b7f32952ee7618e3062c0f0a5ebd` |
+| `S2_R2` `config_hash` | `073ebc97390854d8331531a681a8374d` |
+| `S2_R3` `config_hash` | `4b75b94f619fe83c93aa3582a3da0aa3` |
+| `S2_S` `config_hash` | `d9e92534b466f8793b390b222c18fe76` |
+| `S2_SS` `config_hash` | `d2cd1cf2024412d57d685340261f5fe5` |
+
+Each `config_hash` is `topology_config_hash(base effective config,
+stage2_topology(arm))`. The topology contains:
+
+* the role → requested-model map;
+* the role → expected-resolved-model map;
+* the role → effort map;
+* the topology version;
+* the prompt version (source and appendix hashes, no model-specific prompts);
+* the permission policy id;
+* the pricing table.
+
+Each run's metadata adds a `stage2_identity` over:
+
+* the `config_hash`;
+* the task base commit;
+* the held-out verifier hash;
+* the classifier versions (parser, wrapper, coverage, bash classifier,
+  reacquisition, handoff, isolation, overlap v2, decomposition, content check,
+  model-routing check, cost accounting).
+
+No historical hash is rewritten.
+
+### 18.13 Accepted confounds (stated in advance)
+
+* **Different model defaults.** The model defaults differ, beyond "capability":
+
+  | | Haiku 4.5 | Sonnet 5 |
+  | --- | --- | --- |
+  | Context window | 200k | 1M |
+  | Default max output | 32k | 64k |
+  | Thinking / effort | no effort capability | adaptive thinking; default effort `high` |
+
+  Claude Code may compact a Haiku session sooner. These are properties of the
+  models as the CLI serves them, and are not equalized.
+* **Prompts are not tuned for Haiku.** They were written for, and frozen on,
+  Sonnet runs. This is deliberate: the variable is model assignment.
+* **Auxiliary usage.** Claude Code's own auxiliary calls continue in every
+  configuration. They are separated from role usage but included in cost.
+* **Cost is a price, not an observation.** API-equivalent cost uses the CLI's
+  list prices; relative prices drive the result.
+* **n = 1** per task and configuration: descriptive only.
+* **Server-side unobservables.** Effort and any server-side routing behind a
+  model id are not observable.

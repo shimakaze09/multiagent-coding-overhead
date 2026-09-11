@@ -6,6 +6,10 @@
     python runner.py report              per-run report / arm comparison
     python runner.py trace               human-readable run trace
     python runner.py pilot --confirm-pilot   the full 12x2x3 pilot (gated)
+    python runner.py smoke --task T --arm S2_R1|S2_R2|S2_R3|S2_S|S2_SS
+                                         Stage 2A heterogeneous model routing
+    python runner.py stage2-report --task T  Stage 2A per-task report (no Claude)
+    python runner.py stage2-summary      Stage 2A 4-task summary (no Claude)
 
 Subscription usage protection: every command except `pilot` is capped by
 config.SMOKE_LIMITS, and `pilot` refuses to start without --confirm-pilot.
@@ -26,15 +30,17 @@ from typing import Optional
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import config
-from analysis import ingest as ingest_mod, report as report_mod
-from arms import c1_shared_worker, multi_nl, single
+from analysis import ingest as ingest_mod, report as report_mod, stage2 as stage2_mod
+from arms import c1_shared_worker, multi_nl, s2_routing, single
 from harness import claude_cli
 from tasks import registry
 
 # Which arms each `smoke --arm` value runs, and which module runs each arm.
-# `both` is Arm A + Arm B exactly as before; C1 (Stage 1) is never implied.
-SMOKE_ARMS = {"A": ("A",), "B": ("B",), "both": ("A", "B"), "C1": ("C1",)}
-ARM_MODULES = {"A": single, "B": multi_nl, "C1": c1_shared_worker}
+# `both` is Arm A + Arm B exactly as before; C1 (Stage 1) and the Stage-2
+# configurations are never implied: each must be named explicitly.
+SMOKE_ARMS = {"A": ("A",), "B": ("B",), "both": ("A", "B"), "C1": ("C1",),
+              **{arm: (arm,) for arm in config.STAGE2_ARMS}}
+ARM_MODULES = {"A": single, "B": multi_nl, "C1": c1_shared_worker, **s2_routing.ARMS}
 
 DEFAULT_SMOKE_TASK = "palindrome_punctuation"
 MIN_PYTHON = (3, 11)
@@ -278,11 +284,17 @@ def _require_ready(strict_auth: bool = True) -> tuple[config.ClaudeCli, dict]:
 
 
 def cmd_smoke(args) -> int:
+    arms = list(SMOKE_ARMS[args.arm])
+    stage2 = [a for a in arms if a in config.STAGE2_CONFIGS]
+    if stage2 and args.model != config.STRONG_MODEL:
+        # Checked before anything is probed or spawned.
+        raise SystemExit(
+            f"--model {args.model!r} is not allowed with {stage2}: Stage-2 role models are "
+            "fixed by the preregistered configuration (PREREGISTRATION section 18).")
     cli, caps = _require_ready()
     task = registry.get_task(args.task)
     cfg = config.RunConfig(model=args.model, limits=config.SMOKE_LIMITS)
 
-    arms = list(SMOKE_ARMS[args.arm])
     if len(arms) > cfg.limits.max_tasks_per_invocation * 2:
         raise SystemExit("smoke would exceed the configured smoke limits")
 
@@ -321,6 +333,9 @@ def cmd_smoke(args) -> int:
     if arms == ["C1"]:
         print()
         print(f"Stage-1 comparison: python runner.py report --task {task.task_id} --compare-stage1")
+    if stage2:
+        print()
+        print(f"Stage-2 report: python runner.py stage2-report --task {task.task_id}")
     return 0
 
 
@@ -486,6 +501,21 @@ def cmd_stage1_summary(args) -> int:
     return 0
 
 
+def cmd_stage2_report(args) -> int:
+    """Stage-2A per-task report over every run found (no Claude)."""
+    runs = ingest_mod.discover_runs(args.runs_dir)
+    entries = stage2_mod.load_entries(runs, tasks=(args.task,))
+    print(stage2_mod.render_task_report(entries, args.task))
+    return 0
+
+
+def cmd_stage2_summary(args) -> int:
+    """Stage-2A summary over the four preregistered tasks (no Claude)."""
+    runs = ingest_mod.discover_runs(args.runs_dir)
+    print(stage2_mod.render_summary(stage2_mod.load_entries(runs)))
+    return 0
+
+
 def cmd_summary(args) -> int:
     """Stage-0.5 cross-task A/B summary over every run found (no Claude)."""
     runs = ingest_mod.discover_runs(args.runs_dir)
@@ -531,7 +561,8 @@ def main(argv=None) -> int:
     s = sub.add_parser("smoke", help="one task, Arm A and/or Arm B")
     s.add_argument("--task", default=DEFAULT_SMOKE_TASK)
     s.add_argument("--arm", choices=tuple(SMOKE_ARMS), default="both",
-                   help="A, B, both (= A and B), or C1 (Stage 1, C1_shared_worker_context)")
+                   help="A, B, both (= A and B), C1 (Stage 1), or a Stage-2 configuration: "
+                        "S2_R1, S2_R2, S2_R3, S2_S, S2_SS (never implied by `both`)")
     s.add_argument("--model", default="sonnet")
     s.add_argument("--repeat-id", type=int, default=1, dest="repeat_id")
     s.set_defaults(func=cmd_smoke)
@@ -568,6 +599,15 @@ def main(argv=None) -> int:
     s1 = sub.add_parser("stage1-summary", help="Stage-1 B vs C1 summary (no Claude)")
     s1.add_argument("--runs-dir", dest="runs_dir")
     s1.set_defaults(func=cmd_stage1_summary)
+
+    s2r = sub.add_parser("stage2-report", help="Stage-2A per-task configuration report (no Claude)")
+    s2r.add_argument("--task", required=True, choices=config.STAGE2_TASKS)
+    s2r.add_argument("--runs-dir", dest="runs_dir")
+    s2r.set_defaults(func=cmd_stage2_report)
+
+    s2s = sub.add_parser("stage2-summary", help="Stage-2A summary, comparisons A-D, cases A-E (no Claude)")
+    s2s.add_argument("--runs-dir", dest="runs_dir")
+    s2s.set_defaults(func=cmd_stage2_summary)
 
     x = sub.add_parser("summary", help="Stage-0.5 cross-task A/B summary (no Claude)")
     x.add_argument("--runs-dir", dest="runs_dir")

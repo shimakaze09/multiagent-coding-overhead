@@ -1017,3 +1017,65 @@ Preregistered in PREREGISTRATION section 16.
 * `decomposition.session_contexts` keys resume chains by physical session
   (identical results on every A/B run).
 * The mock CLI recognizes the C1 Implementer-resume prompt, for local tests only.
+
+## 23. Stage 2A: heterogeneous model routing (2026-09-11)
+
+Preregistered in PREREGISTRATION section 18. It is a new experiment: A, B and C1
+are unchanged.
+
+* `config.py`: `CHEAP_MODEL = "claude-haiku-4-5-20251001"`,
+  `STRONG_MODEL = "sonnet"`, and alongside them:
+  - `MODEL_CLASSES`;
+  - `AUXILIARY_MODELS_CANONICAL`;
+  - `MODEL_PRICING_USD_PER_MTOK`, from the CLI registry and verified against
+    stored `costUSD`;
+  - `STAGE2_EFFORT_POLICY` (`cli_default_not_passed`);
+  - `STAGE2_CONFIGS`: `S2_R1`, `S2_R2`, `S2_R3`, `S2_S`, `S2_SS`;
+  - `stage2_topology(arm)`, whose identity goes through `topology_config_hash`;
+  - `preflight_model_routing_env`, a presence-only guard for model/effort
+    variables that would reach a child.
+
+  `ARMS`, `effective_config()` and the A/B `config_hash` are untouched.
+* `harness/agent.run_agent(..., model=None)`: a per-invocation model override.
+  A, B and C1 never pass it, so every one of their invocations still gets
+  `ctx.model`.
+* `arms/__init__.start_run`: a topology may name its `stage` and
+  `experiment_schema_version`. C1's names neither, so its metadata is unchanged.
+* `harness/model_routing.py`:
+  - `check_invocation`: the requested vs `init.model` vs every assistant
+    `message.model` vs `modelUsage`.
+  - `split_usage`: role-assigned usage (`result.usage`) vs Claude Code auxiliary
+    usage (`modelUsage − result.usage`, per model), with API-equivalent cost.
+    Also a lower-bound fallback when there is no result event.
+* `arms/s2_routing.py`:
+  - Arm B's orchestration and prompt functions verbatim, with each role's
+    `--model` from the topology.
+  - Single-agent configurations use Arm A's prompt.
+  - Every invocation is verified immediately. On a mismatch the chain stops
+    before the next session.
+  - It writes `routing.json` and `MODEL_ROUTING` events (an additive event type;
+    `SCHEMA_VERSION` stays 1).
+  - Before any invocation it checks the frozen prompt hashes, and it adds
+    `stage2_identity` (config hash, task base commit, verifier hash, classifier
+    versions) to the metadata.
+* `analysis/routing.py`: the run-level routing and accounting check, recomputed
+  from raw logs. It also works on historical A/B runs, where `sonnet` = STRONG.
+  It supplies the Stage-2 validity rules (`report.run_validity` applies them to
+  `S2_*` arms only).
+* `analysis/stage2.py`:
+  - per-run metrics E2–E5 (cost by role and by model, strong usage, tokens,
+    wall);
+  - `baseline_parity` and `select_single_strong`: the exact-parity reuse rule;
+  - E6 `failure_location` (rules R1–R7) and E7 `escalation_evidence`;
+  - `compare` (A–D; cost only between valid runs that both solved);
+  - `interpretation_cases` (A–E);
+  - `render_task_report` and `render_summary`.
+* `runner.py`:
+  - `smoke --arm S2_R1|S2_R2|S2_R3|S2_S|S2_SS`. Stage-2 arms require the default
+    `--model sonnet`, checked before anything is probed.
+  - `stage2-report --task <t>` and `stage2-summary`.
+  - `--arm both` is still exactly A and B.
+* `tools/mock_claude.py`: for the Stage-2 model names only, it resolves them
+  like 2.1.260, reports per-model `modelUsage` with an auxiliary Haiku entry,
+  and has a forced-mismatch test hook. Its A/B/C1 output (`mock-sonnet`) is
+  unchanged.
