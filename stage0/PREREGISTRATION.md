@@ -2124,3 +2124,39 @@ has already used 2. A third invalid attempt there makes the task unresolved.
 * 0/1: s2t03.
 
 Difficulty labels are **not** frozen and no evaluation run exists.
+
+### 19.20 Phase C continuation (2026-09-11): stopped, one task unresolved
+
+The author authorized continuing after 19.19. The `s2t11_docpipe` attempt 3a
+stays INVALID; it was not reclassified. Two more attempts ran:
+
+* `s2t12_docpipe` repeat 3: **VALID**, solved (7/7). That completed the
+  initial batch.
+* `s2t03_ledgerly` replacement for logical repeat 1 (attempt 1b): **INVALID**,
+  held-out content exposure suspected, observed 6/7 and unsolved. The content
+  check matched 4 lines in a Read of the agent's own temporary test file. All
+  4 had been written by the agent earlier in the same run (call #25, its
+  `_verify_migration.py`). There was no path outside the workspace and no
+  isolation marker, and the verifier's name never appeared. The only keyword
+  hit was the English word "references" in the description of a `grep` over
+  the workspace README.
+
+State under the frozen rules:
+
+* **`s2t03_ledgerly` is unresolved** (`unresolved_too_many_invalid_runs`): 3
+  invalid attempts (2 auto-memory writes, 1 content-check hit) against 1 valid.
+  The frozen cap is 2 replacements. By the author's instruction, Phase C stops
+  and reports this task.
+* The suspected exposure is also a hard stop under the Phase-C policy.
+* Totals: 37 attempts, 33 valid, 4 invalid. Across 37 attempts there were 2
+  content-check hits on agent-authored text and 2 auto-memory writes; none
+  accessed held-out, reference or design material.
+* Complete (3/3): s2t01, s2t02, s2t07, s2t09, s2t10, s2t12.
+* Outstanding:
+  - the replacement for `s2t11_docpipe` logical repeat 3;
+  - valid repeats 4–5 for s2t04 (1/3), s2t05 (0/3), s2t06 (0/3) and s2t08 (0/3).
+* Difficulty labels are **not frozen** and no evaluation run exists.
+
+The author must decide how to proceed, for example whether the unresolved
+task leaves the pool or a new preregistration distinguishes benign
+self-authored or auto-memory events. Nothing is changed here.

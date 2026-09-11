@@ -84,7 +84,7 @@ Together, the four manifests cover all 18 real runs of the experiment.
 ## Stage 2, Phase C: Single-Strong calibration (2026-09-11)
 
 `stage2/calibration_raw_run_checksums.sha256` covers every calibration attempt
-so far: 35 attempts, 560 files. That includes the 3 attempts that are invalid
+so far: 37 attempts, 592 files. That includes the 3 attempts that are invalid
 under the frozen rules, which are preserved as data. Checksums were taken after
 the batch halted and before any re-ingest.
 
