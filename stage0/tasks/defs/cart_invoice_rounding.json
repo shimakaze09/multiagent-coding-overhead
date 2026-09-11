@@ -1,0 +1,14 @@
+{
+  "task_id": "cart_invoice_rounding",
+  "category": "cross_file_bug",
+  "repo": "shopcart",
+  "statement": "In the `shopcart` package, cart totals disagree with the invoicing service.\n\n    >>> from shopcart import Cart, Money, Invoice\n    >>> cart = Cart(\"USD\")\n    >>> cart.add(\"SKU-1\", Money.of(\"1.05\", \"USD\"), qty=3, discount_percent=15)\n    >>> cart.total()\n    Money(amount_minor=268, currency='USD')     # the invoice says 2.67 USD\n    >>> Invoice.from_cart(cart).total()\n    Money(amount_minor=267, currency='USD')\n\nSeparately, `Cart.total_major()` is wrong for currencies that do not use two decimal places:\n\n    >>> jpy = Cart(\"JPY\")\n    >>> jpy.add(\"SKU-2\", Money.of(1500, \"JPY\"), qty=2)\n    >>> jpy.total_major()\n    Decimal('30')          # expected Decimal('3000')\n\nThe cart must agree with the invoice for every line, and `total_major()` must be correct in every supported currency.\n\nConstraints: money, currency and discount behaviour, and invoice output, are shared with the invoicing service and must not change. The tests under `tests/` are owned by QA and are read-only; do not modify them.\n\nFix the defect and make sure the existing test suite still passes.",
+  "verifier_source": "cart_invoice_rounding/test_holdout_cart.py",
+  "verifier_dest_name": "test_holdout_cart.py",
+  "verifier_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "test_holdout_cart.py"],
+  "visible_test_command": ["python", "-m", "pytest", "--noconftest", "-p", "no:cacheprovider", "-q", "tests"],
+  "read_only_paths": ["tests/*"],
+  "expected_modified_paths": ["shopcart/cart.py"],
+  "supporting_paths": ["shopcart/discounts.py", "shopcart/invoice.py", "shopcart/money.py", "shopcart/currency.py"],
+  "notes": "Controlled fixture 2 (amendment 5): separates edit-required rereads from cross-file informational reacquisition. The symptom and the ONLY correct production change are in shopcart/cart.py (file A). Understanding it needs the per-unit rounding contract in shopcart/discounts.py (C) and shopcart/invoice.py (E), Money.major / times in shopcart/money.py (B), and the minor-unit table in shopcart/currency.py (D). A naive per-line half-up rounding in cart.py fails the held-out tests (1.05 x3 at 15% gives 268, not 267), so the per-unit contract has to be discovered. B/C/D/E are pinned by held-out regression tests and must not be edited. The statement deliberately names no supporting file, so any priming of the Implementer toward B-E can only come from the handoff. Visible tests are made read-only by the harness identically for both arms; the held-out verifier runs alone with --noconftest."
+}

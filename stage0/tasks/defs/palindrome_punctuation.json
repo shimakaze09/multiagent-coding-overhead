@@ -1,0 +1,24 @@
+{
+  "task_id": "palindrome_punctuation",
+  "category": "cross_file_bug",
+  "repo": "tinylib",
+  "statement": "In the `tinylib` package, `is_palindrome` reports False for well-known palindromes that contain punctuation. For example:\n\n    >>> from tinylib import is_palindrome\n    >>> is_palindrome(\"A man, a plan, a canal: Panama!\")\n    False        # expected True\n    >>> is_palindrome(\"No 'x' in Nixon\")\n    False        # expected True\n\nPalindrome checks should ignore punctuation, spacing and casing.\n\nConstraint: the rest of the library must keep working exactly as it does today. In particular, report headings and slugs must not change.\n\nFix the defect and make sure the existing test suite still passes.",
+  "verifier_source": "palindrome_normalize/test_holdout_palindrome.py",
+  "verifier_dest_name": "test_holdout_palindrome.py",
+  "verifier_command": [
+    "python",
+    "-m",
+    "pytest",
+    "test_holdout_palindrome.py",
+    "tests",
+    "-q"
+  ],
+  "visible_test_command": [
+    "python",
+    "-m",
+    "pytest",
+    "tests",
+    "-q"
+  ],
+  "notes": "Cross-file bug: the symptom is in tinylib/palindrome.py but the root cause is the shared tinylib/text.py:normalize, which deliberately preserves punctuation because tinylib/report.py depends on that. A naive fix to normalize breaks the report tests, so a correct fix requires reading at least palindrome.py, text.py and report.py."
+}

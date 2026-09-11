@@ -1,0 +1,4 @@
+# Stage 0 uses the Python standard library only.
+# Deliberately no anthropic SDK, no LangGraph/CrewAI/AutoGen, no HTTP client.
+# pytest is the only development dependency.
+pytest>=7.4

@@ -1,0 +1,12 @@
+# Derived analytical index - always rebuildable from raw run artifacts
+analysis/*.sqlite3
+
+# Run artifacts are large; keep the directory, not its contents.
+# Remove these two lines if you want raw telemetry committed.
+runs/*
+!runs/.gitkeep
+
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/

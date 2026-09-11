@@ -1,0 +1,2 @@
+{"type": "system", "subtype": "init", "session_id": "s2", "tools": [], "apiKeySource": "none", "claude_code_version": "2.1.260", "model": "claude-sonnet-5"}
+{"type": "result", "subtype": "error", "is_error": true, "num_turns": 0, "session_id": "s2", "result": "Claude usage limit reached. Your limit resets at 3pm.", "total_cost_usd": 0, "terminal_reason": "usage_limit", "usage": {}}

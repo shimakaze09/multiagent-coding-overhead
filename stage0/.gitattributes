@@ -1,0 +1,7 @@
+# Byte-exact paths. Fixture source trees are hashed into each run's base commit
+# and workspace tree hash; raw telemetry fixtures and the checksum manifest are
+# compared byte for byte. Never let core.autocrlf rewrite them on checkout.
+tasks/repos/**          -text
+tasks/holdout/**        -text
+tests/fixtures/**       -text
+run_manifests/*.sha256  -text
