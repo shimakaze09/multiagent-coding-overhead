@@ -2052,3 +2052,75 @@ end to end through the mock CLI (`tests/test_stage2_runner_e2e.py`).
 **Decision.** Chosen by the author before any inference: fix as a disclosed
 amendment, commit, re-verify the freeze preconditions (clean tree, `diagnose`
 READY), then start Phase C with repeat 1 of `s2t01_ledgerly`, as planned.
+
+### Amendment 10 - 2026-09-11 - reporting and test scope after the first Stage-2 real runs (DURING Phase C; no data change)
+
+This is kept separate from amendment 9, which was the pre-inference runner
+crash. After the first Stage-2 calibration runs existed in `runs/`, two checks
+changed for reasons unrelated to data:
+
+1. **`runner.py summary`**, the Stage-0.5 cross-task A/B summary, grouped every
+   run, so each calibration attempt appeared as an "incomplete pair" row. The
+   invalid-pair count went from 1 to 36; the six valid pairs and every
+   aggregate were unchanged.
+
+   **Fix:** the command now reads only Arm A and Arm B runs, which is what the
+   summary is defined over. For the historical runs its output is
+   byte-identical to `results/stage05_pilot/cross_task_summary.txt`.
+2. **`test_amendment8.test_no_real_run_has_opaque_acquisitions_under_v2`**
+   asserted a property of every real run. A calibration attempt
+   (`s2t03_ledgerly` repeat 3, itself invalid) ran a `diff` command that the
+   frozen classifier leaves opaque.
+
+   **Fix:** the test is scoped to the Stage-0/1 runs it was written for. An
+   opaque call in a Stage-2 run only lowers that run's acquisition coverage,
+   which the frozen ≥ 0.90 gate already checks.
+
+Unchanged:
+
+* the bash classifier, the coverage formula and every validity rule;
+* the isolation and content checks;
+* every task, prompt, limit and identity hash.
+
+### 19.19 Phase C record (2026-09-11): calibration halted at a hard stop, pending the author's decision
+
+Setup: Single Strong (`S2_SS`) only, at `c3bf49f` (the 601cb61 freeze plus
+amendment 9). Claude Code 2.1.260; every attempt `claude-sonnet-5`,
+`apiKeySource=none`; seven-day quota utilization 0.93–0.96, never in paid
+overage.
+
+**Attempts: 35 (32 VALID, 3 INVALID).** Raw data is in
+`run_manifests/stage2/calibration_raw_run_checksums.sha256` (560 files).
+Attempt-level data is in `results/stage2/calibration_attempts.json`.
+
+**Invalid attempts.** They are excluded from calibration n, the success rate,
+the aggregates and the stratum; their observed quality is kept for
+diagnostics only. None is reclassified.
+
+| Attempt | Frozen reason | What happened | Held-out access |
+| --- | --- | --- | --- |
+| `s2t03_ledgerly` 1a | isolation: path outside workspace | Claude Code auto-memory: read and wrote files under `~/.claude/projects/<this-run>/memory/` (`out_of_workspace_auto_memory_write`). Observed 6/7, unsolved. | none |
+| `s2t03_ledgerly` 3a | isolation: path outside workspace | auto-memory again: listed the memory directory, wrote a project note and an index (`out_of_workspace_auto_memory_write`). Observed 6/7, unsolved. | none |
+| `s2t11_docpipe` 3a | held-out content exposure suspected | The content detector matched 6 generic lines (`import warnings`, `import docpipe`, `def visit_quote(self, node):` …) in a Read of the agent's own scratch file `_verify.py`. All 6 lines were written by the agent earlier in the same run (calls #23 and #24). No path outside the workspace; no held-out, reference or design material mentioned; the verifier's name was never in a tool result. Observed 7/7. | none found |
+
+**Hard stop.** The author's Phase-C policy stops on any held-out/reference
+exposure, and the `s2t11` attempt is *suspected* exposure under the frozen
+check. Calibration therefore stopped at that attempt. Still outstanding:
+
+* `s2t12_docpipe` repeat 3, never launched;
+* replacements for `s2t03_ledgerly` logical repeats 1 and 3, and for
+  `s2t11_docpipe` logical repeat 3;
+* the valid repeats 4–5 that the frozen rule requires.
+
+The frozen rule allows at most 2 replacements per task, and `s2t03_ledgerly`
+has already used 2. A third invalid attempt there makes the task unresolved.
+
+**Provisional valid-only state** (not a frozen classification):
+
+* 3/3: s2t01, s2t02, s2t07, s2t09, s2t10;
+* 2/2: s2t11, s2t12;
+* 1/3: s2t04;
+* 0/3: s2t05, s2t06, s2t08;
+* 0/1: s2t03.
+
+Difficulty labels are **not** frozen and no evaluation run exists.

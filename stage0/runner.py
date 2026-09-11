@@ -619,8 +619,11 @@ def cmd_stage2_frontier(args) -> int:
 
 
 def cmd_summary(args) -> int:
-    """Stage-0.5 cross-task A/B summary over every run found (no Claude)."""
-    runs = ingest_mod.discover_runs(args.runs_dir)
+    """Stage-0.5 cross-task A/B summary over every Arm A / Arm B run found (no Claude).
+    Amendment 10: runs of other arms (C1, Stage 2) are not A/B pairs and are skipped;
+    for the historical runs the output is byte-identical."""
+    runs = [rd for rd in ingest_mod.discover_runs(args.runs_dir)
+            if (ingest_mod._load_json(rd / "metadata.json") or {}).get("arm") in ("A", "B")]
     if not runs:
         print("no runs found")
         return 1

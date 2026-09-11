@@ -86,9 +86,14 @@ def test_no_other_run_recorded_before_the_amendment_contains_the_affected_forms(
 
 
 def test_no_real_run_has_opaque_acquisitions_under_v2():
+    """Scope (amendment 10): the Stage-0/1 real runs this amendment re-analysed.
+    Stage-2 runs are classified under v2 like any later run; an opaque call there
+    only lowers that run's acquisition coverage (the frozen >= 0.90 gate)."""
     from analysis import ingest
 
     for rd in sorted((ROOT / "runs").glob("2026*_r[0-9]")):
+        if "_S2_" in rd.name:
+            continue
         raw = ingest.load_run(rd)
         if raw is None:
             continue
