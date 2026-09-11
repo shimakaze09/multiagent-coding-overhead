@@ -879,6 +879,12 @@ The coverage formula (v2), the gate (≥ 0.90, no unknown tools) and every other
 category are unchanged. The classifier is part of the derived analysis, not of
 `config_hash`, and nothing about execution changed.
 
+**Re-analysis (post-hoc, disclosed; no rerun).** Under v2 the same raw data
+gives coverage **1.000** (14 classified, 0 unknown), so the run is valid and the
+Task-4 rerun pair is valid. The v1 result (0.700, invalid) is recorded here and
+in the pilot report. No other real run contains either command form, and every
+other run's classification is unchanged (asserted in `tests/test_amendment8.py`).
+
 ## 16. Stage 1: C1_shared_worker_context (preregistered 2026-09-11, before any C1 run)
 
 Stage 0.5 was accepted with six valid A/B pairs. Branch C (shared prefix/context
@@ -1137,9 +1143,3 @@ the frozen classifier, which is an upper bound for C1.
 Best-supported conclusion: **C1-C**, shared Worker context does not meaningfully
 reduce overhead. Decision: **D, stop multi-agent optimization for this
 experiment** (see `FINAL_RESEARCH_REPORT.md`).
-
-**Re-analysis (post-hoc, disclosed; no rerun).** Under v2 the same raw data
-gives coverage **1.000** (14 classified, 0 unknown), so the run is valid and the
-Task-4 rerun pair is valid. The v1 result (0.700, invalid) is recorded here and
-in the pilot report. No other real run contains either command form, and every
-other run's classification is unchanged (asserted in `tests/test_amendment8.py`).
