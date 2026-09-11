@@ -1,0 +1,19 @@
+=== Stage 0.5 cross-task A/B summary ===
+one row per (task, repeat): latest Arm A and Arm B run; * = post-hoc/exploratory Stage-0.5 metrics on a historical run
+task                        shape                   rep  A ok   B ok   A input    B input    B/A in   A out    B out    wall B/A  handoff ch  disc (ch)    edit-req  uniq dn ch  ovl v1   ovl v2   fanout/Δ  valid 
+cart_invoice_rounding*      cross_file_bug          1    True   True   129,667    381,293    2.941    2,152    10,443   4.305     17,972      2 (2,996)    1         0           0.0281   0.071    0.753     yes   
+palindrome_punctuation*     cross_file_bug          1    True   True   114,036    196,700    1.725    1,504    6,326    3.732     16,552      0 (0)        2         0           0.2328   0.235    0.818     yes   
+rename_max_connections      repo_wide_refactor      1    True   True   460,082    494,659    1.075    9,006    19,465   2.056     22,912      0 (0)        5         0           0.1425   0.1362   1.112     yes   
+settings_list_fields        (incomplete pair: missing arm(s): ['B'])
+settings_list_fields        cross_file_feature      2    True   True   428,650    690,719    1.611    6,246    14,561   2.301     25,781      1 (992)      2         0           0.139    0.1206   0.65      yes   
+shipping_inch_dimensions    cross_file_bug          1    True   True   156,693    289,421    1.847    2,064    7,819    4.098     11,388      0 (0)        1         0           0.0203   0.0203   0.819     yes   
+sla_weekend_hours           misleading_symptom_bug  1    True   True   119,910    217,260    1.812    2,721    8,161    3.101     11,921      0 (0)        1         0           0.1248   0.12     0.904     yes   
+
+valid pairs: 6   invalid pairs (excluded from aggregates): 1
+  input_ratio              n=6  mean 1.835  median 1.768  range 1.075-2.941
+  output_ratio             n=6  mean 3.39  median 3.393  range 2.161-4.853
+  wall_ratio               n=6  mean 3.265  median 3.417  range 2.056-4.305
+  fanout_share_of_delta    n=6  mean 0.843  median 0.819  range 0.65-1.112
+per-task run-to-run spread: not available (one repeat per task so far)
+superseded runs (an earlier run of the same task/arm/repeat): 20260910T122445Z_palindrome_punctuation_A_r1
+Descriptive only: no significance testing. Ratios are Arm B / Arm A.

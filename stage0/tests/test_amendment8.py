@@ -67,12 +67,15 @@ def test_the_affected_run_is_fully_observable_under_v2():
     assert r["analysis_versions"]["bash_classifier"] == 2
 
 
-def test_no_other_real_run_contains_the_affected_forms():
+def test_no_other_run_recorded_before_the_amendment_contains_the_affected_forms():
+    """The amendment's claim: re-analysis changed no run except T4B. Scope is the
+    runs that existed when it was made (named before T4B's timestamp); later runs
+    may contain `2>&1` and are simply classified under v2."""
     from analysis import ingest
 
     for rd in sorted((ROOT / "runs").glob("2026*_r[0-9]")):
         raw = ingest.load_run(rd)
-        if raw is None or rd == T4B:
+        if raw is None or rd == T4B or rd.name >= T4B.name:
             continue
         for sa in raw["sessions"]:
             for a in ingest.acquisitions_for_session(sa):
@@ -80,4 +83,15 @@ def test_no_other_real_run_contains_the_affected_forms():
                 if a.permission_denied:
                     continue
                 assert not (">&" in c or "&>" in c or "--version" in c), (rd.name, c)
-                assert not a.is_opaque_acquisition, (rd.name, c)
+
+
+def test_no_real_run_has_opaque_acquisitions_under_v2():
+    from analysis import ingest
+
+    for rd in sorted((ROOT / "runs").glob("2026*_r[0-9]")):
+        raw = ingest.load_run(rd)
+        if raw is None:
+            continue
+        for sa in raw["sessions"]:
+            for a in ingest.acquisitions_for_session(sa):
+                assert not (a.is_opaque_acquisition and not a.permission_denied), (rd.name, a.command)

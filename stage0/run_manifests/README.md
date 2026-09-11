@@ -42,3 +42,20 @@ without the (untracked) run directories.
 
 Both manifests are historical records. The runs they list are immutable, and
 no later metric replaces their preregistered results.
+
+## Stage-0.5 mini-pilot (2026-09-11)
+
+`stage05_pilot/raw_run_checksums.sha256` covers all 9 pilot runs (238 files).
+That includes the invalid first attempt at Task 4
+(`20260911T014415Z_settings_list_fields_A_r1`, `turn_limit_exceeded`,
+amendment 7), which is preserved as data. Each run's checksums were taken right
+after the run and before any re-ingest.
+
+It lives in a subdirectory on purpose. `analysis.report.historical_run_ids()`
+reads only top-level `run_manifests/*.sha256`, so the pilot runs keep their
+Stage-0.5 metrics labelled `prospective` rather than `post_hoc_exploratory`.
+
+Derived outputs (pair reports, cross-task summary, pilot tables) are in
+`../results/stage05_pilot/`.
+
+    sha256sum -c run_manifests/stage05_pilot/raw_run_checksums.sha256

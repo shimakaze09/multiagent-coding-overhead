@@ -74,7 +74,12 @@ def test_the_invalidated_task4_arm_a_session_was_far_below_25_turns():
 def test_no_valid_historical_session_is_affected_by_the_amendment():
     """Every session that completed under wrapper v2 also completes under v3,
     so the amendment cannot change any valid run already collected."""
-    for f in sorted((ROOT / "runs").glob("2026*_r1/sessions/*/claude_stdout.jsonl")):
+    # Scope: sessions RECORDED UNDER WRAPPER v2 (pre-amendment config_hash). Later
+    # v3 runs may legitimately exceed 25 stream lines; that is what the fix allows.
+    for f in sorted((ROOT / "runs").glob("2026*_r[0-9]/sessions/*/claude_stdout.jsonl")):
+        meta = json.loads((f.parents[2] / "metadata.json").read_text(encoding="utf-8"))
+        if meta.get("config_hash") != "22ce9b7e5249dd497ee7c4c0318216b4":
+            continue
         exit_ = json.loads((f.parent / "exit.json").read_text(encoding="utf-8"))
         if exit_.get("termination_reason") != "completed":
             continue

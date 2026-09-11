@@ -1,0 +1,461 @@
+=== Stage 0 run report: 20260911T020645Z_rename_max_connections_A_r1 ===
+task            : rename_max_connections  (repo_wide_change)
+arm             : A   repeat_id=1
+model           : sonnet   claude code 2.1.260 (Claude Code)
+parser version  : raw run produced by v4; re-analysed by v4 (coverage formula v2)
+
+SOLVED          : YES   (held-out deterministic tests, exit=0, LLM judge: no)
+
+-- resources ------------------------------------------------------
+wall time            : 85.99 s
+claude sessions      : 1   logical agents: 1
+turn accounting (four different quantities - do not conflate):
+  assistant stream events (1 per block)  : 40
+    of which thinking-only stream events : 6
+  API assistant messages (model replies) : 18
+  tool_use blocks                        : 24
+  Claude CLI num_turns (per session)     : [25]
+
+-- tool activity --------------------------------------------------
+tool calls total : 24
+  Read           : 7
+  Grep           : 1
+  Glob           : 1
+  Bash           : 9
+  Edit/Write     : 6
+  test runs      : 3   (denied calls excluded)
+bash categories (derived from the raw command; raw text preserved):
+    bash_git_inspection          1
+    bash_search                  1
+    bash_verification            3
+    bash_workspace_management    1
+    tool_denied                  3
+PERMISSION-DENIED tool calls : 3   (the CLI refused these; nothing ran, nothing was acquired)
+    Bash  would_have_been=bash_verification
+      cd "D:\dev\subagent test\stage0\runs\20260911T020645Z_rename_max_connections_A_r1\workspace" && python -c "
+import warnings
+from dbclient import load_ ... [+2163 chars]
+    Bash  would_have_been=bash_unknown
+      cd "D:\dev\subagent test\stage0\runs\20260911T020645Z_rename_max_connections_A_r1\workspace" && python _verify_rename.py
+    Bash  would_have_been=bash_unknown
+      python _verify_rename.py
+
+-- acquisition volume ---------------------------------------------
+unique files read          : 7
+unique repository regions  : 124 (3-line shingles)
+unique result identities   : 11
+total acquired chars/bytes : 5865 / 5865
+files edited               : D:/dev/subagent test/stage0/runs/20260911T020645Z_rename_max_connections_A_r1/workspace/_verify_rename.py, D:/dev/subagent test/stage0/runs/20260911T020645Z_rename_max_connections_A_r1/workspace/dbclient/cli.py, D:/dev/subagent test/stage0/runs/20260911T020645Z_rename_max_connections_A_r1/workspace/dbclient/client.py, D:/dev/subagent test/stage0/runs/20260911T020645Z_rename_max_connections_A_r1/workspace/dbclient/config.py, D:/dev/subagent test/stage0/runs/20260911T020645Z_rename_max_connections_A_r1/workspace/dbclient/pool.py, D:/dev/subagent test/stage0/runs/20260911T020645Z_rename_max_connections_A_r1/workspace/dbclient/stats.py
+
+-- duplication (temporal availability: producer.end < consumer.start) --
+globally previously available   : 0
+  inter-agent duplicates        : 0
+  intra-agent repeats           : 0
+potentially avoidable (inter)   : 0
+  primed reacquisitions         : 0
+  unprimed overlapping discovery: 0
+  priming undetermined          : 0
+repeated searches (same query)  : 0
+repeated search results         : 0
+duplicate chars / bytes (inter) : 0 / 0
+duplicate content chunks        : 0
+pairs excluded by concurrency   : 0  (K(t): not yet available)
+
+-- oracle upper bound (mechanically removable, primed inter-agent only) --
+unit                        : physical (acquisitions / content chunks / bytes), not dollars
+primed repeated file reads  : 0
+primed repeated searches    : 0
+duplicate tool calls        : 0
+duplicate content chunks    : 0
+duplicate chars / bytes     : 0 / 0
+
+-- natural-language handoffs --------------------------------------
+handoffs               : 0
+total chars / bytes    : 0 / 0
+total estimated_tokens : 0  (estimated; NOT provider-billed tokens)
+
+-- communication duplication --------------------------------------
+no natural-language handoffs in this run
+
+-- reacquisition classification -----------------------------------
+gross primed reacquisitions        : 0
+  edit-precondition-associated     : 0   (0 chars, 0 chunks)
+  verification-associated          : 0   (0 chars, 0 chunks)
+  discretionary                    : 0   (0 chars, 0 chunks)
+  unknown                          : 0   (0 chars, 0 chunks)
+  edit precondition rule           : verified for Claude Code 2.1.260
+discretionary upper bound          : 0 tool calls, 0 chars
+handoff -> repository reacquisition overlap: not applicable
+
+-- visible tests and workspace integrity (NOT part of SOLVED) ------
+SOLVED basis                       : held-out verifier exit code only
+visible tests                      : PASS (exit 0)
+changed paths                      : ['dbclient/cli.py', 'dbclient/client.py', 'dbclient/config.py', 'dbclient/pool.py', 'dbclient/stats.py']
+read-only (protected) files        : 1   changed: []
+changed outside expected scope     : []
+held-out isolation breach suspected: False   (outside-workspace accesses 0, held-out/reference exposures 0; detection only)
+
+-- observability --------------------------------------------------
+structured Read operations      : 7
+structured Grep/Glob operations : 2
+bash reads                      : 0
+bash searches                   : 1
+bash directory listings         : 0
+bash git inspections            : 1
+bash unknown (opaque)           : 0
+unknown tool events             : 0
+
+acquisition_classified          : 11
+acquisition_unknown             : 0
+acquisition_candidates (denom)  : 11
+non_acquisition (excluded)      : 10   [edits, verification, build, workspace mgmt, metadata]
+permission-denied (excluded)    : 3   [nothing ran, so nothing could be acquired]
+unknown CLI event types         : {}
+unrecognized system subtypes    : []
+CLI system subtypes seen        : {'init': 1, 'thinking_tokens': 25, 'permission_denied': 3}
+unparsable stream lines         : 0
+acquisition_coverage            : 1.000   minimum required 0.9   [formula v2]
+  formula: acquisition_coverage = acquisition_classified / (acquisition_classified + acquisition_unknown); non-acquisition and permission-denied calls are excluded from both
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+context residency level         : 2 (reconstructed from session event history)
+
+-- token / cache / cost telemetry ---------------------------------
+reported input tokens      : UNCACHED INPUT ONLY - not context length
+                             36  (reported)
+reported cache read tokens : 440539
+reported cache write tokens: 19507
+total INPUT tokens         : 460082   <- submitted context volume (input + cache_read + cache_write)
+reported output tokens     : 9006  (reported)
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=1190 out=21 cost_usd=0.0012950000000000001
+    claude-sonnet-5                  in=36 out=9006 cost_usd=0.25626779999999993
+subscription_execution     : True
+API_charge                 : false_expected
+cli reported cost (per session, api-equivalent, NOT amount paid):
+    0.257563
+
+-- integrity ------------------------------------------------------
+all sessions on subscription : True
+arm label valid              : True  - No internal subagent fan-out observed.
+base commit                  : 58be8a085a3f289ab4292401935474c39f7de747
+final tree hash              : 37aebf516a70e1a51aa5f974f8daab888f1b52b9
+diff bytes                   : 6730
+
+=== Stage 0 run report: 20260911T020834Z_rename_max_connections_B_r1 ===
+task            : rename_max_connections  (repo_wide_change)
+arm             : B   repeat_id=1
+model           : sonnet   claude code 2.1.260 (Claude Code)
+parser version  : raw run produced by v4; re-analysed by v4 (coverage formula v2)
+
+SOLVED          : YES   (held-out deterministic tests, exit=0, LLM judge: no)
+
+-- resources ------------------------------------------------------
+wall time            : 176.83 s
+claude sessions      : 5   logical agents: 3
+turn accounting (four different quantities - do not conflate):
+  assistant stream events (1 per block)  : 52
+    of which thinking-only stream events : 8
+  API assistant messages (model replies) : 20
+  tool_use blocks                        : 33
+  Claude CLI num_turns (per session)     : [1, 15, 1, 20, 1]
+
+-- tool activity --------------------------------------------------
+tool calls total : 33
+  Read           : 13
+  Grep           : 2
+  Glob           : 0
+  Bash           : 11
+  Edit/Write     : 7
+  test runs      : 2   (denied calls excluded)
+bash categories (derived from the raw command; raw text preserved):
+    bash_directory_listing       3
+    bash_git_inspection          2
+    bash_search                  1
+    bash_verification            2
+    tool_denied                  3
+PERMISSION-DENIED tool calls : 3   (the CLI refused these; nothing ran, nothing was acquired)
+    Bash  would_have_been=bash_unknown
+      cd "D:\dev\subagent test\stage0\runs\20260911T020834Z_rename_max_connections_B_r1\workspace" && python - <<'EOF'
+import warnings
+from dbclient.config ... [+1615 chars]
+    Bash  would_have_been=bash_unknown
+      cd "D:\dev\subagent test\stage0\runs\20260911T020834Z_rename_max_connections_B_r1\workspace" && python _scratch_check.py
+    Bash  would_have_been=bash_verification
+      python "D:\dev\subagent test\stage0\runs\20260911T020834Z_rename_max_connections_B_r1\workspace\_scratch_check.py"
+
+-- acquisition volume ---------------------------------------------
+unique files read          : 8
+unique repository regions  : 259 (3-line shingles)
+unique result identities   : 16
+total acquired chars/bytes : 15006 / 15006
+files edited               : D:/dev/subagent test/stage0/runs/20260911T020834Z_rename_max_connections_B_r1/workspace/_scratch_check.py, D:/dev/subagent test/stage0/runs/20260911T020834Z_rename_max_connections_B_r1/workspace/dbclient/cli.py, D:/dev/subagent test/stage0/runs/20260911T020834Z_rename_max_connections_B_r1/workspace/dbclient/client.py, D:/dev/subagent test/stage0/runs/20260911T020834Z_rename_max_connections_B_r1/workspace/dbclient/config.py, D:/dev/subagent test/stage0/runs/20260911T020834Z_rename_max_connections_B_r1/workspace/dbclient/pool.py, D:/dev/subagent test/stage0/runs/20260911T020834Z_rename_max_connections_B_r1/workspace/dbclient/stats.py
+
+-- duplication (temporal availability: producer.end < consumer.start) --
+globally previously available   : 6
+  inter-agent duplicates        : 5
+  intra-agent repeats           : 1
+potentially avoidable (inter)   : 5
+  primed reacquisitions         : 5
+  unprimed overlapping discovery: 0
+  priming undetermined          : 0
+repeated searches (same query)  : 0
+repeated search results         : 0
+duplicate chars / bytes (inter) : 3042 / 3042
+duplicate content chunks        : 65
+pairs excluded by concurrency   : 0  (K(t): not yet available)
+
+-- oracle upper bound (mechanically removable, primed inter-agent only) --
+unit                        : physical (acquisitions / content chunks / bytes), not dollars
+primed repeated file reads  : 5
+primed repeated searches    : 0
+duplicate tool calls        : 5
+duplicate content chunks    : 65
+duplicate chars / bytes     : 3042 / 3042
+
+-- natural-language handoffs --------------------------------------
+handoffs               : 6
+total chars / bytes    : 23896 / 24012
+total estimated_tokens : 5973  (estimated; NOT provider-billed tokens)
+  [1] coordinator -> investigator  investigation_instruction          2010 chars  ~  502 est. tokens
+  [2] investigator -> coordinator   investigation_report               6612 chars  ~ 1653 est. tokens
+  [3] coordinator -> implementer   implementation_instruction         5449 chars  ~ 1362 est. tokens
+  [4] coordinator -> implementer   forwarded_investigation_report     6612 chars  ~ 1653 est. tokens
+  [5] implementer -> coordinator   implementation_report              2229 chars  ~  557 est. tokens
+  [6] coordinator -> user          final_result                        984 chars  ~  246 est. tokens
+
+-- communication duplication --------------------------------------
+investigator acquired content      : 5900 chars, 114 content chunks
+investigator report size           : 6612 chars (~1653 estimated tokens)
+repository/tool chunks copied into report: 36 repository chunks; 36 chunks of the investigator's own tool output (~1370 chars)
+handoff repository quote fraction  : report 0.2072; all handoffs 0.1425 (quoted-chars estimate / handoff chars)
+per handoff - chunks from repository / sender's own tool output / relayed:
+  [1]  coordinator -> investigator investigation_instruction        2010 ch  repo   0  tool   0  relay   0  quote 0.0
+  [2] investigator -> coordinator  investigation_report             6612 ch  repo  36  tool  36  relay   0  quote 0.2072
+  [3]  coordinator -> implementer  implementation_instruction       5449 ch  repo  12  tool   0  relay  15  quote 0.1219
+  [4]  coordinator -> implementer  forwarded_investigation_report   6612 ch  repo  36  tool   0  relay  90  quote 0.2072
+  [5]  implementer -> coordinator  implementation_report            2229 ch  repo   0  tool   0  relay   0  quote 0.0
+  [6]  coordinator -> user         final_result                      984 ch  repo   0  tool   0  relay   0  quote 0.0
+  (window {'lines': 3, 'min_alnum': 16, 'min_content_lines': 2, 'indentation': 'stripped'}; repository source base_commit)
+
+-- reacquisition classification -----------------------------------
+gross primed reacquisitions        : 5
+  edit-precondition-associated     : 5   (3042 chars, 65 chunks)
+  verification-associated          : 0   (0 chars, 0 chunks)
+  discretionary                    : 0   (0 chars, 0 chunks)
+  unknown                          : 0   (0 chars, 0 chunks)
+  edit precondition rule           : verified for Claude Code 2.1.260
+discretionary upper bound          : 0 tool calls, 0 chars
+handoff -> repository reacquisition overlap:
+  chunks in investigator acquisition      : 114
+  ... also copied into handoffs to impl.  : 36
+  ... also later reacquired by implementer: 65
+  in all three                            : 36 (~2325 chars of implementer tool output)
+    cd "D:/dev/subagent test/stage0/runs/20260911T020834Z_rename_max_connections_B_r1/workspace" && git diff -- dbclient/ 2>&1 8 chunks, ~551 chars
+    dbclient/cli.py                          10 chunks, ~561 chars
+    dbclient/config.py                       16 chunks, ~690 chars
+    dbclient/pool.py                         10 chunks, ~523 chars
+
+-- visible tests and workspace integrity (NOT part of SOLVED) ------
+SOLVED basis                       : held-out verifier exit code only
+visible tests                      : PASS (exit 0)
+changed paths                      : ['dbclient/cli.py', 'dbclient/client.py', 'dbclient/config.py', 'dbclient/pool.py', 'dbclient/stats.py']
+read-only (protected) files        : 1   changed: []
+changed outside expected scope     : []
+held-out isolation breach suspected: False   (outside-workspace accesses 0, held-out/reference exposures 0; detection only)
+
+-- observability --------------------------------------------------
+structured Read operations      : 13
+structured Grep/Glob operations : 2
+bash reads                      : 0
+bash searches                   : 1
+bash directory listings         : 3
+bash git inspections            : 2
+bash unknown (opaque)           : 0
+unknown tool events             : 0
+
+acquisition_classified          : 21
+acquisition_unknown             : 0
+acquisition_candidates (denom)  : 21
+non_acquisition (excluded)      : 9   [edits, verification, build, workspace mgmt, metadata]
+permission-denied (excluded)    : 3   [nothing ran, so nothing could be acquired]
+unknown CLI event types         : {}
+unrecognized system subtypes    : []
+CLI system subtypes seen        : {'init': 5, 'thinking_tokens': 39, 'permission_denied': 3}
+unparsable stream lines         : 0
+acquisition_coverage            : 1.000   minimum required 0.9   [formula v2]
+  formula: acquisition_coverage = acquisition_classified / (acquisition_classified + acquisition_unknown); non-acquisition and permission-denied calls are excluded from both
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+context residency level         : 2 (reconstructed from session event history)
+
+-- token / cache / cost telemetry ---------------------------------
+reported input tokens      : UNCACHED INPUT ONLY - not context length
+                             40  (reported)
+reported cache read tokens : 441125
+reported cache write tokens: 53494
+total INPUT tokens         : 494659   <- submitted context volume (input + cache_read + cache_write)
+reported output tokens     : 19465  (reported)
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=1245 out=21 cost_usd=0.00135
+    claude-sonnet-5                  in=2 out=671 cost_usd=0.0323936
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=1700 out=18 cost_usd=0.00179
+    claude-sonnet-5                  in=10 out=4195 cost_usd=0.1062564
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=4916 out=19 cost_usd=0.005011
+    claude-sonnet-5                  in=24 out=7019 cost_usd=0.2300048
+subscription_execution     : True
+API_charge                 : false_expected
+cli reported cost (per session, api-equivalent, NOT amount paid):
+    0.0337436
+    0.108046
+    0.0877946
+    0.235016
+    0.0404816
+
+-- integrity ------------------------------------------------------
+all sessions on subscription : True
+arm label valid              : True  - No internal subagent fan-out observed.
+base commit                  : 58be8a085a3f289ab4292401935474c39f7de747
+final tree hash              : 754368b0558ea9700ab094b7c285dde3c15c6000
+diff bytes                   : 7232
+
+=== Stage 0 primary comparison: Arm B overhead over Arm A ===
+task: rename_max_connections
+
+metric                                   Arm A       Arm B       delta       B/A
+solved                                    True        True           0       1.0
+claude sessions                              1           5           4       5.0
+Claude CLI num_turns (sum)                  25          38          13      1.52
+model calls (API messages)                  18          20           2     1.111
+wall seconds                             85.99      176.8390.84000000000002     2.056
+tool calls                                  24          33           9     1.375
+Read calls                                   7          13           6    1.8571
+Grep calls                                   1           2           1       2.0
+Glob calls                                   1           0          -1       0.0
+Bash calls                                   9          11           2     1.222
+unique files read                            7           8           1     1.143
+unique repo regions                        124         259         135    2.0887
+acquired chars                            5865       15006        9141    2.5586
+acquired bytes                            5865       15006        9141    2.5586
+handoff chars                                0       23896       23896      None
+
+-- coordination redundancy (Arm B only concept) --
+inter-agent duplicate acquisitions : 5
+  of which primed reacquisition    : 5
+  of which unprimed discovery      : 0
+Arm A intra-agent repeats (control): 0
+
+-- observability gate --
+Arm A acquisition_coverage: 1.000   eligible for headline comparison: True
+Arm B acquisition_coverage: 1.000   eligible for headline comparison: True
+
+=== Stage 0 controlled pair: rename_max_connections ===
+Arm A run: 20260911T020645Z_rename_max_connections_A_r1
+Arm B run: 20260911T020834Z_rename_max_connections_B_r1
+
+-- parity (all must PASS for the pair to be comparable) -----------
+  [PASS] same task
+  [PASS] same config_hash
+  [PASS] same base commit
+  [PASS] same Claude Code version
+  [PASS] same resolved main model
+  [PASS] same protected files
+  config_hash 9edbfb5d0d082d49a61969068fafd4ac / 9edbfb5d0d082d49a61969068fafd4ac; CLI ['2.1.260'] / ['2.1.260']; model ['claude-sonnet-5'] / ['claude-sonnet-5']
+
+-- Arm A vs Arm B (descriptive; n=1 per arm) -----------------------
+                                                   Arm A         Arm B
+  solved (held-out verifier)                        True          True
+  Claude sessions                                      1             5
+  CLI turns (sum of num_turns)                        25            38
+  model calls (API assistant messages)                18            20
+  tool calls                                          24            33
+  total input tokens (main model)                 460082        494659
+    uncached input                                    36            40
+    cache read                                    440539        441125
+    cache write                                    19507         53494
+  output tokens (main model)                        9006         19465
+  uncached input, all models (modelUsage)           1226          7901
+  API-equivalent cost USD (not paid)            0.257563      0.505082
+  wall seconds (sum of sessions)                   85.99        176.83
+  repository acquisition chars                      5865         15006
+  repository acquisition bytes                      5865         15006
+  unique repository regions                          124           259
+  unique files read                                    7             8
+
+-- Arm B coordination ----------------------------------------------
+  investigator  tool calls 14, reads 8, searches/listings 6, bash acquisitions 4, edits 0, tests 0; acquired 5900 chars, 117 regions
+  implementer   tool calls 19, reads 5, searches/listings 2, bash acquisitions 2, edits 7, tests 2; acquired 9106 chars, 207 regions
+  handoffs: 6, total 23896 chars; investigator report 6612 chars
+
+-- gross primed reacquisition (Arm B) ------------------------------
+  gross primed reacquisitions      : 5
+    edit-precondition-associated   : 5  (3042 chars, 65 chunks)
+    verification-associated        : 0  (0 chars, 0 chunks)
+    discretionary                  : 0  (0 chars, 0 chunks)
+    unknown                        : 0  (0 chars, 0 chunks)
+  unprimed overlapping discoveries : 0
+  concurrency-excluded pairs       : 0
+  edit precondition verified for   : 2.1.260 (yes)
+
+-- supporting-file discretionary rereads (H1) ----------------------
+  not applicable (task declares no such paths)
+
+-- file being fixed (H2) -------------------------------------------
+  total: gross primed 5, edit-precondition 5, verification 0, discretionary 0 (0 chars), unknown 0, unprimed overlaps 0
+    dbclient/config.py         gross 1  edit 1  verif 0  disc 0  unknown 0  unprimed 0
+    dbclient/pool.py           gross 1  edit 1  verif 0  disc 0  unknown 0  unprimed 0
+    dbclient/cli.py            gross 1  edit 1  verif 0  disc 0  unknown 0  unprimed 0
+    dbclient/stats.py          gross 1  edit 1  verif 0  disc 0  unknown 0  unprimed 0
+    dbclient/client.py         gross 1  edit 1  verif 0  disc 0  unknown 0  unprimed 0
+
+-- handoff repository-content duplication (H3) ---------------------
+  investigator acquired            : 5900 chars, 114 chunks
+  report repository chunks         : 36 (~1370 chars from its own tool output)
+  quote fraction                   : report 0.2072, all handoffs 0.1425
+
+-- handoff_reacquisition_overlap (H4) ------------------------------
+  investigator 114 -> copied into handoffs 36 -> re-acquired 65; in all three 36 (~2325 chars)
+    cd "D:/dev/subagent test/stage0/runs/20260911T020834Z_rename_max_connections_B_r1/workspace" && git diff -- dbclient/ 2>&1 8 chunks, ~551 chars
+    dbclient/cli.py                  10 chunks, ~561 chars
+    dbclient/config.py               16 chunks, ~690 chars
+    dbclient/pool.py                 10 chunks, ~523 chars
+
+-- observability and integrity -------------------------------------
+  Arm A: coverage 1.000, low_observability False, unknown CLI types {}, unknown tools 0, unclassified bash 0, unparsable lines 0
+         isolation breach suspected False, visible tests PASS, protected changed 0, outside expected scope [], permission denials 3, subscription True, arm label valid True
+  Arm B: coverage 1.000, low_observability False, unknown CLI types {}, unknown tools 0, unclassified bash 0, unparsable lines 0
+         isolation breach suspected False, visible tests PASS, protected changed 0, outside expected scope [], permission denials 3, subscription True, arm label valid True
+
+Anything not shown above is exploratory and must be labelled as such (PREREGISTRATION.md, Pair-2 primary outputs).
+
+-- multi-agent overhead decomposition (Stage 0.5, v1) --
+
+Arm A total input:                 460,082   exact (main model)
+Arm B total input:                 494,659   exact (main model)
+B - A observable input delta:       34,577   exact
+
+                                             Arm A     Arm B     B - A
+  session/context fanout:                  316,602   355,045    38,443
+  handoff transmission:                          0    44,919    44,919
+  discretionary reacquisition:                   0         0         0
+  tool-required reacquisition:                   0     8,371     8,371
+  unique downstream acquisition:                 0     1,558     1,558
+  verification-associated reacq.:                0         0         0
+  unknown-subcategory reacq.:                    0         0         0
+  other tool results (not a category):      25,376    12,748   -12,628
+  unattributed / hidden remainder:                             -46,086
+
+  basis:
+    fanout      first-call input, exact: A 17,589 / B 83,927 (1 vs 5 sessions); the row is reconstructed: calls x (first-call input - handoff text)
+    fanout      hidden system prompt + tool schemas, by subtraction (estimated): B 44,683 over 3 fresh sessions; split not observable
+    handoff     exact 22,912 chars / 23,026 bytes in 5 inter-agent messages; row = estimated tokens x calls carrying them
+    reacq./unique rows: counts and chars exact; tokens estimated (chars/4) x later calls
+    rows are disjoint by context position and are NOT forced to sum to the delta
+  overlap (content, reported separately, not subtracted): acquire -> handoff -> reacquire v1 36 chunks (~2325 chars), v2 35 lines (1187 chars)
+  handoff repository overlap: v1 quote fraction 0.1425, v2 quote fraction 0.1362
+  unique downstream: informational ~0 chars, self-generated after own edit ~6,064 chars
+  materiality (mechanical indicators, no LLM judge): changed_diagnosis=undetermined_without_judgement, corrected_earlier_finding=undetermined_without_judgement, added_new_constraint=no_mechanical_evidence, changed_implementation=no, merely_verified=yes

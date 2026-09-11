@@ -1,0 +1,602 @@
+=== Stage 0 run report: 20260911T014415Z_settings_list_fields_A_r1 ===
+task            : settings_list_fields  (cross_file_feature)
+arm             : A   repeat_id=1
+model           : sonnet   claude code 2.1.260 (Claude Code)
+parser version  : raw run produced by v4; re-analysed by v4 (coverage formula v2)
+
+SOLVED          : YES   (held-out deterministic tests, exit=0, LLM judge: no)
+
+-- resources ------------------------------------------------------
+wall time            : 50.52 s
+claude sessions      : 1   logical agents: 1
+turn accounting (four different quantities - do not conflate):
+  assistant stream events (1 per block)  : 26
+    of which thinking-only stream events : 5
+  API assistant messages (model replies) : 11
+  tool_use blocks                        : 17
+  Claude CLI num_turns (per session)     : [None]
+
+-- tool activity --------------------------------------------------
+tool calls total : 17
+  Read           : 7
+  Grep           : 0
+  Glob           : 0
+  Bash           : 7
+  Edit/Write     : 3
+  test runs      : 2   (denied calls excluded)
+bash categories (derived from the raw command; raw text preserved):
+    bash_directory_listing       1
+    bash_search                  1
+    bash_verification            2
+    bash_workspace_management    1
+    tool_denied                  2
+PERMISSION-DENIED tool calls : 2   (the CLI refused these; nothing ran, nothing was acquired)
+    Bash  would_have_been=bash_verification
+      cd "D:\dev\subagent test\stage0\runs\20260911T014415Z_settings_list_fields_A_r1\workspace" && python -c "
+from confkit import Field, Schema, DictSourc ... [+226 chars]
+    Bash  would_have_been=bash_unknown
+      cd "D:\dev\subagent test\stage0\runs\20260911T014415Z_settings_list_fields_A_r1\workspace" && python -m pytest _manual_check.py -q -s 2>&1 || python _ ... [+15 chars]
+
+-- acquisition volume ---------------------------------------------
+unique files read          : 7
+unique repository regions  : 126 (3-line shingles)
+unique result identities   : 9
+total acquired chars/bytes : 6214 / 6214
+files edited               : D:/dev/subagent test/stage0/runs/20260911T014415Z_settings_list_fields_A_r1/workspace/_manual_check.py, D:/dev/subagent test/stage0/runs/20260911T014415Z_settings_list_fields_A_r1/workspace/confkit/coerce.py, D:/dev/subagent test/stage0/runs/20260911T014415Z_settings_list_fields_A_r1/workspace/confkit/schema.py
+
+-- duplication (temporal availability: producer.end < consumer.start) --
+globally previously available   : 0
+  inter-agent duplicates        : 0
+  intra-agent repeats           : 0
+potentially avoidable (inter)   : 0
+  primed reacquisitions         : 0
+  unprimed overlapping discovery: 0
+  priming undetermined          : 0
+repeated searches (same query)  : 0
+repeated search results         : 0
+duplicate chars / bytes (inter) : 0 / 0
+duplicate content chunks        : 0
+pairs excluded by concurrency   : 2  (K(t): not yet available)
+
+-- oracle upper bound (mechanically removable, primed inter-agent only) --
+unit                        : physical (acquisitions / content chunks / bytes), not dollars
+primed repeated file reads  : 0
+primed repeated searches    : 0
+duplicate tool calls        : 0
+duplicate content chunks    : 0
+duplicate chars / bytes     : 0 / 0
+
+-- natural-language handoffs --------------------------------------
+handoffs               : 0
+total chars / bytes    : 0 / 0
+total estimated_tokens : 0  (estimated; NOT provider-billed tokens)
+
+-- communication duplication --------------------------------------
+no natural-language handoffs in this run
+
+-- reacquisition classification -----------------------------------
+gross primed reacquisitions        : 0
+  edit-precondition-associated     : 0   (0 chars, 0 chunks)
+  verification-associated          : 0   (0 chars, 0 chunks)
+  discretionary                    : 0   (0 chars, 0 chunks)
+  unknown                          : 0   (0 chars, 0 chunks)
+  edit precondition rule           : verified for Claude Code 2.1.260
+discretionary upper bound          : 0 tool calls, 0 chars
+handoff -> repository reacquisition overlap: not applicable
+
+-- visible tests and workspace integrity (NOT part of SOLVED) ------
+SOLVED basis                       : held-out verifier exit code only
+visible tests                      : PASS (exit 0)
+changed paths                      : ['_manual_check.py', 'confkit/coerce.py', 'confkit/schema.py']
+read-only (protected) files        : 1   changed: []
+changed outside expected scope     : ['_manual_check.py']
+held-out isolation breach suspected: False   (outside-workspace accesses 0, held-out/reference exposures 0; detection only)
+supporting-file discretionary rereads: 0 (gross primed 0, unprimed overlaps 0)
+
+-- observability --------------------------------------------------
+structured Read operations      : 7
+structured Grep/Glob operations : 0
+bash reads                      : 0
+bash searches                   : 1
+bash directory listings         : 1
+bash git inspections            : 0
+bash unknown (opaque)           : 0
+unknown tool events             : 0
+
+acquisition_classified          : 9
+acquisition_unknown             : 0
+acquisition_candidates (denom)  : 9
+non_acquisition (excluded)      : 6   [edits, verification, build, workspace mgmt, metadata]
+permission-denied (excluded)    : 2   [nothing ran, so nothing could be acquired]
+unknown CLI event types         : {}
+unrecognized system subtypes    : []
+CLI system subtypes seen        : {'init': 1, 'thinking_tokens': 5, 'permission_denied': 2}
+unparsable stream lines         : 0
+acquisition_coverage            : 1.000   minimum required 0.9   [formula v2]
+  formula: acquisition_coverage = acquisition_classified / (acquisition_classified + acquisition_unknown); non-acquisition and permission-denied calls are excluded from both
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+context residency level         : 2 (reconstructed from session event history)
+
+-- token / cache / cost telemetry ---------------------------------
+reported input tokens      : UNCACHED INPUT ONLY - not context length
+                             52  (reported)
+reported cache read tokens : 526790
+reported cache write tokens: 35960
+total INPUT tokens         : 562802   <- submitted context volume (input + cache_read + cache_write)
+reported output tokens     : 175  (reported)
+subscription_execution     : True
+API_charge                 : false_expected
+cli reported cost (per session, api-equivalent, NOT amount paid):
+    N/A - not exposed by subscription CLI telemetry
+
+-- integrity ------------------------------------------------------
+all sessions on subscription : True
+arm label valid              : True  - No internal subagent fan-out observed.
+base commit                  : 4b5d6496d774d604f43fcbf1b50052ee7ef92bcc
+final tree hash              : 14a5dc5726616a32269de1c9f3970bafb8371f06
+diff bytes                   : 5154
+
+=== Stage 0 run report: 20260911T015555Z_settings_list_fields_A_r2 ===
+task            : settings_list_fields  (cross_file_feature)
+arm             : A   repeat_id=2
+model           : sonnet   claude code 2.1.260 (Claude Code)
+parser version  : raw run produced by v4; re-analysed by v4 (coverage formula v2)
+
+SOLVED          : YES   (held-out deterministic tests, exit=0, LLM judge: no)
+
+-- resources ------------------------------------------------------
+wall time            : 75.42 s
+claude sessions      : 1   logical agents: 1
+turn accounting (four different quantities - do not conflate):
+  assistant stream events (1 per block)  : 37
+    of which thinking-only stream events : 7
+  API assistant messages (model replies) : 18
+  tool_use blocks                        : 22
+  Claude CLI num_turns (per session)     : [23]
+
+-- tool activity --------------------------------------------------
+tool calls total : 22
+  Read           : 7
+  Grep           : 0
+  Glob           : 0
+  Bash           : 11
+  Edit/Write     : 4
+  test runs      : 2   (denied calls excluded)
+bash categories (derived from the raw command; raw text preserved):
+    bash_directory_listing       1
+    bash_git_inspection          1
+    bash_non_acquisition         1
+    bash_search                  1
+    bash_verification            2
+    bash_workspace_management    2
+    tool_denied                  3
+PERMISSION-DENIED tool calls : 3   (the CLI refused these; nothing ran, nothing was acquired)
+    Bash  would_have_been=bash_verification
+      cd "/d/dev/subagent test/stage0/runs/20260911T015555Z_settings_list_fields_A_r2/workspace" && python -c "
+from confkit import Field, Schema, DictSourc ... [+226 chars]
+    Bash  would_have_been=bash_unknown
+      cd "/d/dev/subagent test/stage0/runs/20260911T015555Z_settings_list_fields_A_r2/workspace" && python _manual_check.py
+    Bash  would_have_been=bash_git_inspection
+      cd "/d/dev/subagent test/stage0/runs/20260911T015555Z_settings_list_fields_A_r2/workspace" && git status
+
+-- acquisition volume ---------------------------------------------
+unique files read          : 7
+unique repository regions  : 136 (3-line shingles)
+unique result identities   : 10
+total acquired chars/bytes : 6543 / 6543
+files edited               : D:/dev/subagent test/stage0/runs/20260911T015555Z_settings_list_fields_A_r2/workspace/_manual_check.py, D:/dev/subagent test/stage0/runs/20260911T015555Z_settings_list_fields_A_r2/workspace/_manual_check_test.py, D:/dev/subagent test/stage0/runs/20260911T015555Z_settings_list_fields_A_r2/workspace/confkit/coerce.py, D:/dev/subagent test/stage0/runs/20260911T015555Z_settings_list_fields_A_r2/workspace/confkit/schema.py
+
+-- duplication (temporal availability: producer.end < consumer.start) --
+globally previously available   : 0
+  inter-agent duplicates        : 0
+  intra-agent repeats           : 0
+potentially avoidable (inter)   : 0
+  primed reacquisitions         : 0
+  unprimed overlapping discovery: 0
+  priming undetermined          : 0
+repeated searches (same query)  : 0
+repeated search results         : 0
+duplicate chars / bytes (inter) : 0 / 0
+duplicate content chunks        : 0
+pairs excluded by concurrency   : 0  (K(t): not yet available)
+
+-- oracle upper bound (mechanically removable, primed inter-agent only) --
+unit                        : physical (acquisitions / content chunks / bytes), not dollars
+primed repeated file reads  : 0
+primed repeated searches    : 0
+duplicate tool calls        : 0
+duplicate content chunks    : 0
+duplicate chars / bytes     : 0 / 0
+
+-- natural-language handoffs --------------------------------------
+handoffs               : 0
+total chars / bytes    : 0 / 0
+total estimated_tokens : 0  (estimated; NOT provider-billed tokens)
+
+-- communication duplication --------------------------------------
+no natural-language handoffs in this run
+
+-- reacquisition classification -----------------------------------
+gross primed reacquisitions        : 0
+  edit-precondition-associated     : 0   (0 chars, 0 chunks)
+  verification-associated          : 0   (0 chars, 0 chunks)
+  discretionary                    : 0   (0 chars, 0 chunks)
+  unknown                          : 0   (0 chars, 0 chunks)
+  edit precondition rule           : verified for Claude Code 2.1.260
+discretionary upper bound          : 0 tool calls, 0 chars
+handoff -> repository reacquisition overlap: not applicable
+
+-- visible tests and workspace integrity (NOT part of SOLVED) ------
+SOLVED basis                       : held-out verifier exit code only
+visible tests                      : PASS (exit 0)
+changed paths                      : ['confkit/coerce.py', 'confkit/schema.py']
+read-only (protected) files        : 1   changed: []
+changed outside expected scope     : []
+held-out isolation breach suspected: False   (outside-workspace accesses 0, held-out/reference exposures 0; detection only)
+supporting-file discretionary rereads: 0 (gross primed 0, unprimed overlaps 0)
+
+-- observability --------------------------------------------------
+structured Read operations      : 7
+structured Grep/Glob operations : 0
+bash reads                      : 0
+bash searches                   : 1
+bash directory listings         : 1
+bash git inspections            : 1
+bash unknown (opaque)           : 0
+unknown tool events             : 0
+
+acquisition_classified          : 10
+acquisition_unknown             : 0
+acquisition_candidates (denom)  : 10
+non_acquisition (excluded)      : 9   [edits, verification, build, workspace mgmt, metadata]
+permission-denied (excluded)    : 3   [nothing ran, so nothing could be acquired]
+unknown CLI event types         : {}
+unrecognized system subtypes    : []
+CLI system subtypes seen        : {'init': 1, 'thinking_tokens': 11, 'permission_denied': 3}
+unparsable stream lines         : 0
+acquisition_coverage            : 1.000   minimum required 0.9   [formula v2]
+  formula: acquisition_coverage = acquisition_classified / (acquisition_classified + acquisition_unknown); non-acquisition and permission-denied calls are excluded from both
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+context residency level         : 2 (reconstructed from session event history)
+
+-- token / cache / cost telemetry ---------------------------------
+reported input tokens      : UNCACHED INPUT ONLY - not context length
+                             36  (reported)
+reported cache read tokens : 411611
+reported cache write tokens: 17003
+total INPUT tokens         : 428650   <- submitted context volume (input + cache_read + cache_write)
+reported output tokens     : 6246  (reported)
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=1282 out=14 cost_usd=0.001352
+    claude-sonnet-5                  in=36 out=6246 cost_usd=0.21286619999999998
+subscription_execution     : True
+API_charge                 : false_expected
+cli reported cost (per session, api-equivalent, NOT amount paid):
+    0.214218
+
+-- integrity ------------------------------------------------------
+all sessions on subscription : True
+arm label valid              : True  - No internal subagent fan-out observed.
+base commit                  : 4b5d6496d774d604f43fcbf1b50052ee7ef92bcc
+final tree hash              : 948e07b3c7ac415a7fd4da24f7c103196550db0a
+diff bytes                   : 3742
+
+=== Stage 0 run report: 20260911T015737Z_settings_list_fields_B_r2 ===
+task            : settings_list_fields  (cross_file_feature)
+arm             : B   repeat_id=2
+model           : sonnet   claude code 2.1.260 (Claude Code)
+parser version  : raw run produced by v4; re-analysed by v4 (coverage formula v2)
+
+SOLVED          : YES   (held-out deterministic tests, exit=0, LLM judge: no)
+
+-- resources ------------------------------------------------------
+wall time            : 173.55 s
+claude sessions      : 5   logical agents: 3
+turn accounting (four different quantities - do not conflate):
+  assistant stream events (1 per block)  : 53
+    of which thinking-only stream events : 11
+  API assistant messages (model replies) : 27
+  tool_use blocks                        : 31
+  Claude CLI num_turns (per session)     : [1, 11, 1, 22, 1]
+
+-- tool activity --------------------------------------------------
+tool calls total : 31
+  Read           : 11
+  Grep           : 1
+  Glob           : 0
+  Bash           : 13
+  Edit/Write     : 6
+  test runs      : 5   (denied calls excluded)
+bash categories (derived from the raw command; raw text preserved):
+    bash_git_inspection          1
+    bash_non_acquisition         1
+    bash_search                  1
+    bash_verification            5
+    bash_workspace_management    1
+    tool_denied                  4
+PERMISSION-DENIED tool calls : 4   (the CLI refused these; nothing ran, nothing was acquired)
+    Bash  would_have_been=bash_build
+      cd "D:\dev\subagent test\stage0\runs\20260911T015737Z_settings_list_fields_B_r2\workspace" && python -c "
+from confkit import Field, Schema, DictSourc ... [+1598 chars]
+    Bash  would_have_been=bash_unknown
+      cd "D:\dev\subagent test\stage0\runs\20260911T015737Z_settings_list_fields_B_r2\workspace" && python _scratch_check.py
+    Bash  would_have_been=bash_verification
+      python "D:\dev\subagent test\stage0\runs\20260911T015737Z_settings_list_fields_B_r2\workspace\_scratch_check.py"
+    Bash  would_have_been=bash_git_inspection
+      cd "D:\dev\subagent test\stage0\runs\20260911T015737Z_settings_list_fields_B_r2\workspace" && rm _scratch_check.py && python -m pytest -q 2>&1 && git ... [+14 chars]
+
+-- acquisition volume ---------------------------------------------
+unique files read          : 8
+unique repository regions  : 180 (3-line shingles)
+unique result identities   : 11
+total acquired chars/bytes : 11326 / 11326
+files edited               : D:/dev/subagent test/stage0/runs/20260911T015737Z_settings_list_fields_B_r2/workspace/_scratch_check.py, D:/dev/subagent test/stage0/runs/20260911T015737Z_settings_list_fields_B_r2/workspace/confkit/coerce.py, D:/dev/subagent test/stage0/runs/20260911T015737Z_settings_list_fields_B_r2/workspace/confkit/schema.py
+
+-- duplication (temporal availability: producer.end < consumer.start) --
+globally previously available   : 3
+  inter-agent duplicates        : 3
+  intra-agent repeats           : 0
+potentially avoidable (inter)   : 3
+  primed reacquisitions         : 3
+  unprimed overlapping discovery: 0
+  priming undetermined          : 0
+repeated searches (same query)  : 0
+repeated search results         : 0
+duplicate chars / bytes (inter) : 2809 / 2809
+duplicate content chunks        : 69
+pairs excluded by concurrency   : 0  (K(t): not yet available)
+
+-- oracle upper bound (mechanically removable, primed inter-agent only) --
+unit                        : physical (acquisitions / content chunks / bytes), not dollars
+primed repeated file reads  : 3
+primed repeated searches    : 0
+duplicate tool calls        : 3
+duplicate content chunks    : 69
+duplicate chars / bytes     : 2809 / 2809
+
+-- natural-language handoffs --------------------------------------
+handoffs               : 6
+total chars / bytes    : 26988 / 27136
+total estimated_tokens : 6747  (estimated; NOT provider-billed tokens)
+  [1] coordinator -> investigator  investigation_instruction          2333 chars  ~  583 est. tokens
+  [2] investigator -> coordinator   investigation_report               8659 chars  ~ 2165 est. tokens
+  [3] coordinator -> implementer   implementation_instruction         3714 chars  ~  928 est. tokens
+  [4] coordinator -> implementer   forwarded_investigation_report     8659 chars  ~ 2165 est. tokens
+  [5] implementer -> coordinator   implementation_report              2416 chars  ~  604 est. tokens
+  [6] coordinator -> user          final_result                       1207 chars  ~  302 est. tokens
+
+-- communication duplication --------------------------------------
+investigator acquired content      : 6488 chars, 127 content chunks
+investigator report size           : 8659 chars (~2165 estimated tokens)
+repository/tool chunks copied into report: 50 repository chunks; 50 chunks of the investigator's own tool output (~1876 chars)
+handoff repository quote fraction  : report 0.2167; all handoffs 0.139 (quoted-chars estimate / handoff chars)
+per handoff - chunks from repository / sender's own tool output / relayed:
+  [1]  coordinator -> investigator investigation_instruction        2333 ch  repo   0  tool   0  relay   0  quote 0.0
+  [2] investigator -> coordinator  investigation_report             8659 ch  repo  50  tool  50  relay   0  quote 0.2167
+  [3]  coordinator -> implementer  implementation_instruction       3714 ch  repo   0  tool   0  relay   0  quote 0.0
+  [4]  coordinator -> implementer  forwarded_investigation_report   8659 ch  repo  50  tool   0  relay 118  quote 0.2167
+  [5]  implementer -> coordinator  implementation_report            2416 ch  repo   0  tool   0  relay   0  quote 0.0
+  [6]  coordinator -> user         final_result                     1207 ch  repo   0  tool   0  relay   0  quote 0.0
+  (window {'lines': 3, 'min_alnum': 16, 'min_content_lines': 2, 'indentation': 'stripped'}; repository source base_commit)
+
+-- reacquisition classification -----------------------------------
+gross primed reacquisitions        : 3
+  edit-precondition-associated     : 2   (1817 chars, 45 chunks)
+  verification-associated          : 0   (0 chars, 0 chunks)
+  discretionary                    : 1   (992 chars, 24 chunks)
+  unknown                          : 0   (0 chars, 0 chunks)
+  edit precondition rule           : verified for Claude Code 2.1.260
+discretionary upper bound          : 1 tool calls, 992 chars
+handoff -> repository reacquisition overlap:
+  chunks in investigator acquisition      : 127
+  ... also copied into handoffs to impl.  : 48
+  ... also later reacquired by implementer: 69
+  in all three                            : 36 (~1611 chars of implementer tool output)
+    cd "D:/dev/subagent test/stage0/runs/20260911T015737Z_settings_list_fields_B_r2/workspace" && git status --short && git diff 2 chunks, ~153 chars
+    confkit/loader.py                        21 chunks, ~808 chars
+    confkit/schema.py                        15 chunks, ~650 chars
+
+-- visible tests and workspace integrity (NOT part of SOLVED) ------
+SOLVED basis                       : held-out verifier exit code only
+visible tests                      : PASS (exit 0)
+changed paths                      : ['confkit/coerce.py', 'confkit/schema.py']
+read-only (protected) files        : 1   changed: []
+changed outside expected scope     : []
+held-out isolation breach suspected: False   (outside-workspace accesses 0, held-out/reference exposures 0; detection only)
+supporting-file discretionary rereads: 1 (gross primed 1, unprimed overlaps 0)
+
+-- observability --------------------------------------------------
+structured Read operations      : 11
+structured Grep/Glob operations : 1
+bash reads                      : 0
+bash searches                   : 1
+bash directory listings         : 0
+bash git inspections            : 1
+bash unknown (opaque)           : 0
+unknown tool events             : 0
+
+acquisition_classified          : 14
+acquisition_unknown             : 0
+acquisition_candidates (denom)  : 14
+non_acquisition (excluded)      : 13   [edits, verification, build, workspace mgmt, metadata]
+permission-denied (excluded)    : 4   [nothing ran, so nothing could be acquired]
+unknown CLI event types         : {}
+unrecognized system subtypes    : []
+CLI system subtypes seen        : {'init': 5, 'thinking_tokens': 15, 'permission_denied': 4}
+unparsable stream lines         : 0
+acquisition_coverage            : 1.000   minimum required 0.9   [formula v2]
+  formula: acquisition_coverage = acquisition_classified / (acquisition_classified + acquisition_unknown); non-acquisition and permission-denied calls are excluded from both
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+subscription quota telemetry    : status=allowed_warning type=seven_day utilization=0.89 overage=False execution_failure=False
+context residency level         : 2 (reconstructed from session event history)
+
+-- token / cache / cost telemetry ---------------------------------
+reported input tokens      : UNCACHED INPUT ONLY - not context length
+                             54  (reported)
+reported cache read tokens : 643719
+reported cache write tokens: 46946
+total INPUT tokens         : 690719   <- submitted context volume (input + cache_read + cache_write)
+reported output tokens     : 14561  (reported)
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=1337 out=15 cost_usd=0.001412
+    claude-sonnet-5                  in=2 out=758 cost_usd=0.0337036
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=1877 out=14 cost_usd=0.001947
+    claude-sonnet-5                  in=8 out=4338 cost_usd=0.1021844
+NOTE: 2 models were used. result.usage covers the main model only; per-model from modelUsage:
+    claude-haiku-4-5-20251001        in=4896 out=15 cost_usd=0.004971000000000001
+    claude-sonnet-5                  in=40 out=7488 cost_usd=0.2738146
+subscription_execution     : True
+API_charge                 : false_expected
+cli reported cost (per session, api-equivalent, NOT amount paid):
+    0.0351156
+    0.104131
+    0.0335866
+    0.278786
+    0.0189566
+
+-- integrity ------------------------------------------------------
+all sessions on subscription : True
+arm label valid              : True  - No internal subagent fan-out observed.
+base commit                  : 4b5d6496d774d604f43fcbf1b50052ee7ef92bcc
+final tree hash              : 981df456cc229715a86dae2ed77f749821393883
+diff bytes                   : 3591
+
+=== Stage 0 primary comparison: Arm B overhead over Arm A ===
+task: settings_list_fields
+
+metric                                   Arm A       Arm B       delta       B/A
+solved                                    True        True           0       1.0
+claude sessions                              1           5           4       5.0
+Claude CLI num_turns (sum)                  23          36          13     1.565
+model calls (API messages)                  18          27           9       1.5
+wall seconds                             75.42      173.5598.13000000000001     2.301
+tool calls                                  22          31           9    1.4091
+Read calls                                   7          11           4    1.5714
+Grep calls                                   0           1           1      None
+Glob calls                                   0           0           0      None
+Bash calls                                  11          13           2     1.182
+unique files read                            7           8           1     1.143
+unique repo regions                        136         180          44    1.3235
+acquired chars                            6543       11326        4783     1.731
+acquired bytes                            6543       11326        4783     1.731
+handoff chars                                0       26988       26988      None
+
+-- coordination redundancy (Arm B only concept) --
+inter-agent duplicate acquisitions : 3
+  of which primed reacquisition    : 3
+  of which unprimed discovery      : 0
+Arm A intra-agent repeats (control): 0
+
+-- observability gate --
+Arm A acquisition_coverage: 1.000   eligible for headline comparison: True
+Arm B acquisition_coverage: 1.000   eligible for headline comparison: True
+
+=== Stage 0 controlled pair: settings_list_fields ===
+Arm A run: 20260911T015555Z_settings_list_fields_A_r2
+Arm B run: 20260911T015737Z_settings_list_fields_B_r2
+
+-- parity (all must PASS for the pair to be comparable) -----------
+  [PASS] same task
+  [PASS] same config_hash
+  [PASS] same base commit
+  [PASS] same Claude Code version
+  [PASS] same resolved main model
+  [PASS] same protected files
+  config_hash 9edbfb5d0d082d49a61969068fafd4ac / 9edbfb5d0d082d49a61969068fafd4ac; CLI ['2.1.260'] / ['2.1.260']; model ['claude-sonnet-5'] / ['claude-sonnet-5']
+
+-- Arm A vs Arm B (descriptive; n=1 per arm) -----------------------
+                                                   Arm A         Arm B
+  solved (held-out verifier)                        True          True
+  Claude sessions                                      1             5
+  CLI turns (sum of num_turns)                        23            36
+  model calls (API assistant messages)                18            27
+  tool calls                                          22            31
+  total input tokens (main model)                 428650        690719
+    uncached input                                    36            54
+    cache read                                    411611        643719
+    cache write                                    17003         46946
+  output tokens (main model)                        6246         14561
+  uncached input, all models (modelUsage)           1318          8164
+  API-equivalent cost USD (not paid)            0.214218      0.470576
+  wall seconds (sum of sessions)                   75.42        173.55
+  repository acquisition chars                      6543         11326
+  repository acquisition bytes                      6543         11326
+  unique repository regions                          136           180
+  unique files read                                    7             8
+
+-- Arm B coordination ----------------------------------------------
+  investigator  tool calls 10, reads 8, searches/listings 2, bash acquisitions 1, edits 0, tests 0; acquired 6488 chars, 129 regions
+  implementer   tool calls 21, reads 3, searches/listings 1, bash acquisitions 1, edits 6, tests 5; acquired 4838 chars, 120 regions
+  handoffs: 6, total 26988 chars; investigator report 8659 chars
+
+-- gross primed reacquisition (Arm B) ------------------------------
+  gross primed reacquisitions      : 3
+    edit-precondition-associated   : 2  (1817 chars, 45 chunks)
+    verification-associated        : 0  (0 chars, 0 chunks)
+    discretionary                  : 1  (992 chars, 24 chunks)
+    unknown                        : 0  (0 chars, 0 chunks)
+  unprimed overlapping discoveries : 0
+  concurrency-excluded pairs       : 0
+  edit precondition verified for   : 2.1.260 (yes)
+
+-- supporting-file discretionary rereads (H1) ----------------------
+  total: gross primed 1, edit-precondition 0, verification 0, discretionary 1 (992 chars), unknown 0, unprimed overlaps 0
+    confkit/loader.py          gross 1  edit 0  verif 0  disc 1  unknown 0  unprimed 0
+    confkit/sources.py         gross 0  edit 0  verif 0  disc 0  unknown 0  unprimed 0
+    confkit/errors.py          gross 0  edit 0  verif 0  disc 0  unknown 0  unprimed 0
+
+-- file being fixed (H2) -------------------------------------------
+  total: gross primed 2, edit-precondition 2, verification 0, discretionary 0 (0 chars), unknown 0, unprimed overlaps 0
+    confkit/schema.py          gross 1  edit 1  verif 0  disc 0  unknown 0  unprimed 0
+    confkit/coerce.py          gross 1  edit 1  verif 0  disc 0  unknown 0  unprimed 0
+
+-- handoff repository-content duplication (H3) ---------------------
+  investigator acquired            : 6488 chars, 127 chunks
+  report repository chunks         : 50 (~1876 chars from its own tool output)
+  quote fraction                   : report 0.2167, all handoffs 0.139
+
+-- handoff_reacquisition_overlap (H4) ------------------------------
+  investigator 127 -> copied into handoffs 48 -> re-acquired 69; in all three 36 (~1611 chars)
+    cd "D:/dev/subagent test/stage0/runs/20260911T015737Z_settings_list_fields_B_r2/workspace" && git status --short && git diff 2 chunks, ~153 chars
+    confkit/loader.py                21 chunks, ~808 chars
+    confkit/schema.py                15 chunks, ~650 chars
+
+-- observability and integrity -------------------------------------
+  Arm A: coverage 1.000, low_observability False, unknown CLI types {}, unknown tools 0, unclassified bash 0, unparsable lines 0
+         isolation breach suspected False, visible tests PASS, protected changed 0, outside expected scope [], permission denials 3, subscription True, arm label valid True
+  Arm B: coverage 1.000, low_observability False, unknown CLI types {}, unknown tools 0, unclassified bash 0, unparsable lines 0
+         isolation breach suspected False, visible tests PASS, protected changed 0, outside expected scope [], permission denials 4, subscription True, arm label valid True
+
+Anything not shown above is exploratory and must be labelled as such (PREREGISTRATION.md, Pair-2 primary outputs).
+
+-- multi-agent overhead decomposition (Stage 0.5, v1) --
+
+Arm A total input:                 428,650   exact (main model)
+Arm B total input:                 690,719   exact (main model)
+B - A observable input delta:      262,069   exact
+
+                                             Arm A     Arm B     B - A
+  session/context fanout:                  318,582   488,796   170,214
+  handoff transmission:                          0    71,220    71,220
+  discretionary reacquisition:                   0     4,712     4,712
+  tool-required reacquisition:                   0     8,626     8,626
+  unique downstream acquisition:                 0       507       507
+  verification-associated reacq.:                0         0         0
+  unknown-subcategory reacq.:                    0         0         0
+  other tool results (not a category):      28,660    16,340   -12,320
+  unattributed / hidden remainder:                              19,110
+
+  basis:
+    fanout      first-call input, exact: A 17,699 / B 80,188 (1 vs 5 sessions); the row is reconstructed: calls x (first-call input - handoff text)
+    fanout      hidden system prompt + tool schemas, by subtraction (estimated): B 44,741 over 3 fresh sessions; split not observable
+    handoff     exact 25,781 chars / 25,923 bytes in 5 inter-agent messages; row = estimated tokens x calls carrying them
+    reacq./unique rows: counts and chars exact; tokens estimated (chars/4) x later calls
+    rows are disjoint by context position and are NOT forced to sum to the delta
+  overlap (content, reported separately, not subtracted): acquire -> handoff -> reacquire v1 36 chunks (~1611 chars), v2 31 lines (919 chars)
+  handoff repository overlap: v1 quote fraction 0.139, v2 quote fraction 0.1206
+  unique downstream: informational ~0 chars, self-generated after own edit ~2,029 chars
+  materiality (mechanical indicators, no LLM judge): changed_diagnosis=undetermined_without_judgement, corrected_earlier_finding=undetermined_without_judgement, added_new_constraint=no_mechanical_evidence, changed_implementation=no, merely_verified=yes
