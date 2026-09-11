@@ -20,6 +20,14 @@ With n = 5: 5 easy, 4 medium, 3 or 2 hard, 1 very_hard, 0 beyond; n = 3: 3/3 eas
 Benchmark selection when a stratum has more tasks than its cap: round-robin
 over task families (fixed family order), within a family by sha256(task_id).
 Nothing but the frozen stratum and the design family is used.
+
+Amendment 11 adds one exclusion, INFRASTRUCTURE only: a candidate listed in
+`config.STAGE2_INFRASTRUCTURE_UNRESOLVED` cannot obtain its valid observations
+because eligibility invalidation recurs, so it gets status
+`infrastructure_unresolved`, no stratum, and is kept out of the difficulty
+pool, the distribution, the frozen labels and the evaluation benchmark. Its
+valid observations stay in the record as descriptive counts. This is not
+performance-based selection: no measured success rate takes a task out.
 """
 
 from __future__ import annotations
@@ -38,6 +46,7 @@ INITIAL_RUNS = 3
 MAX_RUNS = 5
 MAX_INVALID_REPLACEMENTS = 2
 STRATA = ("easy", "medium", "hard", "very_hard", "beyond")
+INFRASTRUCTURE_UNRESOLVED_STATUS = "infrastructure_unresolved"
 STRATUM_LOWER_BOUNDS = (("easy", 0.9), ("medium", 0.7), ("hard", 0.4))
 STRATUM_CAPS = {"easy": 2, "medium": 3, "hard": 3, "very_hard": 3, "beyond": 2}
 EASY_CONTROL_STRATUM = "easy_control"
@@ -53,7 +62,19 @@ PROTOCOL = {
                "very_hard": "(0, 0.4)", "beyond": "0"},
     "caps": STRATUM_CAPS,
     "selection": "round-robin over families in design order, then sha256(task_id)",
+    "infrastructure_exclusion": {
+        "amendment": 11,
+        "status": INFRASTRUCTURE_UNRESOLVED_STATUS,
+        "tasks": dict(config.STAGE2_INFRASTRUCTURE_UNRESOLVED),
+        "basis": "infrastructure only; never a measured success rate",
+    },
 }
+
+
+def difficulty_pool() -> tuple[str, ...]:
+    """Candidates whose calibration can still produce a difficulty label."""
+    return tuple(t for t in config.STAGE2_CANDIDATES
+                 if t not in config.STAGE2_INFRASTRUCTURE_UNRESOLVED)
 
 
 def stratum_for(successes: int, n: int) -> str:
@@ -80,7 +101,10 @@ def task_status(task_id: str, entries: Sequence[dict]) -> dict:
     invalid = [e for e in runs if not e["valid"]]
     counted = valid[:MAX_RUNS]
     n, k = len(counted), sum(1 for e in counted if e["solved"])
-    if len(invalid) > MAX_INVALID_REPLACEMENTS:
+    excluded_reason = config.STAGE2_INFRASTRUCTURE_UNRESOLVED.get(task_id)
+    if excluded_reason:
+        status, needed = INFRASTRUCTURE_UNRESOLVED_STATUS, 0
+    elif len(invalid) > MAX_INVALID_REPLACEMENTS:
         status, needed = "unresolved_too_many_invalid_runs", 0
     elif n < INITIAL_RUNS:
         status, needed = "needs_runs", INITIAL_RUNS - n
@@ -99,6 +123,12 @@ def task_status(task_id: str, entries: Sequence[dict]) -> dict:
         "successes": k,
         "rate": round(k / n, 4) if n else None,
         "stratum": stratum_for(k, n) if status == "complete" else None,
+        "included_in_difficulty_pool": excluded_reason is None,
+        "included_in_evaluation_benchmark": excluded_reason is None,
+        "exclusion_reason": excluded_reason,
+        "valid_observations": n,
+        "valid_successes": k,
+        "invalid_attempts": len(invalid),
         "counted_run_ids": [e["run_id"] for e in counted],
         "invalid_run_ids": [e["run_id"] for e in invalid],
         "ignored_extra_run_ids": [e["run_id"] for e in valid[MAX_RUNS:]],
@@ -110,6 +140,20 @@ def calibration_summary(entries: Sequence[dict]) -> dict:
     return {t: task_status(t, entries) for t in config.STAGE2_CANDIDATES}
 
 
+def distribution(statuses: dict) -> dict:
+    """Strata counts over the difficulty pool only, plus the infrastructure
+    count reported beside them (amendment 11, item 9)."""
+    out = {s: 0 for s in STRATA}
+    for t, s in statuses.items():
+        if not s.get("included_in_difficulty_pool", True):
+            continue
+        if s.get("stratum") in out:
+            out[s["stratum"]] += 1
+    out["infrastructure_unresolved"] = sum(
+        1 for s in statuses.values() if s.get("status") == INFRASTRUCTURE_UNRESOLVED_STATUS)
+    return out
+
+
 def _family(task_id: str) -> str:
     design = stage2_design.load_design(task_id) or {}
     return design.get("task_family", "unknown")
@@ -119,7 +163,8 @@ def select_benchmark(statuses: dict) -> dict:
     """Deterministic selection per stratum (cap, family round-robin)."""
     selected, excluded = {}, {}
     for stratum in STRATA:
-        members = [t for t, s in statuses.items() if s.get("stratum") == stratum]
+        members = [t for t, s in statuses.items() if s.get("stratum") == stratum
+                   and s.get("included_in_difficulty_pool", True)]
         by_family: dict = {}
         for t in sorted(members, key=lambda t: hashlib.sha256(t.encode()).hexdigest()):
             by_family.setdefault(_family(t), []).append(t)
@@ -135,22 +180,58 @@ def select_benchmark(statuses: dict) -> dict:
 
 
 def freeze_labels(entries: Sequence[dict]) -> dict:
-    """The frozen difficulty record. Refuses unless every candidate is complete."""
+    """The frozen difficulty record. Refuses unless every task in the
+    difficulty pool is complete. Infrastructure-unresolved candidates
+    (amendment 11) are recorded separately with descriptive counts only: they
+    have no stratum, are not in `tasks`, and cannot reach the benchmark."""
     statuses = calibration_summary(entries)
-    incomplete = [t for t, s in statuses.items() if s["status"] != "complete"]
+    pool = difficulty_pool()
+    incomplete = [t for t in pool if statuses[t]["status"] != "complete"]
     if incomplete:
         raise ValueError(f"calibration incomplete for: {incomplete}")
     bench = select_benchmark(statuses)
-    run_ids = sorted(r for s in statuses.values() for r in s["counted_run_ids"])
-    return {
+    run_ids = sorted(r for t in pool for r in statuses[t]["counted_run_ids"])
+    unresolved = {
+        t: {"calibration_status": INFRASTRUCTURE_UNRESOLVED_STATUS.upper(),
+            "valid_observations": statuses[t]["valid_observations"],
+            "valid_successes": statuses[t]["valid_successes"],
+            "invalid_attempts": statuses[t]["invalid_attempts"],
+            "included_in_difficulty_pool": False,
+            "included_in_evaluation_benchmark": False,
+            "exclusion_basis": "infrastructure",
+            "reason": statuses[t]["exclusion_reason"],
+            "descriptive_records_only": True}
+        for t in config.STAGE2_CANDIDATES if t not in pool}
+    labels = {
         "protocol": PROTOCOL,
-        "tasks": {t: {k: s[k] for k in ("n", "successes", "rate", "stratum", "counted_run_ids")}
-                  for t, s in statuses.items()},
+        "tasks": {t: {k: statuses[t][k]
+                      for k in ("n", "successes", "rate", "stratum", "counted_run_ids")}
+                  for t in pool},
+        "difficulty_pool": list(pool),
+        "infrastructure_unresolved": unresolved,
+        "distribution": distribution(statuses),
         "benchmark": bench["selected"],
         "excluded_over_cap": bench["excluded_over_cap"],
         "easy_controls": list(config.STAGE2_EASY_CONTROLS),
         "calibration_runs_sha256": hashlib.sha256("\n".join(run_ids).encode()).hexdigest(),
     }
+    assert_no_excluded_task(labels)
+    return labels
+
+
+def assert_no_excluded_task(labels: dict) -> None:
+    """An infrastructure-unresolved task must not appear anywhere a difficulty
+    label, a benchmark slot or an evaluation run could be derived from."""
+    excluded = set(config.STAGE2_INFRASTRUCTURE_UNRESOLVED)
+    reachable = set(labels.get("tasks") or {}) | set(labels.get("easy_controls") or [])
+    for tasks in (labels.get("benchmark") or {}).values():
+        reachable |= set(tasks)
+    for tasks in (labels.get("excluded_over_cap") or {}).values():
+        reachable |= set(tasks)
+    bad = sorted(excluded & reachable)
+    if bad:
+        raise ValueError(
+            f"infrastructure-unresolved task(s) reached difficulty aggregation: {bad}")
 
 
 def labels_sha256(path: Path = config.STAGE2_DIFFICULTY_LABELS) -> Optional[str]:
@@ -190,12 +271,20 @@ def render_summary(entries: Sequence[dict], labels: Optional[dict] = None) -> st
                  f"{str(s['stratum'] or '-'):<11}{s['next_repeat_ids'] or '-'}")
         if s["invalid_run_ids"]:
             L.append(f"    invalid (not counted): {', '.join(s['invalid_run_ids'])}")
-    done = sum(1 for s in statuses.values() if s["status"] == "complete")
+        if s["exclusion_reason"]:
+            L.append(f"    EXCLUDED (infrastructure): {s['exclusion_reason']}; descriptive only: "
+                     f"{s['valid_successes']}/{s['valid_observations']} valid, "
+                     f"{s['invalid_attempts']} invalid")
+    pool = difficulty_pool()
+    done = sum(1 for t in pool if statuses[t]["status"] == "complete")
+    dist = distribution(statuses)
     L.append("")
-    L.append(f"complete: {done}/{len(statuses)} candidates")
+    L.append(f"complete: {done}/{len(pool)} pool candidates "
+             f"({len(statuses) - len(pool)} infrastructure-unresolved, excluded)")
+    L.append("distribution (pool only): " + "  ".join(f"{k}={v}" for k, v in dist.items()))
     if labels:
         L.append(f"difficulty labels FROZEN: benchmark {labels['benchmark']}")
-    elif done == len(statuses):
+    elif done == len(pool):
         L.append("all candidates complete: freeze with `python runner.py difficulty-freeze`")
     L.append("Strata use Single-Strong calibration runs only; evaluation runs never change them.")
     return "\n".join(L)

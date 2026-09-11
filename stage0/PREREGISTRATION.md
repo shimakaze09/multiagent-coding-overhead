@@ -2160,3 +2160,103 @@ State under the frozen rules:
 The author must decide how to proceed, for example whether the unresolved
 task leaves the pool or a new preregistration distinguishes benign
 self-authored or auto-memory events. Nothing is changed here.
+
+### Amendment 11 - 2026-09-12 - content-match provenance and the infrastructure-unresolved exclusion (prospective; BEFORE the runs it governs)
+
+Two changes, both prospective, both decided from the author's instruction
+before any further Claude session. No historical attempt is reclassified: the
+`s2t11_docpipe` repeat-3 attempt and the three `s2t03_ledgerly` attempts stay
+INVALID, and every raw artifact and earlier record is unchanged.
+
+**11a. A content match whose provenance is the agent's own writing is not
+exposure.** Phase C produced two matches of the frozen content check
+(section 15) that were not held-out content at all: the agent wrote a scratch
+verification script, then read it back, and the check saw its own lines
+(19.19, 19.20). The check is right to be conservative - it cannot tell where a
+line came from - so provenance is decided separately, in
+`analysis/exposure_provenance.py` (version 1, `applies_to` gated), from raw
+telemetry only.
+
+A match is `self_authored_false_positive` only when ALL six conditions hold:
+
+1. the matched text appeared in an ordinary file inside the run workspace;
+2. that file was written by the current agent earlier in the same run - a
+   file-writing tool call (`Write`, `Edit`, `MultiEdit`, `NotebookEdit`) whose
+   target resolves inside the workspace and carries no exposure marker;
+3. no protected path was read before the text appeared;
+4. no held-out, reference or design file was accessed anywhere in the run;
+5. no out-of-workspace source supplied the matched content: for every matched
+   line the agent's own write comes strictly before that line's first
+   appearance in any tool RESULT;
+6. the provenance is reconstructible - the isolation check is available, the
+   streams parsed with no unparsable line, and every matched line has an
+   identified author call.
+
+Then, and only then:
+
+    content_match      = self_authored_false_positive
+    held_out_exposure  = false
+    hard_stop          = false
+
+Everything else is `unexplained`: a line whose first appearance is in a tool
+result, an author that cannot be identified (a Bash heredoc write, whose
+target is not mechanically knowable), an unresolvable path, an
+out-of-workspace access, incomplete telemetry. `unexplained` remains a
+suspected exposure and a hard stop, exactly as before. A true protected-content
+match is unaffected: nothing in this amendment can clear a line the agent did
+not write first.
+
+The frozen detectors are untouched: `leakage.py` stays version 1 with
+`MIN_PROTECTED_LINES = 3`, `isolation.py` stays version 1 with the same five
+`EXPOSURE_MARKERS`. The new layer only classifies what they report, and
+`report.run_validity` drops the exposure reason for a run only when
+`exposure_provenance.clears_content_match` is true.
+
+**Prospective, mechanically.** From this commit the harness records
+`exposure_provenance_rule` in each new run's `metadata.json`; `applies_to`
+requires that record. An attempt that ran before the amendment has no record,
+so the rule cannot reach it. `s2t11_docpipe` repeat 3 is classified
+`self_authored_false_positive` and stays INVALID, which is the intended and
+tested behaviour (`tests/test_amendment11.py::test_s2t11_repeat_3_stays_invalid`).
+
+**Auto-memory stays strict.** A read or write under
+`~/.claude/projects/.../memory/` remains an out-of-workspace access and
+therefore INVALID, even where the content looks harmless: it can carry state
+across runs and sessions, which the workspace-isolation model forbids. Such an
+attempt is recorded INVALID, is replaceable up to the frozen cap of 2, and
+never enters a quality or difficulty statistic. This amendment does not
+legalise it.
+
+**11b. `INFRASTRUCTURE_UNRESOLVED`: an infrastructure exclusion, not benchmark
+selection.** `s2t03_ledgerly` exhausted the frozen replacement allowance
+through repeated eligibility invalidation (two auto-memory writes and one
+content match), so it holds one valid observation, 0/1, and cannot obtain the
+three the protocol requires. No further replacement is granted. One valid
+observation cannot support an empirical difficulty label, so the task is given
+none - not easy, medium, hard, very_hard or beyond:
+
+    calibration_status                = INFRASTRUCTURE_UNRESOLVED
+    included_in_difficulty_pool       = false
+    included_in_evaluation_benchmark  = false
+    valid observations = 1   valid successes = 0   invalid attempts = 3
+
+The counts are kept as descriptive records only. The reason is
+`infrastructure incompatibility / repeated isolation invalidation`, recorded in
+`config.STAGE2_INFRASTRUCTURE_UNRESOLVED`; it is explicitly **not** "task too
+difficult". Nothing about the task's measured performance takes it out, so this
+is not performance-based benchmark selection, and the exclusion is declared
+here before any further calibration run.
+
+Mechanically: `difficulty.difficulty_pool()` is the candidate set minus the
+excluded tasks; such a task gets status `infrastructure_unresolved`, no
+stratum and no `next_repeat_ids`; `select_benchmark` and `distribution` see
+only the pool; `freeze_labels` requires every *pool* task complete, records the
+excluded ones under `infrastructure_unresolved` with descriptive counts, and
+calls `assert_no_excluded_task`, which refuses if an excluded task appears in
+`tasks`, `benchmark`, `excluded_over_cap` or `easy_controls`. The distribution
+reports `Infrastructure unresolved: 1` beside the strata, never inside them.
+
+**Unchanged by this amendment:** the strata thresholds (easy ≥ 0.90, medium
+[0.70, 0.90), hard [0.40, 0.70), very_hard (0, 0.40), beyond 0), the 3-then-5
+repetition rule, the replacement cap of 2, the isolation rule, every task,
+prompt, limit and identity hash, and every historical record.

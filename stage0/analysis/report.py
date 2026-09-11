@@ -15,7 +15,8 @@ import dataclasses
 import statistics
 
 import config
-from analysis import decomposition, handoff, ingest, isolation, leakage, metrics, overlap_v2, routing
+from analysis import (decomposition, exposure_provenance, handoff, ingest, isolation, leakage,
+                      metrics, overlap_v2, routing)
 from harness import events as ev, telemetry, tools
 
 NA = "N/A - not exposed by subscription CLI telemetry"
@@ -74,6 +75,12 @@ def run_report(run_dir: str | Path) -> dict:
     content_check = leakage.check_run(raw, meta.get("task_id"), repo_texts)
 
     isolation_check = isolation.check_run(raw)
+    # PREREGISTRATION amendment 11: provenance of a content match. Recorded for
+    # every run; only taken up by `run_validity` where the run's metadata shows
+    # the rule was in force when it ran.
+    _, _protected = leakage.protected_for_run(meta.get("task_id"), repo_texts)
+    provenance_check = exposure_provenance.classify_run(
+        raw, isolation_check, content_check, _protected)
     per_agent = per_agent_acquisition(raw)
     task_meta = meta.get("task") or {}
     supporting_paths = list(task_meta.get("supporting_paths") or [])
@@ -262,6 +269,7 @@ def run_report(run_dir: str | Path) -> dict:
             "handoff_overlap_v2": overlap_v2.OVERLAP_V2_VERSION,
             "overhead_decomposition": decomposition.DECOMPOSITION_VERSION,
             "held_out_content_check": leakage.LEAKAGE_CONTENT_VERSION,
+            "exposure_provenance": exposure_provenance.EXPOSURE_PROVENANCE_VERSION,
         },
         "per_agent_acquisition": per_agent,
         # Pair-2 hypotheses H1 (supporting files) and H2 (the file being fixed)
@@ -278,6 +286,7 @@ def run_report(run_dir: str | Path) -> dict:
         "unique_downstream_acquisition": unique,
         "overhead_decomposition": decomposition.decompose(raw, dup.findings, unique),
         "held_out_content_check": content_check,
+        "exposure_provenance": provenance_check,
         "session_terminations": [sa.exit.get("termination_reason") for sa in sessions],
         # --- Stage 1 (C1): physical-session topology, identity, thinking tokens
         "arm_topology": meta.get("arm_topology"),
@@ -428,7 +437,11 @@ def run_validity(r: dict) -> dict:
     elif not iso.get("available"):
         reasons.append("isolation check unavailable")
     content = r.get("held_out_content_check") or {}
-    if content.get("breach_suspected"):
+    if content.get("breach_suspected") and not exposure_provenance.clears_content_match(r):
+        # Amendment 11: a match whose every line the agent itself wrote into an
+        # in-workspace file earlier in the same run, with no protected read and
+        # no out-of-workspace source, is not exposure. Prospective: runs that
+        # predate the amendment carry no rule record and are unaffected.
         reasons.append("held-out content exposure suspected")
     if r.get("arm") == config.C1_ARM:
         wt = (r.get("topology") or {}).get("worker_transition") or {}

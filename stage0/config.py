@@ -685,6 +685,15 @@ STAGE2_CANDIDATES = (
     "s2t05_flowq", "s2t06_flowq", "s2t07_flowq", "s2t08_flowq",
     "s2t09_docpipe", "s2t10_docpipe", "s2t11_docpipe", "s2t12_docpipe",
 )
+# PREREGISTRATION amendment 11: candidates withdrawn from the difficulty pool
+# for INFRASTRUCTURE reasons only. A task lands here when the harness cannot
+# produce the required valid observations - repeated eligibility invalidation
+# under the frozen isolation rule - never because of its measured difficulty.
+# Its valid observations are preserved as descriptive records and never enter a
+# stratum, the distribution, the frozen labels or the evaluation benchmark.
+STAGE2_INFRASTRUCTURE_UNRESOLVED = {
+    "s2t03_ledgerly": "infrastructure incompatibility / repeated isolation invalidation",
+}
 # The four Stage-0.5 tasks: an EASY control stratum only (section 19.11).
 STAGE2_EASY_CONTROLS = STAGE2_TASKS
 

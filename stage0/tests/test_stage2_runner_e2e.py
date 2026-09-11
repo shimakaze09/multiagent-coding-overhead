@@ -15,6 +15,7 @@ import pytest
 
 import config
 import runner
+from analysis import exposure_provenance
 
 ROOT = Path(__file__).resolve().parent.parent
 MOCK_CLI = ROOT / "tools" / "mock_claude.py"
@@ -41,6 +42,9 @@ def test_calibrate_runs_end_to_end(mock_runner, capsys):
     assert runner.main(["calibrate", "--task", TASK, "--repeat-id", "1"]) == 0
     run_dir, meta = _only_run(mock_runner, f"*_{TASK}_S2_SS_r1")
     assert meta["arm"] == "S2_SS" and meta["stage2_phase"] == "calibration"
+    # amendment 11: a new run records the provenance rule, so it is in force
+    assert exposure_provenance.applies_to(meta) is True
+    assert meta["exposure_provenance_rule"] == exposure_provenance.rule_record()
     assert "stage2_difficulty" not in meta
     assert isinstance(meta["capability_report"], dict) and meta["capability_report"]["ok"] is True
     assert meta["config"]["limits"] == config.STAGE2_LIMITS.as_dict()

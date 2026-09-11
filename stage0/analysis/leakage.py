@@ -56,7 +56,11 @@ def check_texts(results: list[tuple[str, str, Optional[str]]], protected: set[st
     return hits
 
 
-def check_run(raw: dict, task_id: Optional[str], repo_texts: dict[str, str]) -> dict:
+def protected_for_run(task_id: Optional[str], repo_texts: dict[str, str]):
+    """`(task, protected lines)` for one run; the lines are None when the task
+    verifier or the base-commit repository is not available. Same inputs and
+    same rule as `check_run`, exposed so the amendment-11 provenance layer sees
+    exactly the set that was matched."""
     from tasks import registry
 
     try:
@@ -65,10 +69,16 @@ def check_run(raw: dict, task_id: Optional[str], repo_texts: dict[str, str]) -> 
     except (registry.TaskError, OSError):
         task, verifier_text = None, None
     if task is None or verifier_text is None or not repo_texts:
+        return task, None
+    return task, protected_lines(verifier_text, repo_texts, task.statement)
+
+
+def check_run(raw: dict, task_id: Optional[str], repo_texts: dict[str, str]) -> dict:
+    task, protected = protected_for_run(task_id, repo_texts)
+    if protected is None:
         return {"version": LEAKAGE_CONTENT_VERSION, "available": False,
                 "reason": "task verifier or base-commit repository not available",
                 "breach_suspected": None}
-    protected = protected_lines(verifier_text, repo_texts, task.statement)
     results = [(sa.session_key, c.tool_use_id, c.result_text)
                for sa in raw["sessions"] for c in sa.parsed.tool_calls]
     hits = check_texts(results, protected)

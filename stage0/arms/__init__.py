@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Optional, Sequence
 
 import config
+from analysis import exposure_provenance
 from harness import agent, claude_cli, events as ev, telemetry, tools, workspace as ws_mod
 from tasks.registry import Task
 
@@ -174,6 +175,12 @@ def start_run(
             "platform": platform.platform(),
             "git": _git_version(),
         },
+        # PREREGISTRATION amendment 11, prospective from its commit: this run's
+        # content matches are classified by provenance before they can count as
+        # held-out exposure. Runs without this record predate the amendment and
+        # keep the frozen classification. Analysis-side only; no config identity
+        # and no prompt depends on it.
+        "exposure_provenance_rule": exposure_provenance.rule_record(),
         "context_residency_level": 2,
         "context_residency_note": (
             "Level 2 (reconstructed from session event history). Level 1 is not "
