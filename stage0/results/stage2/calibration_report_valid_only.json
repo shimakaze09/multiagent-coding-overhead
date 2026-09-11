@@ -1,9 +1,14 @@
 {
+  "calibration_runs": 49,
+  "valid_runs": 42,
+  "invalid_runs": 7,
+  "all_pool_complete": true,
   "rows": [
     {
       "task": "s2t01_ledgerly",
       "family": "deep_diagnosis",
       "codebase": "ledgerly",
+      "in_pool": true,
       "n": 3,
       "successes": 3,
       "rate": 1.0,
@@ -14,6 +19,8 @@
       "status": "complete",
       "stratum": "easy",
       "preliminary_stratum": "easy",
+      "exclusion_reason": null,
+      "invalid_attempts": 0,
       "needs_runs": [],
       "invalid_run_ids": [],
       "heldout_fraction": [
@@ -53,6 +60,13 @@
         "min": 4523,
         "max": 13006
       },
+      "cache_write": {
+        "n": 3,
+        "mean": 23247.0,
+        "median": 22911,
+        "min": 15468,
+        "max": 31362
+      },
       "wall": {
         "n": 3,
         "mean": 98.8533,
@@ -89,6 +103,7 @@
       "task": "s2t02_ledgerly",
       "family": "cross_subsystem_change",
       "codebase": "ledgerly",
+      "in_pool": true,
       "n": 3,
       "successes": 3,
       "rate": 1.0,
@@ -99,6 +114,8 @@
       "status": "complete",
       "stratum": "easy",
       "preliminary_stratum": "easy",
+      "exclusion_reason": null,
+      "invalid_attempts": 0,
       "needs_runs": [],
       "invalid_run_ids": [],
       "heldout_fraction": [
@@ -138,6 +155,13 @@
         "min": 11537,
         "max": 12751
       },
+      "cache_write": {
+        "n": 3,
+        "mean": 36660.3333,
+        "median": 36971,
+        "min": 35057,
+        "max": 37953
+      },
       "wall": {
         "n": 3,
         "mean": 131.6967,
@@ -174,6 +198,7 @@
       "task": "s2t03_ledgerly",
       "family": "long_horizon_migration",
       "codebase": "ledgerly",
+      "in_pool": false,
       "n": 1,
       "successes": 0,
       "rate": 0.0,
@@ -181,9 +206,11 @@
         0.0,
         0.7935
       ],
-      "status": "unresolved_too_many_invalid_runs",
+      "status": "infrastructure_unresolved",
       "stratum": null,
-      "preliminary_stratum": "beyond",
+      "preliminary_stratum": null,
+      "exclusion_reason": "infrastructure incompatibility / repeated isolation invalidation",
+      "invalid_attempts": 3,
       "needs_runs": [],
       "invalid_run_ids": [
         "20260911T063412Z_s2t03_ledgerly_S2_SS_r1",
@@ -221,6 +248,13 @@
         "min": 13587,
         "max": 13587
       },
+      "cache_write": {
+        "n": 1,
+        "mean": 38655.0,
+        "median": 38655,
+        "min": 38655,
+        "max": 38655
+      },
       "wall": {
         "n": 1,
         "mean": 159.05,
@@ -253,80 +287,97 @@
       "task": "s2t04_ledgerly",
       "family": "hidden_regression",
       "codebase": "ledgerly",
-      "n": 3,
+      "in_pool": true,
+      "n": 5,
       "successes": 1,
-      "rate": 0.3333,
+      "rate": 0.2,
       "wilson_95": [
-        0.0615,
-        0.7923
+        0.0362,
+        0.6245
       ],
-      "status": "needs_runs",
-      "stratum": null,
+      "status": "complete",
+      "stratum": "very_hard",
       "preliminary_stratum": "very_hard",
-      "needs_runs": [
-        4,
-        5
+      "exclusion_reason": null,
+      "invalid_attempts": 1,
+      "needs_runs": [],
+      "invalid_run_ids": [
+        "20260911T223200Z_s2t04_ledgerly_S2_SS_r5"
       ],
-      "invalid_run_ids": [],
       "heldout_fraction": [
         0.7143,
         0.7143,
-        1.0
+        1.0,
+        0.7143,
+        0.7143
       ],
       "constraint_fraction": [
         0.6667,
         0.6667,
-        1.0
+        1.0,
+        0.6667,
+        0.6667
       ],
-      "regression_preserved": 3,
+      "regression_preserved": 5,
       "visible_passed": [
+        "11/11",
+        "11/11",
         "11/11",
         "11/11",
         "11/11"
       ],
       "cost": {
-        "n": 3,
-        "mean": 0.246,
-        "median": 0.2146,
-        "min": 0.204736,
+        "n": 5,
+        "mean": 0.2114,
+        "median": 0.2047,
+        "min": 0.129409,
         "max": 0.318574
       },
       "input": {
-        "n": 3,
-        "mean": 506378.3333,
-        "median": 405604,
-        "min": 399431,
+        "n": 5,
+        "mean": 428543.8,
+        "median": 399431,
+        "min": 229148,
         "max": 714100
       },
       "output": {
-        "n": 3,
-        "mean": 7044.0,
-        "median": 6876,
-        "min": 6109,
+        "n": 5,
+        "mean": 5942.8,
+        "median": 6109,
+        "min": 3517,
         "max": 8147
       },
+      "cache_write": {
+        "n": 5,
+        "mean": 17186.2,
+        "median": 16199,
+        "min": 12491,
+        "max": 24548
+      },
       "wall": {
-        "n": 3,
-        "mean": 102.3867,
-        "median": 88.86,
-        "min": 68.05,
+        "n": 5,
+        "mean": 82.316,
+        "median": 68.05,
+        "min": 38.44,
         "max": 150.25
       },
       "tool_calls": {
-        "n": 3,
-        "mean": 19.6667,
+        "n": 5,
+        "mean": 17.4,
         "median": 17,
-        "min": 16,
+        "min": 10,
         "max": 26
       },
       "model_calls": {
-        "n": 3,
-        "mean": 20.6667,
-        "median": 18,
-        "min": 17,
+        "n": 5,
+        "mean": 18.0,
+        "median": 17,
+        "min": 11,
         "max": 27
       },
       "terminations": [
+        "completed",
+        "completed",
         "completed",
         "completed",
         "completed"
@@ -334,87 +385,106 @@
       "run_ids": [
         "20260911T063910Z_s2t04_ledgerly_S2_SS_r1",
         "20260911T070836Z_s2t04_ledgerly_S2_SS_r2",
-        "20260911T074205Z_s2t04_ledgerly_S2_SS_r3"
+        "20260911T074205Z_s2t04_ledgerly_S2_SS_r3",
+        "20260911T223030Z_s2t04_ledgerly_S2_SS_r4",
+        "20260911T223505Z_s2t04_ledgerly_S2_SS_r6"
       ]
     },
     {
       "task": "s2t05_flowq",
       "family": "deep_diagnosis",
       "codebase": "flowq",
-      "n": 3,
+      "in_pool": true,
+      "n": 5,
       "successes": 0,
       "rate": 0.0,
       "wilson_95": [
         0.0,
-        0.5615
+        0.4345
       ],
-      "status": "needs_runs",
-      "stratum": null,
+      "status": "complete",
+      "stratum": "beyond",
       "preliminary_stratum": "beyond",
-      "needs_runs": [
-        4,
-        5
+      "exclusion_reason": null,
+      "invalid_attempts": 1,
+      "needs_runs": [],
+      "invalid_run_ids": [
+        "20260911T223749Z_s2t05_flowq_S2_SS_r5"
       ],
-      "invalid_run_ids": [],
       "heldout_fraction": [
         0.8333,
+        0.5,
+        0.5,
         0.5,
         0.5
       ],
       "constraint_fraction": [
         0.8,
         0.4,
+        0.4,
+        0.4,
         0.4
       ],
-      "regression_preserved": 3,
+      "regression_preserved": 5,
       "visible_passed": [
+        "11/11",
+        "11/11",
         "11/11",
         "11/11",
         "11/11"
       ],
       "cost": {
-        "n": 3,
-        "mean": 0.2391,
+        "n": 5,
+        "mean": 0.2517,
         "median": 0.2375,
-        "min": 0.230973,
-        "max": 0.248781
+        "min": 0.225533,
+        "max": 0.315763
       },
       "input": {
-        "n": 3,
-        "mean": 423383.0,
-        "median": 424805,
+        "n": 5,
+        "mean": 481901.0,
+        "median": 435962,
         "min": 398900,
-        "max": 446444
+        "max": 703394
       },
       "output": {
-        "n": 3,
-        "mean": 6622.3333,
+        "n": 5,
+        "mean": 6493.8,
         "median": 6563,
-        "min": 6561,
-        "max": 6743
+        "min": 5262,
+        "max": 7340
+      },
+      "cache_write": {
+        "n": 5,
+        "mean": 23545.2,
+        "median": 22317,
+        "min": 22150,
+        "max": 26514
       },
       "wall": {
-        "n": 3,
-        "mean": 79.25,
+        "n": 5,
+        "mean": 83.55,
         "median": 77.8,
-        "min": 75.12,
-        "max": 84.83
+        "min": 72.88,
+        "max": 107.12
       },
       "tool_calls": {
-        "n": 3,
-        "mean": 18.6667,
+        "n": 5,
+        "mean": 20.6,
         "median": 20,
         "min": 16,
-        "max": 20
+        "max": 27
       },
       "model_calls": {
-        "n": 3,
-        "mean": 14.6667,
+        "n": 5,
+        "mean": 16.2,
         "median": 15,
         "min": 14,
-        "max": 15
+        "max": 22
       },
       "terminations": [
+        "completed",
+        "completed",
         "completed",
         "completed",
         "completed"
@@ -422,29 +492,35 @@
       "run_ids": [
         "20260911T064020Z_s2t05_flowq_S2_SS_r1",
         "20260911T071009Z_s2t05_flowq_S2_SS_r2",
-        "20260911T074439Z_s2t05_flowq_S2_SS_r3"
+        "20260911T074439Z_s2t05_flowq_S2_SS_r3",
+        "20260911T223611Z_s2t05_flowq_S2_SS_r4",
+        "20260911T223911Z_s2t05_flowq_S2_SS_r6"
       ]
     },
     {
       "task": "s2t06_flowq",
       "family": "cross_subsystem_change",
       "codebase": "flowq",
-      "n": 3,
+      "in_pool": true,
+      "n": 5,
       "successes": 0,
       "rate": 0.0,
       "wilson_95": [
         0.0,
-        0.5615
+        0.4345
       ],
-      "status": "needs_runs",
-      "stratum": null,
+      "status": "complete",
+      "stratum": "beyond",
       "preliminary_stratum": "beyond",
-      "needs_runs": [
-        4,
-        5
+      "exclusion_reason": null,
+      "invalid_attempts": 1,
+      "needs_runs": [],
+      "invalid_run_ids": [
+        "20260911T224125Z_s2t06_flowq_S2_SS_r4"
       ],
-      "invalid_run_ids": [],
       "heldout_fraction": [
+        0.7143,
+        0.7143,
         0.7143,
         0.7143,
         0.7143
@@ -452,57 +528,70 @@
       "constraint_fraction": [
         0.6667,
         0.6667,
+        0.6667,
+        0.6667,
         0.6667
       ],
-      "regression_preserved": 3,
+      "regression_preserved": 5,
       "visible_passed": [
+        "11/11",
+        "11/11",
         "11/11",
         "11/11",
         "11/11"
       ],
       "cost": {
-        "n": 3,
-        "mean": 0.9554,
+        "n": 5,
+        "mean": 0.9472,
         "median": 0.9254,
         "min": 0.831999,
         "max": 1.108695
       },
       "input": {
-        "n": 3,
-        "mean": 2034502.3333,
+        "n": 5,
+        "mean": 2019756.0,
         "median": 1983516,
         "min": 1739394,
         "max": 2380597
       },
       "output": {
-        "n": 3,
-        "mean": 32229.3333,
+        "n": 5,
+        "mean": 31865.2,
         "median": 30529,
         "min": 27881,
         "max": 38278
       },
+      "cache_write": {
+        "n": 5,
+        "mean": 58792.0,
+        "median": 58490,
+        "min": 53729,
+        "max": 65430
+      },
       "wall": {
-        "n": 3,
-        "mean": 317.7333,
+        "n": 5,
+        "mean": 320.848,
         "median": 301.16,
         "min": 281.2,
         "max": 370.84
       },
       "tool_calls": {
-        "n": 3,
-        "mean": 51.0,
-        "median": 51,
+        "n": 5,
+        "mean": 50.4,
+        "median": 50,
         "min": 48,
         "max": 54
       },
       "model_calls": {
-        "n": 3,
-        "mean": 38.3333,
+        "n": 5,
+        "mean": 39.0,
         "median": 37,
         "min": 36,
-        "max": 42
+        "max": 43
       },
       "terminations": [
+        "completed",
+        "completed",
         "completed",
         "completed",
         "completed"
@@ -510,13 +599,16 @@
       "run_ids": [
         "20260911T064141Z_s2t06_flowq_S2_SS_r1",
         "20260911T071137Z_s2t06_flowq_S2_SS_r2",
-        "20260911T074558Z_s2t06_flowq_S2_SS_r3"
+        "20260911T074558Z_s2t06_flowq_S2_SS_r3",
+        "20260911T224819Z_s2t06_flowq_S2_SS_r5",
+        "20260911T225439Z_s2t06_flowq_S2_SS_r6"
       ]
     },
     {
       "task": "s2t07_flowq",
       "family": "long_horizon_migration",
       "codebase": "flowq",
+      "in_pool": true,
       "n": 3,
       "successes": 3,
       "rate": 1.0,
@@ -527,6 +619,8 @@
       "status": "complete",
       "stratum": "easy",
       "preliminary_stratum": "easy",
+      "exclusion_reason": null,
+      "invalid_attempts": 0,
       "needs_runs": [],
       "invalid_run_ids": [],
       "heldout_fraction": [
@@ -566,6 +660,13 @@
         "min": 13818,
         "max": 20183
       },
+      "cache_write": {
+        "n": 3,
+        "mean": 39657.3333,
+        "median": 39861,
+        "min": 34887,
+        "max": 44224
+      },
       "wall": {
         "n": 3,
         "mean": 167.8,
@@ -602,22 +703,24 @@
       "task": "s2t08_flowq",
       "family": "hidden_regression",
       "codebase": "flowq",
-      "n": 3,
+      "in_pool": true,
+      "n": 5,
       "successes": 0,
       "rate": 0.0,
       "wilson_95": [
         0.0,
-        0.5615
+        0.4345
       ],
-      "status": "needs_runs",
-      "stratum": null,
+      "status": "complete",
+      "stratum": "beyond",
       "preliminary_stratum": "beyond",
-      "needs_runs": [
-        4,
-        5
-      ],
+      "exclusion_reason": null,
+      "invalid_attempts": 0,
+      "needs_runs": [],
       "invalid_run_ids": [],
       "heldout_fraction": [
+        0.6667,
+        0.6667,
         0.6667,
         0.6667,
         0.6667
@@ -625,57 +728,70 @@
       "constraint_fraction": [
         0.75,
         0.75,
+        0.75,
+        0.75,
         0.75
       ],
-      "regression_preserved": 3,
+      "regression_preserved": 5,
       "visible_passed": [
+        "11/11",
+        "11/11",
         "11/11",
         "11/11",
         "11/11"
       ],
       "cost": {
-        "n": 3,
-        "mean": 0.1567,
-        "median": 0.1673,
-        "min": 0.121373,
+        "n": 5,
+        "mean": 0.1309,
+        "median": 0.1214,
+        "min": 0.082601,
         "max": 0.181463
       },
       "input": {
-        "n": 3,
-        "mean": 342782.0,
-        "median": 360783,
-        "min": 233532,
+        "n": 5,
+        "mean": 271316.2,
+        "median": 233532,
+        "min": 140229,
         "max": 434031
       },
       "output": {
-        "n": 3,
-        "mean": 3504.0,
-        "median": 3720,
-        "min": 2619,
+        "n": 5,
+        "mean": 2746.2,
+        "median": 2619,
+        "min": 1437,
         "max": 4173
       },
+      "cache_write": {
+        "n": 5,
+        "mean": 12693.6,
+        "median": 12506,
+        "min": 10328,
+        "max": 14992
+      },
       "wall": {
-        "n": 3,
-        "mean": 50.6233,
-        "median": 45.8,
-        "min": 32.34,
+        "n": 5,
+        "mean": 39.992,
+        "median": 32.34,
+        "min": 20.2,
         "max": 73.73
       },
       "tool_calls": {
-        "n": 3,
-        "mean": 15.0,
-        "median": 15,
-        "min": 10,
+        "n": 5,
+        "mean": 11.8,
+        "median": 10,
+        "min": 6,
         "max": 20
       },
       "model_calls": {
-        "n": 3,
-        "mean": 15.6667,
-        "median": 16,
-        "min": 11,
+        "n": 5,
+        "mean": 12.6,
+        "median": 11,
+        "min": 7,
         "max": 20
       },
       "terminations": [
+        "completed",
+        "completed",
         "completed",
         "completed",
         "completed"
@@ -683,13 +799,16 @@
       "run_ids": [
         "20260911T064945Z_s2t08_flowq_S2_SS_r1",
         "20260911T072003Z_s2t08_flowq_S2_SS_r2",
-        "20260911T075406Z_s2t08_flowq_S2_SS_r3"
+        "20260911T075406Z_s2t08_flowq_S2_SS_r3",
+        "20260911T230005Z_s2t08_flowq_S2_SS_r4",
+        "20260911T230054Z_s2t08_flowq_S2_SS_r5"
       ]
     },
     {
       "task": "s2t09_docpipe",
       "family": "deep_diagnosis",
       "codebase": "docpipe",
+      "in_pool": true,
       "n": 3,
       "successes": 3,
       "rate": 1.0,
@@ -700,6 +819,8 @@
       "status": "complete",
       "stratum": "easy",
       "preliminary_stratum": "easy",
+      "exclusion_reason": null,
+      "invalid_attempts": 0,
       "needs_runs": [],
       "invalid_run_ids": [],
       "heldout_fraction": [
@@ -739,6 +860,13 @@
         "min": 5101,
         "max": 7768
       },
+      "cache_write": {
+        "n": 3,
+        "mean": 23050.3333,
+        "median": 21845,
+        "min": 20798,
+        "max": 26508
+      },
       "wall": {
         "n": 3,
         "mean": 72.99,
@@ -775,6 +903,7 @@
       "task": "s2t10_docpipe",
       "family": "cross_subsystem_change",
       "codebase": "docpipe",
+      "in_pool": true,
       "n": 3,
       "successes": 3,
       "rate": 1.0,
@@ -785,6 +914,8 @@
       "status": "complete",
       "stratum": "easy",
       "preliminary_stratum": "easy",
+      "exclusion_reason": null,
+      "invalid_attempts": 0,
       "needs_runs": [],
       "invalid_run_ids": [],
       "heldout_fraction": [
@@ -824,6 +955,13 @@
         "min": 27253,
         "max": 30091
       },
+      "cache_write": {
+        "n": 3,
+        "mean": 51966.0,
+        "median": 52179,
+        "min": 50386,
+        "max": 53333
+      },
       "wall": {
         "n": 3,
         "mean": 312.16,
@@ -860,90 +998,7 @@
       "task": "s2t11_docpipe",
       "family": "long_horizon_migration",
       "codebase": "docpipe",
-      "n": 2,
-      "successes": 2,
-      "rate": 1.0,
-      "wilson_95": [
-        0.3424,
-        1.0
-      ],
-      "status": "needs_runs",
-      "stratum": null,
-      "preliminary_stratum": "easy",
-      "needs_runs": [
-        4
-      ],
-      "invalid_run_ids": [
-        "20260911T080058Z_s2t11_docpipe_S2_SS_r3"
-      ],
-      "heldout_fraction": [
-        1.0,
-        1.0
-      ],
-      "constraint_fraction": [
-        1.0,
-        1.0
-      ],
-      "regression_preserved": 2,
-      "visible_passed": [
-        "11/11",
-        "11/11"
-      ],
-      "cost": {
-        "n": 2,
-        "mean": 0.6998,
-        "median": 0.6998,
-        "min": 0.6521,
-        "max": 0.747427
-      },
-      "input": {
-        "n": 2,
-        "mean": 1240064.5,
-        "median": 1240064.5,
-        "min": 993031,
-        "max": 1487098
-      },
-      "output": {
-        "n": 2,
-        "mean": 27679.0,
-        "median": 27679.0,
-        "min": 27313,
-        "max": 28045
-      },
-      "wall": {
-        "n": 2,
-        "mean": 269.46,
-        "median": 269.46,
-        "min": 268.67,
-        "max": 270.25
-      },
-      "tool_calls": {
-        "n": 2,
-        "mean": 33.0,
-        "median": 33.0,
-        "min": 28,
-        "max": 38
-      },
-      "model_calls": {
-        "n": 2,
-        "mean": 27.0,
-        "median": 27.0,
-        "min": 22,
-        "max": 32
-      },
-      "terminations": [
-        "completed",
-        "completed"
-      ],
-      "run_ids": [
-        "20260911T065706Z_s2t11_docpipe_S2_SS_r1",
-        "20260911T072835Z_s2t11_docpipe_S2_SS_r2"
-      ]
-    },
-    {
-      "task": "s2t12_docpipe",
-      "family": "hidden_regression",
-      "codebase": "docpipe",
+      "in_pool": true,
       "n": 3,
       "successes": 3,
       "rate": 1.0,
@@ -954,6 +1009,105 @@
       "status": "complete",
       "stratum": "easy",
       "preliminary_stratum": "easy",
+      "exclusion_reason": null,
+      "invalid_attempts": 1,
+      "needs_runs": [],
+      "invalid_run_ids": [
+        "20260911T080058Z_s2t11_docpipe_S2_SS_r3"
+      ],
+      "heldout_fraction": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "constraint_fraction": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "regression_preserved": 3,
+      "visible_passed": [
+        "11/11",
+        "11/11",
+        "11/11"
+      ],
+      "cost": {
+        "n": 3,
+        "mean": 0.6683,
+        "median": 0.6521,
+        "min": 0.60524,
+        "max": 0.747427
+      },
+      "input": {
+        "n": 3,
+        "mean": 1146148.3333,
+        "median": 993031,
+        "min": 958316,
+        "max": 1487098
+      },
+      "output": {
+        "n": 3,
+        "mean": 26794.3333,
+        "median": 27313,
+        "min": 25025,
+        "max": 28045
+      },
+      "cache_write": {
+        "n": 3,
+        "mean": 44742.3333,
+        "median": 45262,
+        "min": 42705,
+        "max": 46260
+      },
+      "wall": {
+        "n": 3,
+        "mean": 262.1033,
+        "median": 268.67,
+        "min": 247.39,
+        "max": 270.25
+      },
+      "tool_calls": {
+        "n": 3,
+        "mean": 32.0,
+        "median": 30,
+        "min": 28,
+        "max": 38
+      },
+      "model_calls": {
+        "n": 3,
+        "mean": 25.3333,
+        "median": 22,
+        "min": 22,
+        "max": 32
+      },
+      "terminations": [
+        "completed",
+        "completed",
+        "completed"
+      ],
+      "run_ids": [
+        "20260911T065706Z_s2t11_docpipe_S2_SS_r1",
+        "20260911T072835Z_s2t11_docpipe_S2_SS_r2",
+        "20260911T230151Z_s2t11_docpipe_S2_SS_r4"
+      ]
+    },
+    {
+      "task": "s2t12_docpipe",
+      "family": "hidden_regression",
+      "codebase": "docpipe",
+      "in_pool": true,
+      "n": 3,
+      "successes": 3,
+      "rate": 1.0,
+      "wilson_95": [
+        0.4385,
+        1.0
+      ],
+      "status": "complete",
+      "stratum": "easy",
+      "preliminary_stratum": "easy",
+      "exclusion_reason": null,
+      "invalid_attempts": 0,
       "needs_runs": [],
       "invalid_run_ids": [],
       "heldout_fraction": [
@@ -993,6 +1147,13 @@
         "min": 5447,
         "max": 8782
       },
+      "cache_write": {
+        "n": 3,
+        "mean": 19433.0,
+        "median": 19295,
+        "min": 15774,
+        "max": 23230
+      },
       "wall": {
         "n": 3,
         "mean": 77.1533,
@@ -1031,7 +1192,10 @@
     "medium": 0,
     "hard": 0,
     "very_hard": 1,
-    "beyond": 4
+    "beyond": 3
+  },
+  "infrastructure_unresolved": {
+    "s2t03_ledgerly": "infrastructure incompatibility / repeated isolation invalidation"
   },
   "by_family": {
     "deep_diagnosis": {
@@ -1053,7 +1217,7 @@
       "medium": 0,
       "hard": 0,
       "very_hard": 0,
-      "beyond": 1
+      "beyond": 0
     },
     "hidden_regression": {
       "easy": 1,
@@ -1069,7 +1233,7 @@
       "medium": 0,
       "hard": 0,
       "very_hard": 1,
-      "beyond": 1
+      "beyond": 0
     },
     "flowq": {
       "easy": 1,
@@ -1089,120 +1253,147 @@
   "scaling_by_stratum": {
     "easy": {
       "tasks": 7,
-      "runs": 20,
-      "successes": 20,
+      "runs": 21,
+      "successes": 21,
       "success": 1.0,
-      "input_per_run": 902352.3,
-      "output_per_run": 14793.6,
-      "cost_per_run": 0.4574,
-      "wall_per_run": 156.044,
-      "model_calls_per_run": 24.0
+      "input_per_run": 905017.2381,
+      "output_per_run": 15280.8095,
+      "cache_write_per_run": 34108.0476,
+      "cost_per_run": 0.4644,
+      "wall_per_run": 160.3938,
+      "tool_calls_per_run": 30.0476,
+      "model_calls_per_run": 23.9048
     },
     "very_hard": {
       "tasks": 1,
-      "runs": 3,
+      "runs": 5,
       "successes": 1,
-      "success": 0.3333,
-      "input_per_run": 506378.3333,
-      "output_per_run": 7044.0,
-      "cost_per_run": 0.246,
-      "wall_per_run": 102.3867,
-      "model_calls_per_run": 20.6667
+      "success": 0.2,
+      "input_per_run": 428543.8,
+      "output_per_run": 5942.8,
+      "cache_write_per_run": 17186.2,
+      "cost_per_run": 0.2114,
+      "wall_per_run": 82.316,
+      "tool_calls_per_run": 17.4,
+      "model_calls_per_run": 18.0
     },
     "beyond": {
-      "tasks": 4,
-      "runs": 10,
+      "tasks": 3,
+      "runs": 15,
       "successes": 0,
       "success": 0.0,
-      "input_per_run": 955667.6,
-      "output_per_run": 14065.4,
-      "cost_per_run": 0.4568,
-      "wall_per_run": 150.187,
-      "model_calls_per_run": 23.5
+      "input_per_run": 924324.4,
+      "output_per_run": 13701.7333,
+      "cache_write_per_run": 31676.9333,
+      "cost_per_run": 0.4433,
+      "wall_per_run": 148.13,
+      "tool_calls_per_run": 27.6,
+      "model_calls_per_run": 22.6
     }
   },
   "scaling_by_family": {
     "deep_diagnosis": {
       "tasks": 3,
-      "runs": 9,
+      "runs": 11,
       "successes": 6,
-      "success": 0.6667,
-      "input_per_run": 493139.6667,
-      "output_per_run": 7110.4444,
-      "cost_per_run": 0.2584,
-      "wall_per_run": 83.6978,
-      "model_calls_per_run": 17.4444
+      "success": 0.5455,
+      "input_per_run": 507055.7273,
+      "output_per_run": 6963.2727,
+      "cache_write_per_run": 23328.9091,
+      "cost_per_run": 0.2606,
+      "wall_per_run": 84.8436,
+      "tool_calls_per_run": 20.7273,
+      "model_calls_per_run": 17.6364
     },
     "cross_subsystem_change": {
       "tasks": 3,
-      "runs": 9,
+      "runs": 11,
       "successes": 6,
-      "success": 0.6667,
-      "input_per_run": 1564560.1111,
-      "output_per_run": 24360.8889,
-      "cost_per_run": 0.7449,
-      "wall_per_run": 253.8633,
-      "model_calls_per_run": 33.1111
-    },
-    "long_horizon_migration": {
-      "tasks": 3,
-      "runs": 6,
-      "successes": 5,
-      "success": 0.8333,
-      "input_per_run": 1106655.1667,
-      "output_per_run": 20434.5,
-      "cost_per_run": 0.5846,
-      "wall_per_run": 200.2283,
-      "model_calls_per_run": 26.5
+      "success": 0.5455,
+      "input_per_run": 1643301.2727,
+      "output_per_run": 25626.0,
+      "cache_write_per_run": 50894.4545,
+      "cost_per_run": 0.7794,
+      "wall_per_run": 266.8918,
+      "tool_calls_per_run": 45.2727,
+      "model_calls_per_run": 34.3636
     },
     "hidden_regression": {
       "tasks": 3,
-      "runs": 9,
+      "runs": 13,
       "successes": 4,
-      "success": 0.4444,
-      "input_per_run": 440403.1111,
-      "output_per_run": 5756.5556,
-      "cost_per_run": 0.213,
-      "wall_per_run": 76.7211,
-      "model_calls_per_run": 18.1111
+      "success": 0.3077,
+      "input_per_run": 378111.3077,
+      "output_per_run": 4893.0769,
+      "cache_write_per_run": 15976.7692,
+      "cost_per_run": 0.1862,
+      "wall_per_run": 64.8462,
+      "tool_calls_per_run": 15.8462,
+      "model_calls_per_run": 15.9231
+    },
+    "long_horizon_migration": {
+      "tasks": 2,
+      "runs": 6,
+      "successes": 6,
+      "success": 1.0,
+      "input_per_run": 1073928.8333,
+      "output_per_run": 22340.8333,
+      "cache_write_per_run": 42199.8333,
+      "cost_per_run": 0.5997,
+      "wall_per_run": 214.9517,
+      "tool_calls_per_run": 33.3333,
+      "model_calls_per_run": 25.3333
     }
   },
   "scaling_by_codebase": {
     "ledgerly": {
-      "tasks": 4,
-      "runs": 10,
+      "tasks": 3,
+      "runs": 11,
       "successes": 7,
-      "success": 0.7,
-      "input_per_run": 737136.8,
-      "output_per_run": 9737.9,
-      "cost_per_run": 0.3508,
-      "wall_per_run": 115.786,
-      "model_calls_per_run": 23.5
+      "success": 0.6364,
+      "input_per_run": 621843.4545,
+      "output_per_run": 8397.6364,
+      "cache_write_per_run": 24150.2727,
+      "cost_per_run": 0.3011,
+      "wall_per_run": 100.2936,
+      "tool_calls_per_run": 23.9091,
+      "model_calls_per_run": 21.2727
     },
     "flowq": {
       "tasks": 4,
-      "runs": 12,
+      "runs": 18,
       "successes": 3,
-      "success": 0.25,
-      "input_per_run": 950594.1667,
-      "output_per_run": 15060.75,
-      "cost_per_run": 0.4706,
-      "wall_per_run": 153.8517,
-      "model_calls_per_run": 23.5
+      "success": 0.1667,
+      "input_per_run": 937221.8889,
+      "output_per_run": 14399.3333,
+      "cache_write_per_run": 33007.0,
+      "cost_per_run": 0.4579,
+      "wall_per_run": 151.4083,
+      "tool_calls_per_run": 28.7778,
+      "model_calls_per_run": 23.0556
     },
     "docpipe": {
       "tasks": 4,
-      "runs": 11,
-      "successes": 11,
+      "runs": 12,
+      "successes": 12,
       "success": 1.0,
-      "input_per_run": 940396.2727,
-      "output_per_run": 16322.7273,
-      "cost_per_run": 0.4818,
-      "wall_per_run": 175.0755,
-      "model_calls_per_run": 23.6364
+      "input_per_run": 941889.5833,
+      "output_per_run": 17047.9167,
+      "cache_write_per_run": 34797.9167,
+      "cost_per_run": 0.4921,
+      "wall_per_run": 181.1017,
+      "tool_calls_per_run": 29.25,
+      "model_calls_per_run": 23.5
     }
   },
-  "all_complete": false,
-  "calibration_runs": 37,
-  "valid_runs": 33
+  "adequacy": {
+    "at_least_one_medium": false,
+    "at_least_one_hard": false,
+    "non_easy_non_beyond_in_more_than_one_codebase": false,
+    "codebases_with_a_middle_task": [
+      "ledgerly"
+    ],
+    "intermediate_region_exists": false,
+    "bimodal_easy_beyond_split": true
+  }
 }

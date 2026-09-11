@@ -2260,3 +2260,152 @@ reports `Infrastructure unresolved: 1` beside the strata, never inside them.
 [0.70, 0.90), hard [0.40, 0.70), very_hard (0, 0.40), beyond 0), the 3-then-5
 repetition rule, the replacement cap of 2, the isolation rule, every task,
 prompt, limit and identity hash, and every historical record.
+
+### 19.21 Phase C outcome (2026-09-12): calibration complete, the candidate pool failed to resolve the intermediate difficulty frontier
+
+Phase C is finished for every task it can finish. Under amendment 11 the
+`s2t11_docpipe` replacement ran, the remaining repeats 4-5 ran, and
+`s2t03_ledgerly` was not launched again.
+
+**Attempts: 49 (42 VALID, 7 INVALID).** Twelve of them ran after the
+amendment-11 commit; nine were planned and three were replacements for
+attempts invalidated during the batch. Raw data for all 49 is in
+`run_manifests/stage2/calibration_raw_run_checksums.sha256` (784 files);
+attempt-level records are in `results/stage2/calibration_attempts.json`. Every
+attempt: `claude-sonnet-5`, requested `sonnet`, `apiKeySource=none`, Claude
+Code 2.1.260, no paid overage (the account cannot enter it: `overageStatus:
+rejected`).
+
+**Final valid n and success (Single Strong).**
+
+| task | family | codebase | n | successes | rate | stratum |
+| --- | --- | --- | --- | --- | --- | --- |
+| s2t01_ledgerly | deep_diagnosis | ledgerly | 3 | 3 | 1.00 | easy |
+| s2t02_ledgerly | cross_subsystem_change | ledgerly | 3 | 3 | 1.00 | easy |
+| s2t03_ledgerly | long_horizon_migration | ledgerly | 1 | 0 | - | **INFRASTRUCTURE_UNRESOLVED** |
+| s2t04_ledgerly | hidden_regression | ledgerly | 5 | 1 | 0.20 | very_hard |
+| s2t05_flowq | deep_diagnosis | flowq | 5 | 0 | 0.00 | beyond |
+| s2t06_flowq | cross_subsystem_change | flowq | 5 | 0 | 0.00 | beyond |
+| s2t07_flowq | long_horizon_migration | flowq | 3 | 3 | 1.00 | easy |
+| s2t08_flowq | hidden_regression | flowq | 5 | 0 | 0.00 | beyond |
+| s2t09_docpipe | deep_diagnosis | docpipe | 3 | 3 | 1.00 | easy |
+| s2t10_docpipe | cross_subsystem_change | docpipe | 3 | 3 | 1.00 | easy |
+| s2t11_docpipe | long_horizon_migration | docpipe | 3 | 3 | 1.00 | easy |
+| s2t12_docpipe | hidden_regression | docpipe | 3 | 3 | 1.00 | easy |
+
+Every denominator is 3 (three valid successes, early stop) or 5, as the frozen
+rule requires. No invalid attempt entered any n, rate, aggregate or stratum.
+
+**Distribution (difficulty pool, 11 tasks).** Easy 7, Medium 0, Hard 0,
+Very Hard 1, Beyond 3; Infrastructure unresolved 1, reported beside the strata
+and never inside them.
+
+**Benchmark adequacy (amendment 11, item 11).**
+
+* at least one Medium task: **NO**
+* at least one Hard task: **NO**
+* a non-Easy/non-Beyond task in more than one codebase: **NO** (only
+  `s2t04_ledgerly`, in `ledgerly`)
+* an actual intermediate difficulty region rather than an Easy/Beyond split:
+  **NO**
+
+**Conclusion: CANDIDATE POOL FAILED TO RESOLVE THE INTERMEDIATE DIFFICULTY
+FRONTIER.** Per amendment 11 item 12 this is a valid calibration result and
+the stopping point: `difficulty-freeze` was NOT run, no difficulty labels
+exist, and no Multi-Agent evaluation run was generated. No task was modified
+after seeing its calibration performance, and none will be.
+
+Single Strong is at ceiling on 7 of 11 tasks and at floor on 4 (0.20 or 0.00).
+The ceiling *was* removed - Stage 0-1 had no task below ceiling, and Stage 2
+now has four - but removing it produced no measurable middle, and the
+architecture comparison the amendment is built on needs strata where quality
+can differ without being 1.00 or 0.00.
+
+**Invalid attempts (7). None accessed held-out, reference or design material.**
+
+| Attempt | Frozen reason | Provenance | Held-out access |
+| --- | --- | --- | --- |
+| `s2t03_ledgerly` 1a | out-of-workspace path | Claude Code auto-memory write | none |
+| `s2t03_ledgerly` 3a | out-of-workspace path | auto-memory write | none |
+| `s2t03_ledgerly` 1b | content exposure suspected | classified `self_authored_false_positive` (4/4 matched lines written by the agent earlier in the run); ran before amendment 11, so NOT cleared | none |
+| `s2t04_ledgerly` 5a | out-of-workspace path | auto-memory write; this attempt SOLVED the task and is still excluded | none |
+| `s2t05_flowq` 5a | out-of-workspace path | auto-memory write | none |
+| `s2t06_flowq` 4a | out-of-workspace path | auto-memory write | none |
+| `s2t11_docpipe` 3a | content exposure suspected | classified `self_authored_false_positive` (6/6 matched lines); ran before amendment 11, so NOT cleared | none |
+
+Content matches: 2, both classified self-authored, neither reclassified.
+Actual protected-content exposures: **0**. Among the 12 attempts that ran under
+amendment 11 there was no content match at all, so the new rule changed no
+verdict; it is in force for any future run.
+
+**SYSTEMIC CALIBRATION INFRASTRUCTURE ISSUE: Claude Code auto-memory.** Five of
+the seven invalid attempts are auto-memory writes, and three of them happened
+in this batch of twelve (25%). They now span two codebases (`ledgerly`,
+`flowq`) and three tasks besides `s2t03`. The agent writes notes such as
+`memory/env_no_python_execution.md` and `memory/memory.md` under
+`~/.claude/projects/<workspace-derived key>/memory/`. The directory key is
+derived from each run's own workspace path, so in practice no state was shared
+between runs; the frozen isolation rule nevertheless counts any out-of-workspace
+write as an eligibility failure, and it was applied every time. Nothing here is
+reclassified. The cost is real: `s2t04_ledgerly` attempt 5a solved the task
+7/7 and was discarded, and `s2t06_flowq` attempt 4a cost $1.11 and 386 s.
+Two consequences to weigh before Phase E, in a separate preregistration:
+
+1. **capacity.** At a ~25% invalidation rate, a task needing five valid
+   observations needs six or seven attempts, and the frozen cap of two
+   replacements can be exhausted by infrastructure alone - which is exactly how
+   `s2t03_ledgerly` became unresolved.
+2. **possible selection effect.** Discarding an attempt for a reason that the
+   agent's own behaviour produces is not guaranteed to be independent of the
+   outcome; 5a was a solved run. With one such case the direction cannot be
+   estimated, and `s2t04_ledgerly` would have been `hard` (2/5) rather than
+   `very_hard` (1/5) had that observation counted. This is disclosed, not
+   corrected: the frozen rule stands.
+
+**Single-Strong difficulty scaling (classified pool tasks only).**
+
+| stratum | tasks | runs | success | input/run | output/run | cache write/run | cost/run | wall/run | tool calls/run | model calls/run |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| easy | 7 | 21 | 1.00 | 905,017 | 15,281 | 34,108 | $0.4644 | 160.4 s | 30.0 | 23.9 |
+| very_hard | 1 | 5 | 0.20 | 428,544 | 5,943 | 17,186 | $0.2114 | 82.3 s | 17.4 | 18.0 |
+| beyond | 3 | 15 | 0.00 | 924,324 | 13,702 | 31,677 | $0.4433 | 148.1 s | 27.6 | 22.6 |
+
+Harder tasks did **not** cost more. Failure happened at the same or lower spend
+than success: `beyond` sits slightly below `easy` on every resource, and the
+single `very_hard` task is the cheapest group of all. Per codebase, `flowq`
+(0.17 success) spends about as much as `docpipe` (1.00 success). Two mechanisms
+are visible in the raw runs and both point the same way: an agent that cannot
+see the hidden constraint stops early and cheaply (`s2t08_flowq`: 11.8 tool calls,
+12.6 model calls, $0.13, 40 s), while an agent that keeps working can spend a great deal
+and still fail (`s2t06_flowq`: 39 model calls, $0.95, 321 s). Cost tracks how
+much exploration a task invites, not whether the agent succeeds - so a
+difficulty-stratified cost model must not assume monotone cost in difficulty.
+
+| family | tasks | runs | success | input/run | cost/run | wall/run |
+| --- | --- | --- | --- | --- | --- | --- |
+| deep_diagnosis | 3 | 11 | 0.55 | 507,056 | $0.2606 | 84.8 s |
+| cross_subsystem_change | 3 | 11 | 0.55 | 1,643,301 | $0.7794 | 266.9 s |
+| long_horizon_migration | 2 | 6 | 1.00 | 1,073,929 | $0.5997 | 215.0 s |
+| hidden_regression | 3 | 13 | 0.31 | 378,111 | $0.1862 | 64.8 s |
+
+| codebase | tasks | runs | success | input/run | cost/run | wall/run |
+| --- | --- | --- | --- | --- | --- | --- |
+| ledgerly | 3 | 11 | 0.64 | 621,843 | $0.3011 | 100.3 s |
+| flowq | 4 | 18 | 0.17 | 937,222 | $0.4579 | 151.4 s |
+| docpipe | 4 | 12 | 1.00 | 941,890 | $0.4921 | 181.1 s |
+
+`hidden_regression` is the hardest family and the cheapest; `docpipe` is the
+easiest codebase and among the most expensive. Difficulty in this pool is
+carried by the codebase and the hidden constraint, not by the volume of work.
+
+**Recommendation (not executed here).** A separately preregistered Stage-2
+candidate-pool revision should fill the missing Medium and Hard region, frozen
+before any calibration of it, using only what these calibration runs show about
+broad task characteristics - no architecture result exists yet, and none may
+inform task design. The present pool, its tasks and all 49 attempts stay
+published exactly as they are. Whether the auto-memory eligibility rule should
+distinguish a per-run memory write is a separate question for that
+preregistration; it is not changed here.
+
+**Next authorized action: NONE.** No difficulty labels, no evaluation plan, no
+Multi-Agent run, pending the author's review.

@@ -81,15 +81,15 @@ summary) are in `../results/stage1_c1/`.
 
 Together, the four manifests cover all 18 real runs of the experiment.
 
-## Stage 2, Phase C: Single-Strong calibration (2026-09-11)
+## Stage 2, Phase C: Single-Strong calibration (2026-09-11 to 2026-09-12)
 
 `stage2/calibration_raw_run_checksums.sha256` covers every calibration attempt
-so far: 37 attempts, 592 files. That includes the 3 attempts that are invalid
+so far: 49 attempts, 784 files. That includes the 7 attempts that are invalid
 under the frozen rules, which are preserved as data. Checksums were taken after
-the batch halted and before any re-ingest.
+calibration finished and before any re-ingest.
 
 It lives in a subdirectory, so `historical_run_ids()` is unchanged. Attempt
 records and summaries are in `../results/stage2/`, and the state of the phase
-is recorded in PREREGISTRATION section 19.19.
+is recorded in PREREGISTRATION sections 19.19 to 19.21.
 
     sha256sum -c run_manifests/stage2/calibration_raw_run_checksums.sha256

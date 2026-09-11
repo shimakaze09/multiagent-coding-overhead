@@ -253,12 +253,19 @@ def test_excluded_task_has_no_stratum_and_keeps_descriptive_counts():
 
 
 def _complete_entries():
-    """Every pool task complete, the excluded one not."""
+    """Every pool task complete, the excluded one not. The flowq tasks are
+    given middle rates so the pool has a Medium and a Hard task and freezing is
+    not blocked by the adequacy guard (which is tested separately)."""
+    middle = {"s2t05_flowq": 4, "s2t06_flowq": 2, "s2t08_flowq": 3}   # of 5
     entries = []
     for t in difficulty.difficulty_pool():
-        solved = not t.endswith("flowq")
-        for rep in (1, 2, 3) if solved else (1, 2, 3, 4, 5):
-            entries.append(_entry(t, f"{t}_r{rep}", rep, solved))
+        if t in middle:
+            k = middle[t]
+            for rep in (1, 2, 3, 4, 5):
+                entries.append(_entry(t, f"{t}_r{rep}", rep, rep <= k))
+        else:
+            for rep in (1, 2, 3):
+                entries.append(_entry(t, f"{t}_r{rep}", rep, True))
     entries.append(_entry("s2t03_ledgerly", "s2t03_r1", 1, False))
     return entries
 
@@ -269,6 +276,7 @@ def test_excluded_task_cannot_enter_difficulty_aggregation():
     dist = difficulty.distribution(statuses)
     assert dist["infrastructure_unresolved"] == 1
     assert sum(dist[s] for s in difficulty.STRATA) == len(difficulty.difficulty_pool())
+    assert (dist["medium"], dist["hard"]) == (1, 2)
 
     labels = difficulty.freeze_labels(entries)
     assert "s2t03_ledgerly" not in labels["tasks"]
@@ -303,3 +311,50 @@ def test_amendment_11_is_recorded():
     assert "### Amendment 11" in text
     assert "self_authored_false_positive" in text
     assert "INFRASTRUCTURE_UNRESOLVED" in text
+
+
+# --------------------------------------------------------------------------
+# item 12: no intermediate region -> a valid result, and freezing is refused
+# --------------------------------------------------------------------------
+
+
+def _easy_beyond_entries():
+    """The distribution Phase C actually produced: Easy and Beyond only."""
+    entries = []
+    for t in difficulty.difficulty_pool():
+        solved = not t.endswith("flowq")
+        for rep in (1, 2, 3) if solved else (1, 2, 3, 4, 5):
+            entries.append(_entry(t, f"{t}_r{rep}", rep, solved))
+    entries.append(_entry("s2t03_ledgerly", "s2t03_r1", 1, False))
+    return entries
+
+
+def test_adequacy_reports_the_missing_intermediate_region():
+    statuses = difficulty.calibration_summary(_easy_beyond_entries())
+    a = difficulty.adequacy(statuses)
+    assert a["at_least_one_medium"] is False and a["at_least_one_hard"] is False
+    assert a["intermediate_region_exists"] is False
+    assert a["bimodal_easy_beyond_split"] is True
+    assert a["usable_for_quality_cost_frontier"] is False
+    assert a["distribution"]["infrastructure_unresolved"] == 1
+
+    ok = difficulty.adequacy(difficulty.calibration_summary(_complete_entries()))
+    assert ok["usable_for_quality_cost_frontier"] is True
+    assert ok["at_least_one_medium"] is True and ok["at_least_one_hard"] is True
+
+
+def test_freeze_is_refused_without_an_intermediate_region():
+    entries = _easy_beyond_entries()
+    statuses = difficulty.calibration_summary(entries)
+    assert all(statuses[t]["status"] == "complete" for t in difficulty.difficulty_pool())
+    with pytest.raises(ValueError, match=difficulty.POOL_FAILED):
+        difficulty.freeze_labels(entries)
+    text = difficulty.render_summary(entries)
+    assert difficulty.POOL_FAILED in text
+    assert "freeze with" not in text
+
+
+def test_no_difficulty_labels_exist():
+    """Phase C stopped at the pool failure: nothing is frozen on disk."""
+    assert difficulty.load_labels() is None
+    assert not config.STAGE2_DIFFICULTY_LABELS.exists()

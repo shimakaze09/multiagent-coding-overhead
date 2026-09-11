@@ -154,6 +154,36 @@ def distribution(statuses: dict) -> dict:
     return out
 
 
+def _codebase(task_id: str) -> str:
+    design = stage2_design.load_design(task_id) or {}
+    return design.get("codebase", "unknown")
+
+
+def adequacy(statuses: dict) -> dict:
+    """Amendment 11 items 11 and 12: does this pool support the intended
+    difficulty frontier? Mechanical, from the frozen strata only."""
+    d = distribution(statuses)
+    middle = [t for t, s in statuses.items()
+              if s.get("included_in_difficulty_pool", True)
+              and s.get("stratum") in ("medium", "hard", "very_hard")]
+    codebases = sorted({_codebase(t) for t in middle})
+    intermediate = d["medium"] + d["hard"]
+    return {
+        "distribution": d,
+        "at_least_one_medium": d["medium"] >= 1,
+        "at_least_one_hard": d["hard"] >= 1,
+        "non_easy_non_beyond_codebases": codebases,
+        "non_easy_non_beyond_in_more_than_one_codebase": len(codebases) > 1,
+        "intermediate_region_exists": intermediate >= 1,
+        "bimodal_easy_beyond_split": (intermediate == 0 and d["easy"] >= 1
+                                      and (d["beyond"] + d["very_hard"]) >= 1),
+        "usable_for_quality_cost_frontier": intermediate >= 1,
+    }
+
+
+POOL_FAILED = "CANDIDATE POOL FAILED TO RESOLVE THE INTERMEDIATE DIFFICULTY FRONTIER"
+
+
 def _family(task_id: str) -> str:
     design = stage2_design.load_design(task_id) or {}
     return design.get("task_family", "unknown")
@@ -189,6 +219,13 @@ def freeze_labels(entries: Sequence[dict]) -> dict:
     incomplete = [t for t in pool if statuses[t]["status"] != "complete"]
     if incomplete:
         raise ValueError(f"calibration incomplete for: {incomplete}")
+    adq = adequacy(statuses)
+    if not adq["usable_for_quality_cost_frontier"]:
+        # Amendment 11 item 12: a distribution with no Medium and no Hard task
+        # is a valid calibration result and a stopping point, not a benchmark.
+        raise ValueError(
+            f"{POOL_FAILED}: distribution {adq['distribution']}; "
+            "difficulty labels must not be frozen and no evaluation run may be generated")
     bench = select_benchmark(statuses)
     run_ids = sorted(r for t in pool for r in statuses[t]["counted_run_ids"])
     unresolved = {
@@ -210,6 +247,7 @@ def freeze_labels(entries: Sequence[dict]) -> dict:
         "difficulty_pool": list(pool),
         "infrastructure_unresolved": unresolved,
         "distribution": distribution(statuses),
+        "adequacy": adq,
         "benchmark": bench["selected"],
         "excluded_over_cap": bench["excluded_over_cap"],
         "easy_controls": list(config.STAGE2_EASY_CONTROLS),
@@ -282,9 +320,17 @@ def render_summary(entries: Sequence[dict], labels: Optional[dict] = None) -> st
     L.append(f"complete: {done}/{len(pool)} pool candidates "
              f"({len(statuses) - len(pool)} infrastructure-unresolved, excluded)")
     L.append("distribution (pool only): " + "  ".join(f"{k}={v}" for k, v in dist.items()))
+    adq = adequacy(statuses)
+    L.append(f"intermediate region (Medium or Hard): "
+             f"{'YES' if adq['intermediate_region_exists'] else 'NO'}"
+             f"   medium={dist['medium']} hard={dist['hard']}"
+             f"   non-Easy/non-Beyond codebases: {adq['non_easy_non_beyond_codebases'] or '-'}")
     if labels:
         L.append(f"difficulty labels FROZEN: benchmark {labels['benchmark']}")
+    elif done == len(pool) and adq["usable_for_quality_cost_frontier"]:
+        L.append("all pool candidates complete: freeze with `python runner.py difficulty-freeze`")
     elif done == len(pool):
-        L.append("all candidates complete: freeze with `python runner.py difficulty-freeze`")
+        L.append(f"{POOL_FAILED} (amendment 11 item 12): calibration is complete, "
+                 "difficulty must NOT be frozen and no evaluation run may be generated")
     L.append("Strata use Single-Strong calibration runs only; evaluation runs never change them.")
     return "\n".join(L)

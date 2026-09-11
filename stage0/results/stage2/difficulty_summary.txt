@@ -2,18 +2,25 @@
 task              status                            k/n    rate   stratum    next repeat ids
 s2t01_ledgerly    complete                          3/3    1.0    easy       -
 s2t02_ledgerly    complete                          3/3    1.0    easy       -
-s2t03_ledgerly    unresolved_too_many_invalid_runs  0/1    -      -          -
+s2t03_ledgerly    infrastructure_unresolved         0/1    -      -          -
     invalid (not counted): 20260911T063412Z_s2t03_ledgerly_S2_SS_r1, 20260911T083535Z_s2t03_ledgerly_S2_SS_r1, 20260911T073910Z_s2t03_ledgerly_S2_SS_r3
-s2t04_ledgerly    needs_runs                        1/3    0.3333 -          [4, 5]
-s2t05_flowq       needs_runs                        0/3    -      -          [4, 5]
-s2t06_flowq       needs_runs                        0/3    -      -          [4, 5]
+    EXCLUDED (infrastructure): infrastructure incompatibility / repeated isolation invalidation; descriptive only: 0/1 valid, 3 invalid
+s2t04_ledgerly    complete                          1/5    0.2    very_hard  -
+    invalid (not counted): 20260911T223200Z_s2t04_ledgerly_S2_SS_r5
+s2t05_flowq       complete                          0/5    -      beyond     -
+    invalid (not counted): 20260911T223749Z_s2t05_flowq_S2_SS_r5
+s2t06_flowq       complete                          0/5    -      beyond     -
+    invalid (not counted): 20260911T224125Z_s2t06_flowq_S2_SS_r4
 s2t07_flowq       complete                          3/3    1.0    easy       -
-s2t08_flowq       needs_runs                        0/3    -      -          [4, 5]
+s2t08_flowq       complete                          0/5    -      beyond     -
 s2t09_docpipe     complete                          3/3    1.0    easy       -
 s2t10_docpipe     complete                          3/3    1.0    easy       -
-s2t11_docpipe     needs_runs                        2/2    1.0    -          [4]
+s2t11_docpipe     complete                          3/3    1.0    easy       -
     invalid (not counted): 20260911T080058Z_s2t11_docpipe_S2_SS_r3
 s2t12_docpipe     complete                          3/3    1.0    easy       -
 
-complete: 6/12 candidates
+complete: 11/11 pool candidates (1 infrastructure-unresolved, excluded)
+distribution (pool only): easy=7  medium=0  hard=0  very_hard=1  beyond=3  infrastructure_unresolved=1
+intermediate region (Medium or Hard): NO   medium=0 hard=0   non-Easy/non-Beyond codebases: ['ledgerly']
+CANDIDATE POOL FAILED TO RESOLVE THE INTERMEDIATE DIFFICULTY FRONTIER (amendment 11 item 12): calibration is complete, difficulty must NOT be frozen and no evaluation run may be generated
 Strata use Single-Strong calibration runs only; evaluation runs never change them.

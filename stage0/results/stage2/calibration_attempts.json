@@ -8,6 +8,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -61,8 +65,23 @@
       "utilization": 0.93,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -77,6 +96,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -130,8 +153,17 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -146,6 +178,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -199,8 +235,17 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -215,6 +260,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -268,8 +317,17 @@
       "utilization": 0.93,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -284,6 +342,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -337,8 +399,17 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -353,6 +424,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -406,8 +481,23 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -424,6 +514,10 @@
     ],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [
       "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t063412z-s2t03-ledgerly-s2-ss-r1-workspace/memory/memory.md",
       "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t063412z-s2t03-ledgerly-s2-ss-r1-workspace/memory/feedback_bash_permissions.md",
@@ -481,8 +575,17 @@
       "utilization": 0.93,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": false,
     "included_in_success_rate_denominator": false,
@@ -501,6 +604,24 @@
       "held_out_or_reference_exposure"
     ],
     "held_out_exposure": true,
+    "content_match": "unexplained",
+    "provenance_applies": false,
+    "provenance_classification": "self_authored_false_positive",
+    "provenance_matches": [
+      {
+        "tool_use_id": "toolu_01AiLrgWd1tbRCQuMHHZNaSb",
+        "call_index": 30,
+        "tool": "Read",
+        "matched_lines": 4,
+        "self_authored_lines": 4,
+        "unexplained_examples": [],
+        "reasons": [],
+        "authored_by_call_indexes": [
+          25
+        ],
+        "verdict": "self_authored_false_positive"
+      }
+    ],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -554,8 +675,23 @@
       "utilization": 0.97,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.97,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.97,
+        "overage": false
+      }
+    ],
     "attempt": "1b",
     "attempt_index": 2,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": "20260911T063412Z_s2t03_ledgerly_S2_SS_r1",
     "included_in_calibration": false,
     "included_in_success_rate_denominator": false,
@@ -570,6 +706,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -623,8 +763,23 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -641,6 +796,10 @@
     ],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [
       "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t073910z-s2t03-ledgerly-s2-ss-r3-workspace/memory",
       "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t073910z-s2t03-ledgerly-s2-ss-r3-workspace/memory/project_ledgerly_signed_amounts.md",
@@ -698,8 +857,17 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
     "replacement_for_run_id": null,
     "included_in_calibration": false,
     "included_in_success_rate_denominator": false,
@@ -714,6 +882,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -767,8 +939,17 @@
       "utilization": 0.93,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -783,6 +964,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -836,8 +1021,17 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -852,6 +1046,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -905,8 +1103,281 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T223030Z_s2t04_ledgerly_S2_SS_r4",
+    "task": "s2t04_ledgerly",
+    "logical_repeat": 4,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 12,
+      "loc_removed": 3,
+      "unexpected_files": []
+    },
+    "model_calls": 17,
+    "tool_calls": 18,
+    "input_uncached": 1252,
+    "cache_read": 377589,
+    "cache_write": 15595,
+    "input_total": 394436,
+    "output": 5065,
+    "thinking": 927,
+    "wall_s": 65.98,
+    "cost_usd": 0.189764,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      },
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "4a",
+    "attempt_index": 1,
+    "physical_repeat_id": 4,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T223200Z_s2t04_ledgerly_S2_SS_r5",
+    "task": "s2t04_ledgerly",
+    "logical_repeat": 5,
+    "status": "INVALID",
+    "invalid_reason": "out_of_workspace_auto_memory_write",
+    "validity_reasons": [
+      "held-out isolation breach suspected (paths/markers)"
+    ],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t223200z-s2t04-ledgerly-s2-ss-r5-workspace/memory/env_no_python_execution.md",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t223200z-s2t04-ledgerly-s2-ss-r5-workspace/memory/memory.md",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t223200z-s2t04-ledgerly-s2-ss-r5-workspace/memory/memory.md"
+    ],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 18,
+      "loc_removed": 3,
+      "unexpected_files": []
+    },
+    "model_calls": 26,
+    "tool_calls": 25,
+    "input_uncached": 1270,
+    "cache_read": 665077,
+    "cache_write": 24152,
+    "input_total": 690499,
+    "output": 10620,
+    "thinking": 5296,
+    "wall_s": 159.78,
+    "cost_usd": 0.33708,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      },
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "5a",
+    "attempt_index": 1,
+    "physical_repeat_id": 5,
+    "replacement_for_run_id": null,
+    "included_in_calibration": false,
+    "included_in_success_rate_denominator": false,
+    "observed_quality_for_diagnostics_only": true
+  },
+  {
+    "run_id": "20260911T223505Z_s2t04_ledgerly_S2_SS_r6",
+    "task": "s2t04_ledgerly",
+    "logical_repeat": 6,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 12,
+      "loc_removed": 4,
+      "unexpected_files": []
+    },
+    "model_calls": 11,
+    "tool_calls": 10,
+    "input_uncached": 1240,
+    "cache_read": 215417,
+    "cache_write": 12491,
+    "input_total": 229148,
+    "output": 3517,
+    "thinking": 882,
+    "wall_s": 38.44,
+    "cost_usd": 0.129409,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "6a",
+    "attempt_index": 1,
+    "physical_repeat_id": 6,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -921,6 +1392,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -974,8 +1449,17 @@
       "utilization": 0.93,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -990,6 +1474,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -1043,8 +1531,17 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1059,6 +1556,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -1112,8 +1613,285 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T223611Z_s2t05_flowq_S2_SS_r4",
+    "task": "s2t05_flowq",
+    "logical_repeat": 4,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      3,
+      6
+    ],
+    "constraints": [
+      2,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 2,
+      "loc_removed": 2,
+      "unexpected_files": []
+    },
+    "model_calls": 15,
+    "tool_calls": 20,
+    "input_uncached": 1189,
+    "cache_read": 412456,
+    "cache_write": 22317,
+    "input_total": 435962,
+    "output": 5262,
+    "thinking": 1654,
+    "wall_s": 72.88,
+    "cost_usd": 0.225533,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "4a",
+    "attempt_index": 1,
+    "physical_repeat_id": 4,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T223749Z_s2t05_flowq_S2_SS_r5",
+    "task": "s2t05_flowq",
+    "logical_repeat": 5,
+    "status": "INVALID",
+    "invalid_reason": "out_of_workspace_auto_memory_write",
+    "validity_reasons": [
+      "held-out isolation breach suspected (paths/markers)"
+    ],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t223749z-s2t05-flowq-s2-ss-r5-workspace/memory/memory.md"
+    ],
+    "solved": false,
+    "heldout": [
+      3,
+      6
+    ],
+    "constraints": [
+      2,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 2,
+      "loc_removed": 2,
+      "unexpected_files": []
+    },
+    "model_calls": 13,
+    "tool_calls": 13,
+    "input_uncached": 1185,
+    "cache_read": 300824,
+    "cache_write": 17685,
+    "input_total": 319694,
+    "output": 3886,
+    "thinking": 1393,
+    "wall_s": 56.67,
+    "cost_usd": 0.170906,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "5a",
+    "attempt_index": 1,
+    "physical_repeat_id": 5,
+    "replacement_for_run_id": null,
+    "included_in_calibration": false,
+    "included_in_success_rate_denominator": false,
+    "observed_quality_for_diagnostics_only": true
+  },
+  {
+    "run_id": "20260911T223911Z_s2t05_flowq_S2_SS_r6",
+    "task": "s2t05_flowq",
+    "logical_repeat": 6,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      3,
+      6
+    ],
+    "constraints": [
+      2,
+      5
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 3,
+      "loc_removed": 3,
+      "unexpected_files": []
+    },
+    "model_calls": 22,
+    "tool_calls": 27,
+    "input_uncached": 1203,
+    "cache_read": 675677,
+    "cache_write": 26514,
+    "input_total": 703394,
+    "output": 7340,
+    "thinking": 2570,
+    "wall_s": 107.12,
+    "cost_usd": 0.315763,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      },
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      },
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      },
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "6a",
+    "attempt_index": 1,
+    "physical_repeat_id": 6,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1128,6 +1906,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -1181,8 +1963,17 @@
       "utilization": 0.93,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1197,6 +1988,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -1250,8 +2045,23 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1266,6 +2076,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -1319,8 +2133,289 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T224125Z_s2t06_flowq_S2_SS_r4",
+    "task": "s2t06_flowq",
+    "logical_repeat": 4,
+    "status": "INVALID",
+    "invalid_reason": "out_of_workspace_auto_memory_write",
+    "validity_reasons": [
+      "held-out isolation breach suspected (paths/markers)"
+    ],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t224125z-s2t06-flowq-s2-ss-r4-workspace/memory/memory.md",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t224125z-s2t06-flowq-s2-ss-r4-workspace/memory",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t224125z-s2t06-flowq-s2-ss-r4-workspace/memory",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t224125z-s2t06-flowq-s2-ss-r4-workspace/memory/feedback_verification.md",
+      "c:/users/playf/.claude/projects/d--dev-subagent-test-stage0-runs-20260911t224125z-s2t06-flowq-s2-ss-r4-workspace/memory/memory.md"
+    ],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 7,
+      "loc_added": 128,
+      "loc_removed": 30,
+      "unexpected_files": []
+    },
+    "model_calls": 49,
+    "tool_calls": 56,
+    "input_uncached": 1436,
+    "cache_read": 2430400,
+    "cache_write": 67516,
+    "input_total": 2499352,
+    "output": 34946,
+    "thinking": 15127,
+    "wall_s": 386.09,
+    "cost_usd": 1.107078,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "4a",
+    "attempt_index": 1,
+    "physical_repeat_id": 4,
+    "replacement_for_run_id": null,
+    "included_in_calibration": false,
+    "included_in_success_rate_denominator": false,
+    "observed_quality_for_diagnostics_only": true
+  },
+  {
+    "run_id": "20260911T224819Z_s2t06_flowq_S2_SS_r5",
+    "task": "s2t06_flowq",
+    "logical_repeat": 5,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 7,
+      "loc_added": 120,
+      "loc_removed": 34,
+      "unexpected_files": []
+    },
+    "model_calls": 43,
+    "tool_calls": 49,
+    "input_uncached": 1424,
+    "cache_read": 2135657,
+    "cache_write": 58866,
+    "input_total": 2195947,
+    "output": 33442,
+    "thinking": 14620,
+    "wall_s": 352.95,
+    "cost_usd": 0.998465,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      },
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "5a",
+    "attempt_index": 1,
+    "physical_repeat_id": 5,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T225439Z_s2t06_flowq_S2_SS_r6",
+    "task": "s2t06_flowq",
+    "logical_repeat": 6,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      5,
+      7
+    ],
+    "constraints": [
+      4,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 7,
+      "loc_added": 130,
+      "loc_removed": 32,
+      "unexpected_files": []
+    },
+    "model_calls": 37,
+    "tool_calls": 50,
+    "input_uncached": 1412,
+    "cache_read": 1740469,
+    "cache_write": 57445,
+    "input_total": 1799326,
+    "output": 29196,
+    "thinking": 12611,
+    "wall_s": 298.09,
+    "cost_usd": 0.87125,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      },
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "6a",
+    "attempt_index": 1,
+    "physical_repeat_id": 6,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1335,6 +2430,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -1388,8 +2487,23 @@
       "utilization": 0.93,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1404,6 +2518,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -1457,8 +2575,17 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1473,6 +2600,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -1526,8 +2657,17 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1542,6 +2682,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -1595,8 +2739,17 @@
       "utilization": 0.93,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1611,6 +2764,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -1664,8 +2821,17 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1680,6 +2846,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": false,
     "heldout": [
@@ -1733,8 +2903,181 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T230005Z_s2t08_flowq_S2_SS_r4",
+    "task": "s2t08_flowq",
+    "logical_repeat": 4,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      4,
+      6
+    ],
+    "constraints": [
+      3,
+      4
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 1,
+      "unexpected_files": []
+    },
+    "model_calls": 7,
+    "tool_calls": 6,
+    "input_uncached": 1244,
+    "cache_read": 128657,
+    "cache_write": 10328,
+    "input_total": 140229,
+    "output": 1437,
+    "thinking": 162,
+    "wall_s": 20.2,
+    "cost_usd": 0.082601,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "4a",
+    "attempt_index": 1,
+    "physical_repeat_id": 4,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
+  },
+  {
+    "run_id": "20260911T230054Z_s2t08_flowq_S2_SS_r5",
+    "task": "s2t08_flowq",
+    "logical_repeat": 5,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [],
+    "solved": false,
+    "heldout": [
+      4,
+      6
+    ],
+    "constraints": [
+      3,
+      4
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 1,
+      "loc_added": 1,
+      "loc_removed": 1,
+      "unexpected_files": []
+    },
+    "model_calls": 9,
+    "tool_calls": 8,
+    "input_uncached": 1248,
+    "cache_read": 174786,
+    "cache_write": 11972,
+    "input_total": 188006,
+    "output": 1782,
+    "thinking": 262,
+    "wall_s": 27.89,
+    "cost_usd": 0.101861,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "5a",
+    "attempt_index": 1,
+    "physical_repeat_id": 5,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1749,6 +3092,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -1802,8 +3149,35 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.93,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1818,6 +3192,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -1871,8 +3249,29 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1887,6 +3286,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -1940,8 +3343,23 @@
       "utilization": 0.96,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.96,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -1956,6 +3374,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -2009,8 +3431,23 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -2025,6 +3462,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -2078,8 +3519,29 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -2094,6 +3556,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -2147,8 +3613,17 @@
       "utilization": 0.96,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.96,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -2163,6 +3638,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -2216,8 +3695,23 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -2232,6 +3726,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -2287,8 +3785,23 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -2307,6 +3820,25 @@
       "held_out_or_reference_exposure"
     ],
     "held_out_exposure": true,
+    "content_match": "unexplained",
+    "provenance_applies": false,
+    "provenance_classification": "self_authored_false_positive",
+    "provenance_matches": [
+      {
+        "tool_use_id": "toolu_013SSWVFgqZYPyKz4Yzpak7B",
+        "call_index": 27,
+        "tool": "Read",
+        "matched_lines": 6,
+        "self_authored_lines": 6,
+        "unexplained_examples": [],
+        "reasons": [],
+        "authored_by_call_indexes": [
+          15,
+          24
+        ],
+        "verdict": "self_authored_false_positive"
+      }
+    ],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -2360,12 +3892,111 @@
       "utilization": 0.96,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.96,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
     "replacement_for_run_id": null,
     "included_in_calibration": false,
     "included_in_success_rate_denominator": false,
     "observed_quality_for_diagnostics_only": true
+  },
+  {
+    "run_id": "20260911T230151Z_s2t11_docpipe_S2_SS_r4",
+    "task": "s2t11_docpipe",
+    "logical_repeat": 4,
+    "status": "VALID",
+    "invalid_reason": null,
+    "validity_reasons": [],
+    "hard_stop": [],
+    "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": true,
+    "provenance_classification": null,
+    "provenance_matches": [],
+    "outside_workspace_paths": [],
+    "solved": true,
+    "heldout": [
+      7,
+      7
+    ],
+    "constraints": [
+      6,
+      6
+    ],
+    "regression_visible": [
+      11,
+      11
+    ],
+    "regression_heldout": [
+      1,
+      1
+    ],
+    "regression_preserved": true,
+    "patch": {
+      "files_changed": 7,
+      "loc_added": 234,
+      "loc_removed": 179,
+      "unexpected_files": [
+        "docpipe/_dispatch.py"
+      ]
+    },
+    "model_calls": 22,
+    "tool_calls": 30,
+    "input_uncached": 1349,
+    "cache_read": 914262,
+    "cache_write": 42705,
+    "input_total": 958316,
+    "output": 25025,
+    "thinking": 12007,
+    "wall_s": 247.39,
+    "cost_usd": 0.60524,
+    "cost_exact": true,
+    "termination": [
+      "completed"
+    ],
+    "model": [
+      "claude-sonnet-5"
+    ],
+    "init": {
+      "model": "claude-sonnet-5",
+      "apiKeySource": "none",
+      "claude_code_version": "2.1.260"
+    },
+    "rate_limit": {
+      "status": "allowed",
+      "type": "five_hour",
+      "utilization": null,
+      "overage": false
+    },
+    "rate_limits": [
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      },
+      {
+        "status": "allowed",
+        "type": "five_hour",
+        "utilization": null,
+        "overage": false
+      }
+    ],
+    "attempt": "4a",
+    "attempt_index": 1,
+    "physical_repeat_id": 4,
+    "replacement_for_run_id": null,
+    "included_in_calibration": true,
+    "included_in_success_rate_denominator": true,
+    "observed_quality_for_diagnostics_only": false
   },
   {
     "run_id": "20260911T070140Z_s2t12_docpipe_S2_SS_r1",
@@ -2376,6 +4007,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -2429,8 +4064,17 @@
       "utilization": 0.94,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.94,
+        "overage": false
+      }
+    ],
     "attempt": "1a",
     "attempt_index": 1,
+    "physical_repeat_id": 1,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -2445,6 +4089,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -2498,8 +4146,17 @@
       "utilization": 0.95,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.95,
+        "overage": false
+      }
+    ],
     "attempt": "2a",
     "attempt_index": 1,
+    "physical_repeat_id": 2,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,
@@ -2514,6 +4171,10 @@
     "validity_reasons": [],
     "hard_stop": [],
     "held_out_exposure": false,
+    "content_match": null,
+    "provenance_applies": false,
+    "provenance_classification": null,
+    "provenance_matches": [],
     "outside_workspace_paths": [],
     "solved": true,
     "heldout": [
@@ -2567,8 +4228,23 @@
       "utilization": 0.97,
       "overage": false
     },
+    "rate_limits": [
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.97,
+        "overage": false
+      },
+      {
+        "status": "allowed_warning",
+        "type": "seven_day",
+        "utilization": 0.97,
+        "overage": false
+      }
+    ],
     "attempt": "3a",
     "attempt_index": 1,
+    "physical_repeat_id": 3,
     "replacement_for_run_id": null,
     "included_in_calibration": true,
     "included_in_success_rate_denominator": true,

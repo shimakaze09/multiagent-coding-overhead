@@ -1,34 +1,49 @@
-calibration runs: 37 (valid 33); all complete: False
+calibration attempts: 49 (valid 42, invalid 7); all pool tasks complete: True
 task            family                  cb       k/n   rate   wilson95         stratum    needs   Q2 per run                    Q5 per run                    reg  cost mean/med     input mean/med      wall mean/med   calls mdl/tool  
 s2t01_ledgerly  deep_diagnosis          ledgerly 3/3   1.0    (0.4385, 1.0)    easy       -       [1.00,1.00,1.00]              [1.00,1.00,1.00]              3/3  0.2754/0.2811     501136.3333/554499  98.8533/95.5    18.6667/20.0    
 s2t02_ledgerly  cross_subsystem_change  ledgerly 3/3   1.0    (0.4385, 1.0)    easy       -       [1.00,1.00,1.00]              [1.00,1.00,1.00]              3/3  0.4763/0.4672     1064716.6667/991184 131.6967/130.41 29.3333/38.6667 
-s2t03_ledgerly  long_horizon_migration  ledgerly 0/1   0.0    (0.0, 0.7935)    (beyond)   -       [0.86]                        [0.80]                        1/1  0.5148/0.5148     1154674.0/1154674   159.05/159.05   29.0/40.0       
+s2t03_ledgerly  long_horizon_migration  ledgerly 0/1   0.0    (0.0, 0.7935)    EXCLUDED   -       [0.86]                        [0.80]                        1/1  0.5148/0.5148     1154674.0/1154674   159.05/159.05   29.0/40.0       
     invalid (not counted): ['20260911T063412Z_s2t03_ledgerly_S2_SS_r1', '20260911T083535Z_s2t03_ledgerly_S2_SS_r1', '20260911T073910Z_s2t03_ledgerly_S2_SS_r3']
-s2t04_ledgerly  hidden_regression       ledgerly 1/3   0.3333 (0.0615, 0.7923) (very_hard)[4, 5]  [0.71,0.71,1.00]              [0.67,0.67,1.00]              3/3  0.246/0.2146      506378.3333/405604  102.3867/88.86  20.6667/19.6667 
-s2t05_flowq     deep_diagnosis          flowq    0/3   0.0    (0.0, 0.5615)    (beyond)   [4, 5]  [0.83,0.50,0.50]              [0.80,0.40,0.40]              3/3  0.2391/0.2375     423383.0/424805     79.25/77.8      14.6667/18.6667 
-s2t06_flowq     cross_subsystem_change  flowq    0/3   0.0    (0.0, 0.5615)    (beyond)   [4, 5]  [0.71,0.71,0.71]              [0.67,0.67,0.67]              3/3  0.9554/0.9254     2034502.3333/1983516317.7333/301.16 38.3333/51.0    
+    INFRASTRUCTURE_UNRESOLVED: infrastructure incompatibility / repeated isolation invalidation; descriptive only: 0/1 valid, 3 invalid; no stratum, out of the difficulty pool and the evaluation benchmark
+s2t04_ledgerly  hidden_regression       ledgerly 1/5   0.2    (0.0362, 0.6245) very_hard  -       [0.71,0.71,1.00,0.71,0.71]    [0.67,0.67,1.00,0.67,0.67]    5/5  0.2114/0.2047     428543.8/399431     82.316/68.05    18.0/17.4       
+    invalid (not counted): ['20260911T223200Z_s2t04_ledgerly_S2_SS_r5']
+s2t05_flowq     deep_diagnosis          flowq    0/5   0.0    (0.0, 0.4345)    beyond     -       [0.83,0.50,0.50,0.50,0.50]    [0.80,0.40,0.40,0.40,0.40]    5/5  0.2517/0.2375     481901.0/435962     83.55/77.8      16.2/20.6       
+    invalid (not counted): ['20260911T223749Z_s2t05_flowq_S2_SS_r5']
+s2t06_flowq     cross_subsystem_change  flowq    0/5   0.0    (0.0, 0.4345)    beyond     -       [0.71,0.71,0.71,0.71,0.71]    [0.67,0.67,0.67,0.67,0.67]    5/5  0.9472/0.9254     2019756.0/1983516   320.848/301.16  39.0/50.4       
+    invalid (not counted): ['20260911T224125Z_s2t06_flowq_S2_SS_r4']
 s2t07_flowq     long_horizon_migration  flowq    3/3   1.0    (0.4385, 1.0)    easy       -       [1.00,1.00,1.00]              [1.00,1.00,1.00]              3/3  0.5311/0.5428     1001709.3333/967900 167.8/177.67    25.3333/34.6667 
-s2t08_flowq     hidden_regression       flowq    0/3   0.0    (0.0, 0.5615)    (beyond)   [4, 5]  [0.67,0.67,0.67]              [0.75,0.75,0.75]              3/3  0.1567/0.1673     342782.0/360783     50.6233/45.8    15.6667/15.0    
+s2t08_flowq     hidden_regression       flowq    0/5   0.0    (0.0, 0.4345)    beyond     -       [0.67,0.67,0.67,0.67,0.67]    [0.75,0.75,0.75,0.75,0.75]    5/5  0.1309/0.1214     271316.2/233532     39.992/32.34    12.6/11.8       
 s2t09_docpipe   deep_diagnosis          docpipe  3/3   1.0    (0.4385, 1.0)    easy       -       [1.00,1.00,1.00]              [1.00,1.00,1.00]              3/3  0.2607/0.2427     554899.6667/539254  72.99/62.3      19.0/21.6667    
 s2t10_docpipe   cross_subsystem_change  docpipe  3/3   1.0    (0.4385, 1.0)    easy       -       [1.00,1.00,1.00]              [1.00,1.00,1.00]              3/3  0.803/0.795       1594461.3333/1574406312.16/311.41   31.6667/43.3333 
-s2t11_docpipe   long_horizon_migration  docpipe  2/2   1.0    (0.3424, 1.0)    (easy)     [4]     [1.00,1.00]                   [1.00,1.00]                   2/2  0.6998/0.6998     1240064.5/1240064.5 269.46/269.46   27.0/33.0       
+s2t11_docpipe   long_horizon_migration  docpipe  3/3   1.0    (0.4385, 1.0)    easy       -       [1.00,1.00,1.00]              [1.00,1.00,1.00]              3/3  0.6683/0.6521     1146148.3333/993031 262.1033/268.67 25.3333/32.0    
     invalid (not counted): ['20260911T080058Z_s2t11_docpipe_S2_SS_r3']
 s2t12_docpipe   hidden_regression       docpipe  3/3   1.0    (0.4385, 1.0)    easy       -       [1.00,1.00,1.00]              [1.00,1.00,1.00]              3/3  0.2363/0.2272     472049.0/468148     77.1533/71.44   18.0/20.0       
 
-distribution: {'easy': 7, 'medium': 0, 'hard': 0, 'very_hard': 1, 'beyond': 4}
-by family:    {'deep_diagnosis': {'easy': 2, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 1}, 'cross_subsystem_change': {'easy': 2, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 1}, 'long_horizon_migration': {'easy': 2, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 1}, 'hidden_regression': {'easy': 1, 'medium': 0, 'hard': 0, 'very_hard': 1, 'beyond': 1}}
-by codebase:  {'ledgerly': {'easy': 2, 'medium': 0, 'hard': 0, 'very_hard': 1, 'beyond': 1}, 'flowq': {'easy': 1, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 3}, 'docpipe': {'easy': 4, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 0}}
+distribution (pool only): {'easy': 7, 'medium': 0, 'hard': 0, 'very_hard': 1, 'beyond': 3}
+infrastructure unresolved: 1 {'s2t03_ledgerly': 'infrastructure incompatibility / repeated isolation invalidation'}
+by family:    {'deep_diagnosis': {'easy': 2, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 1}, 'cross_subsystem_change': {'easy': 2, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 1}, 'long_horizon_migration': {'easy': 2, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 0}, 'hidden_regression': {'easy': 1, 'medium': 0, 'hard': 0, 'very_hard': 1, 'beyond': 1}}
+by codebase:  {'ledgerly': {'easy': 2, 'medium': 0, 'hard': 0, 'very_hard': 1, 'beyond': 0}, 'flowq': {'easy': 1, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 3}, 'docpipe': {'easy': 4, 'medium': 0, 'hard': 0, 'very_hard': 0, 'beyond': 0}}
 
--- scaling_by_stratum: group | tasks | runs | success | input/run | output/run | cost/run | wall/run | model calls/run
-   easy                      7   20     1.0      902352.3     14793.6    0.4574   156.044    24.0
-   very_hard                 1    3  0.3333   506378.3333      7044.0     0.246  102.3867 20.6667
-   beyond                    4   10     0.0      955667.6     14065.4    0.4568   150.187    23.5
--- scaling_by_family: group | tasks | runs | success | input/run | output/run | cost/run | wall/run | model calls/run
-   deep_diagnosis            3    9  0.6667   493139.6667   7110.4444    0.2584   83.6978 17.4444
-   cross_subsystem_change    3    9  0.6667  1564560.1111  24360.8889    0.7449  253.8633 33.1111
-   long_horizon_migration    3    6  0.8333  1106655.1667     20434.5    0.5846  200.2283    26.5
-   hidden_regression         3    9  0.4444   440403.1111   5756.5556     0.213   76.7211 18.1111
--- scaling_by_codebase: group | tasks | runs | success | input/run | output/run | cost/run | wall/run | model calls/run
-   ledgerly                  4   10     0.7      737136.8      9737.9    0.3508   115.786    23.5
-   flowq                     4   12    0.25   950594.1667    15060.75    0.4706  153.8517    23.5
-   docpipe                   4   11     1.0   940396.2727  16322.7273    0.4818  175.0755 23.6364
+-- scaling_by_stratum (classified pool tasks only)
+   group                    tasks runs    succ     input/run  output/run  cachewr/run  cost/run  wall/run  tool/run  mdl/run
+   easy                         7   21     1.0   905017.2381  15280.8095   34108.0476    0.4644  160.3938   30.0476  23.9048
+   very_hard                    1    5     0.2      428543.8      5942.8      17186.2    0.2114    82.316      17.4     18.0
+   beyond                       3   15     0.0      924324.4  13701.7333   31676.9333    0.4433    148.13      27.6     22.6
+-- scaling_by_family (classified pool tasks only)
+   group                    tasks runs    succ     input/run  output/run  cachewr/run  cost/run  wall/run  tool/run  mdl/run
+   deep_diagnosis               3   11  0.5455   507055.7273   6963.2727   23328.9091    0.2606   84.8436   20.7273  17.6364
+   cross_subsystem_change       3   11  0.5455  1643301.2727     25626.0   50894.4545    0.7794  266.8918   45.2727  34.3636
+   hidden_regression            3   13  0.3077   378111.3077   4893.0769   15976.7692    0.1862   64.8462   15.8462  15.9231
+   long_horizon_migration       2    6     1.0  1073928.8333  22340.8333   42199.8333    0.5997  214.9517   33.3333  25.3333
+-- scaling_by_codebase (classified pool tasks only)
+   group                    tasks runs    succ     input/run  output/run  cachewr/run  cost/run  wall/run  tool/run  mdl/run
+   ledgerly                     3   11  0.6364   621843.4545   8397.6364   24150.2727    0.3011  100.2936   23.9091  21.2727
+   flowq                        4   18  0.1667   937221.8889  14399.3333      33007.0    0.4579  151.4083   28.7778  23.0556
+   docpipe                      4   12     1.0   941889.5833  17047.9167   34797.9167    0.4921  181.1017     29.25     23.5
+
+-- benchmark adequacy (amendment 11, item 11)
+   at least one Medium task              : NO
+   at least one Hard task                : NO
+   non-Easy/non-Beyond in >1 codebase    : NO ['ledgerly']
+   intermediate difficulty region exists : NO
+   Easy/Beyond bimodal split             : YES
